@@ -5,18 +5,13 @@ import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import React, {
   Fragment,
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState,
   type CSSProperties,
-  type Dispatch,
   type ElementType,
-  type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type Ref,
@@ -50,9 +45,10 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useSlice } from '../../react-glue'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import {
   Focus as FocusManagementFocus,
@@ -60,7 +56,6 @@ import {
   focusFrom,
   isFocusableElement,
   restoreFocusIfNecessary,
-  sortByDomNode,
 } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import {
@@ -75,299 +70,8 @@ import { useDescriptions } from '../description/description'
 import { Keys } from '../keyboard'
 import { useLabelContext, useLabels } from '../label/label'
 import { Portal } from '../portal/portal'
-
-enum MenuStates {
-  Open,
-  Closed,
-}
-
-enum ActivationTrigger {
-  Pointer,
-  Other,
-}
-
-type MenuItemDataRef = MutableRefObject<{
-  textValue?: string
-  disabled: boolean
-  domRef: MutableRefObject<HTMLElement | null>
-}>
-
-interface StateDefinition {
-  __demoMode: boolean
-  menuState: MenuStates
-  buttonElement: HTMLButtonElement | null
-  itemsElement: HTMLElement | null
-  items: { id: string; dataRef: MenuItemDataRef }[]
-  searchQuery: string
-  activeItemIndex: number | null
-  activationTrigger: ActivationTrigger
-}
-
-enum ActionTypes {
-  OpenMenu,
-  CloseMenu,
-
-  GoToItem,
-  Search,
-  ClearSearch,
-  RegisterItem,
-  UnregisterItem,
-
-  SetButtonElement,
-  SetItemsElement,
-}
-
-function adjustOrderedState(
-  state: StateDefinition,
-  adjustment: (items: StateDefinition['items']) => StateDefinition['items'] = (i) => i
-) {
-  let currentActiveItem = state.activeItemIndex !== null ? state.items[state.activeItemIndex] : null
-
-  let sortedItems = sortByDomNode(
-    adjustment(state.items.slice()),
-    (item) => item.dataRef.current.domRef.current
-  )
-
-  // If we inserted an item before the current active item then the active item index
-  // would be wrong. To fix this, we will re-lookup the correct index.
-  let adjustedActiveItemIndex = currentActiveItem ? sortedItems.indexOf(currentActiveItem) : null
-
-  // Reset to `null` in case the currentActiveItem was removed.
-  if (adjustedActiveItemIndex === -1) {
-    adjustedActiveItemIndex = null
-  }
-
-  return {
-    items: sortedItems,
-    activeItemIndex: adjustedActiveItemIndex,
-  }
-}
-
-type Actions =
-  | { type: ActionTypes.CloseMenu }
-  | { type: ActionTypes.OpenMenu }
-  | { type: ActionTypes.GoToItem; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
-  | {
-      type: ActionTypes.GoToItem
-      focus: Exclude<Focus, Focus.Specific>
-      trigger?: ActivationTrigger
-    }
-  | { type: ActionTypes.Search; value: string }
-  | { type: ActionTypes.ClearSearch }
-  | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
-  | { type: ActionTypes.UnregisterItem; id: string }
-  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
-  | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
-
-let reducers: {
-  [P in ActionTypes]: (
-    state: StateDefinition,
-    action: Extract<Actions, { type: P }>
-  ) => StateDefinition
-} = {
-  [ActionTypes.CloseMenu](state) {
-    if (state.menuState === MenuStates.Closed) return state
-    return { ...state, activeItemIndex: null, menuState: MenuStates.Closed }
-  },
-  [ActionTypes.OpenMenu](state) {
-    if (state.menuState === MenuStates.Open) return state
-    return {
-      ...state,
-      /* We can turn off demo mode once we re-open the `Menu` */
-      __demoMode: false,
-      menuState: MenuStates.Open,
-    }
-  },
-  [ActionTypes.GoToItem]: (state, action) => {
-    if (state.menuState === MenuStates.Closed) return state
-
-    let base = {
-      ...state,
-      searchQuery: '',
-      activationTrigger: action.trigger ?? ActivationTrigger.Other,
-      __demoMode: false,
-    }
-
-    // Optimization:
-    //
-    // There is no need to sort the DOM nodes if we know that we don't want to focus anything
-    if (action.focus === Focus.Nothing) {
-      return {
-        ...base,
-        activeItemIndex: null,
-      }
-    }
-
-    // Optimization:
-    //
-    // There is no need to sort the DOM nodes if we know exactly where to go
-    if (action.focus === Focus.Specific) {
-      return {
-        ...base,
-        activeItemIndex: state.items.findIndex((o) => o.id === action.id),
-      }
-    }
-
-    // Optimization:
-    //
-    // If the current DOM node and the previous DOM node are next to each other,
-    // or if the previous DOM node is already the first DOM node, then we don't
-    // have to sort all the DOM nodes.
-    else if (action.focus === Focus.Previous) {
-      let activeItemIdx = state.activeItemIndex
-      if (activeItemIdx !== null) {
-        let currentDom = state.items[activeItemIdx].dataRef.current.domRef
-        let previousItemIndex = calculateActiveIndex(action, {
-          resolveItems: () => state.items,
-          resolveActiveIndex: () => state.activeItemIndex,
-          resolveId: (item) => item.id,
-          resolveDisabled: (item) => item.dataRef.current.disabled,
-        })
-        if (previousItemIndex !== null) {
-          let previousDom = state.items[previousItemIndex].dataRef.current.domRef
-          if (
-            // Next to each other
-            currentDom.current?.previousElementSibling === previousDom.current ||
-            // Or already the first element
-            previousDom.current?.previousElementSibling === null
-          ) {
-            return {
-              ...base,
-              activeItemIndex: previousItemIndex,
-            }
-          }
-        }
-      }
-    }
-
-    // Optimization:
-    //
-    // If the current DOM node and the next DOM node are next to each other, or
-    // if the next DOM node is already the last DOM node, then we don't have to
-    // sort all the DOM nodes.
-    else if (action.focus === Focus.Next) {
-      let activeItemIdx = state.activeItemIndex
-      if (activeItemIdx !== null) {
-        let currentDom = state.items[activeItemIdx].dataRef.current.domRef
-        let nextItemIndex = calculateActiveIndex(action, {
-          resolveItems: () => state.items,
-          resolveActiveIndex: () => state.activeItemIndex,
-          resolveId: (item) => item.id,
-          resolveDisabled: (item) => item.dataRef.current.disabled,
-        })
-        if (nextItemIndex !== null) {
-          let nextDom = state.items[nextItemIndex].dataRef.current.domRef
-          if (
-            // Next to each other
-            currentDom.current?.nextElementSibling === nextDom.current ||
-            // Or already the last element
-            nextDom.current?.nextElementSibling === null
-          ) {
-            return {
-              ...base,
-              activeItemIndex: nextItemIndex,
-            }
-          }
-        }
-      }
-    }
-
-    // Slow path:
-    //
-    // Ensure all the items are correctly sorted according to DOM position
-    let adjustedState = adjustOrderedState(state)
-    let activeItemIndex = calculateActiveIndex(action, {
-      resolveItems: () => adjustedState.items,
-      resolveActiveIndex: () => adjustedState.activeItemIndex,
-      resolveId: (item) => item.id,
-      resolveDisabled: (item) => item.dataRef.current.disabled,
-    })
-
-    return {
-      ...base,
-      ...adjustedState,
-      activeItemIndex,
-    }
-  },
-  [ActionTypes.Search]: (state, action) => {
-    let wasAlreadySearching = state.searchQuery !== ''
-    let offset = wasAlreadySearching ? 0 : 1
-    let searchQuery = state.searchQuery + action.value.toLowerCase()
-
-    let reOrderedItems =
-      state.activeItemIndex !== null
-        ? state.items
-            .slice(state.activeItemIndex + offset)
-            .concat(state.items.slice(0, state.activeItemIndex + offset))
-        : state.items
-
-    let matchingItem = reOrderedItems.find(
-      (item) =>
-        item.dataRef.current.textValue?.startsWith(searchQuery) && !item.dataRef.current.disabled
-    )
-
-    let matchIdx = matchingItem ? state.items.indexOf(matchingItem) : -1
-    if (matchIdx === -1 || matchIdx === state.activeItemIndex) return { ...state, searchQuery }
-    return {
-      ...state,
-      searchQuery,
-      activeItemIndex: matchIdx,
-      activationTrigger: ActivationTrigger.Other,
-    }
-  },
-  [ActionTypes.ClearSearch](state) {
-    if (state.searchQuery === '') return state
-    return { ...state, searchQuery: '', searchActiveItemIndex: null }
-  },
-  [ActionTypes.RegisterItem]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (items) => [
-      ...items,
-      { id: action.id, dataRef: action.dataRef },
-    ])
-
-    return { ...state, ...adjustedState }
-  },
-  [ActionTypes.UnregisterItem]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (items) => {
-      let idx = items.findIndex((a) => a.id === action.id)
-      if (idx !== -1) items.splice(idx, 1)
-      return items
-    })
-
-    return {
-      ...state,
-      ...adjustedState,
-      activationTrigger: ActivationTrigger.Other,
-    }
-  },
-  [ActionTypes.SetButtonElement]: (state, action) => {
-    if (state.buttonElement === action.element) return state
-    return { ...state, buttonElement: action.element }
-  },
-  [ActionTypes.SetItemsElement]: (state, action) => {
-    if (state.itemsElement === action.element) return state
-    return { ...state, itemsElement: action.element }
-  },
-}
-
-let MenuContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
-MenuContext.displayName = 'MenuContext'
-
-function useMenuContext(component: string) {
-  let context = useContext(MenuContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
-    throw err
-  }
-  return context
-}
-
-function stateReducer(state: StateDefinition, action: Actions) {
-  return match(action.type, reducers, state, action)
-}
-
-// ---
+import { ActionTypes, ActivationTrigger, MenuState, type MenuItemDataRef } from './menu-machine'
+import { MenuContext, useMenuMachine, useMenuMachineContext } from './menu-machine-glue'
 
 let DEFAULT_MENU_TAG = Fragment
 type MenuRenderPropArg = {
@@ -390,36 +94,32 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let { __demoMode = false, ...theirProps } = props
-  let reducerBag = useReducer(stateReducer, {
-    __demoMode,
-    menuState: __demoMode ? MenuStates.Open : MenuStates.Closed,
-    buttonElement: null,
-    itemsElement: null,
-    items: [],
-    searchQuery: '',
-    activeItemIndex: null,
-    activationTrigger: ActivationTrigger.Other,
-  } as StateDefinition)
-  let [{ menuState, itemsElement, buttonElement }, dispatch] = reducerBag
+  let machine = useMenuMachine({ __demoMode })
+
+  let [menuState, itemsElement, buttonElement] = useSlice(machine, (state) => [
+    state.menuState,
+    state.itemsElement,
+    state.buttonElement,
+  ])
   let menuRef = useSyncRefs(ref)
 
   // Handle outside click
-  let outsideClickEnabled = menuState === MenuStates.Open
+  let outsideClickEnabled = menuState === MenuState.Open
   useOutsideClick(outsideClickEnabled, [buttonElement, itemsElement], (event, target) => {
-    dispatch({ type: ActionTypes.CloseMenu })
+    machine.send({ type: ActionTypes.CloseMenu })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {
       event.preventDefault()
-      buttonElement?.focus()
+      machine.state.buttonElement?.focus()
     }
   })
 
   let close = useEvent(() => {
-    dispatch({ type: ActionTypes.CloseMenu })
+    machine.send({ type: ActionTypes.CloseMenu })
   })
 
   let slot = useMemo(
-    () => ({ open: menuState === MenuStates.Open, close }) satisfies MenuRenderPropArg,
+    () => ({ open: menuState === MenuState.Open, close }) satisfies MenuRenderPropArg,
     [menuState, close]
   )
 
@@ -429,11 +129,11 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
   return (
     <FloatingProvider>
-      <MenuContext.Provider value={reducerBag}>
+      <MenuContext.Provider value={machine}>
         <OpenClosedProvider
           value={match(menuState, {
-            [MenuStates.Open]: State.Open,
-            [MenuStates.Closed]: State.Closed,
+            [MenuState.Open]: State.Open,
+            [MenuState.Closed]: State.Closed,
           })}
         >
           {render({
@@ -476,6 +176,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: MenuButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
+  let machine = useMenuMachineContext('Menu.Button')
   let internalId = useId()
   let {
     id = `headlessui-menu-button-${internalId}`,
@@ -483,12 +184,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
-  let [state, dispatch] = useMenuContext('Menu.Button')
+  let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let getFloatingReferenceProps = useFloatingReferenceProps()
   let buttonRef = useSyncRefs(
     ref,
+    internalButtonRef,
     useFloatingReference(),
-    useEvent((element) => dispatch({ type: ActionTypes.SetButtonElement, element }))
+    useEvent((element) => machine.send({ type: ActionTypes.SetButtonElement, element }))
   )
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -500,15 +202,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
-        dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
+        machine.send({ type: ActionTypes.OpenMenu, focus: { focus: Focus.First } })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
-        dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
+        machine.send({ type: ActionTypes.OpenMenu, focus: { focus: Focus.Last } })
         break
     }
   })
@@ -524,15 +224,24 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
+  let [menuState, itemsElement] = useSlice(machine, (state) => [
+    state.menuState,
+    state.itemsElement,
+  ])
+
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
-    if (state.menuState === MenuStates.Open) {
-      flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
-      state.buttonElement?.focus({ preventScroll: true })
+    if (menuState === MenuState.Open) {
+      flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
+      internalButtonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
-      dispatch({ type: ActionTypes.OpenMenu })
+      machine.send({
+        type: ActionTypes.OpenMenu,
+        focus: { focus: Focus.Nothing },
+        trigger: ActivationTrigger.Pointer,
+      })
     }
   })
 
@@ -542,24 +251,24 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let slot = useMemo(() => {
     return {
-      open: state.menuState === MenuStates.Open,
-      active: active || state.menuState === MenuStates.Open,
+      open: menuState === MenuState.Open,
+      active: active || menuState === MenuState.Open,
       disabled,
       hover,
       focus,
       autofocus: autoFocus,
     } satisfies ButtonRenderPropArg
-  }, [state, hover, focus, active, disabled, autoFocus])
+  }, [menuState, hover, focus, active, disabled, autoFocus])
 
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, state.buttonElement),
+      type: useResolveButtonType(props, internalButtonRef.current),
       'aria-haspopup': 'menu',
-      'aria-controls': state.itemsElement?.id,
-      'aria-expanded': state.menuState === MenuStates.Open,
+      'aria-controls': itemsElement?.id,
+      'aria-expanded': menuState === MenuState.Open,
       disabled: disabled || undefined,
       autoFocus,
       onKeyDown: handleKeyDown,
@@ -622,7 +331,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
-  let [state, dispatch] = useMenuContext('Menu.Items')
+  let machine = useMenuMachineContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
 
@@ -635,11 +344,17 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let itemsRef = useSyncRefs(
     ref,
     anchor ? floatingRef : null,
-    useEvent((element) => dispatch({ type: ActionTypes.SetItemsElement, element })),
+    useEvent((element) => machine.send({ type: ActionTypes.SetItemsElement, element })),
     setLocalItemsElement
   )
-  let portalOwnerDocument = useOwnerDocument(state.buttonElement)
-  let ownerDocument = useOwnerDocument(state.itemsElement)
+
+  let [menuState, buttonElement] = useSlice(machine, (state) => [
+    state.menuState,
+    state.buttonElement,
+  ])
+
+  let portalOwnerDocument = useOwnerDocument(buttonElement)
+  let ownerDocument = useOwnerDocument(localItemsElement)
 
   // Always enable `portal` functionality, when `anchor` is enabled
   if (anchor) {
@@ -652,24 +367,25 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     localItemsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
-      : state.menuState === MenuStates.Open
+      : menuState === MenuState.Open
   )
 
   // Ensure we close the menu as soon as the button becomes hidden
-  useOnDisappear(visible, state.buttonElement, () => {
-    dispatch({ type: ActionTypes.CloseMenu })
+  useOnDisappear(visible, buttonElement, () => {
+    machine.send({ type: ActionTypes.CloseMenu })
   })
 
   // Enable scroll locking when the menu is visible, and `modal` is enabled
-  let scrollLockEnabled = state.__demoMode ? false : modal && state.menuState === MenuStates.Open
+  let __demoMode = useSlice(machine, (state) => state.__demoMode)
+  let scrollLockEnabled = __demoMode ? false : modal && menuState === MenuState.Open
   useScrollLock(scrollLockEnabled, ownerDocument)
 
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
-  let inertOthersEnabled = state.__demoMode ? false : modal && state.menuState === MenuStates.Open
+  let inertOthersEnabled = __demoMode ? false : modal && menuState === MenuState.Open
   useInertOthers(inertOthersEnabled, {
     allowed: useCallback(
-      () => [state.buttonElement, state.itemsElement],
-      [state.buttonElement, state.itemsElement]
+      () => [buttonElement, localItemsElement],
+      [buttonElement, localItemsElement]
     ),
   })
 
@@ -682,24 +398,24 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   //
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
-  let didButtonMoveEnabled = state.menuState !== MenuStates.Open
-  let didButtonMove = useDidElementMove(didButtonMoveEnabled, state.buttonElement)
+  let didButtonMoveEnabled = menuState !== MenuState.Open
+  let didButtonMove = useDidElementMove(didButtonMoveEnabled, buttonElement)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
   let panelEnabled = didButtonMove ? false : visible
 
   useEffect(() => {
-    let container = state.itemsElement
+    let container = localItemsElement
     if (!container) return
-    if (state.menuState !== MenuStates.Open) return
+    if (menuState !== MenuState.Open) return
     if (container === ownerDocument?.activeElement) return
 
     container.focus({ preventScroll: true })
-  }, [state.menuState, state.itemsElement, ownerDocument])
+  }, [menuState, localItemsElement, ownerDocument])
 
-  useTreeWalker(state.menuState === MenuStates.Open, {
-    container: state.itemsElement,
+  useTreeWalker(menuState === MenuState.Open, {
+    container: localItemsElement,
     accept(node) {
       if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
@@ -719,66 +435,66 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
       // @ts-expect-error Fallthrough is expected here
       case Keys.Space:
-        if (state.searchQuery !== '') {
+        if (machine.state.searchQuery !== '') {
           event.preventDefault()
           event.stopPropagation()
-          return dispatch({ type: ActionTypes.Search, value: event.key })
+          return machine.send({ type: ActionTypes.Search, value: event.key })
         }
       // When in type ahead mode, fallthrough
       case Keys.Enter:
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.CloseMenu })
-        if (state.activeItemIndex !== null) {
-          let { dataRef } = state.items[state.activeItemIndex]
+        if (machine.state.activeItemIndex !== null) {
+          let { dataRef } = machine.state.items[machine.state.activeItemIndex]
           dataRef.current?.domRef.current?.click()
         }
-        restoreFocusIfNecessary(state.buttonElement)
+        machine.send({ type: ActionTypes.CloseMenu })
+        restoreFocusIfNecessary(machine.state.buttonElement)
         break
 
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
-        return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Next })
+        return machine.send({ type: ActionTypes.GoToItem, focus: Focus.Next })
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
-        return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Previous })
+        return machine.send({ type: ActionTypes.GoToItem, focus: Focus.Previous })
 
       case Keys.Home:
       case Keys.PageUp:
         event.preventDefault()
         event.stopPropagation()
-        return dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
+        return machine.send({ type: ActionTypes.GoToItem, focus: Focus.First })
 
       case Keys.End:
       case Keys.PageDown:
         event.preventDefault()
         event.stopPropagation()
-        return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
+        return machine.send({ type: ActionTypes.GoToItem, focus: Focus.Last })
 
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
-        state.buttonElement?.focus({ preventScroll: true })
+        flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
+        machine.state.buttonElement?.focus({ preventScroll: true })
         break
 
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
+        flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
         focusFrom(
-          state.buttonElement!,
+          machine.state.buttonElement!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
         )
         break
 
       default:
         if (event.key.length === 1) {
-          dispatch({ type: ActionTypes.Search, value: event.key })
-          searchDisposables.setTimeout(() => dispatch({ type: ActionTypes.ClearSearch }), 350)
+          machine.send({ type: ActionTypes.Search, value: event.key })
+          searchDisposables.setTimeout(() => machine.send({ type: ActionTypes.ClearSearch }), 350)
         }
         break
     }
@@ -797,14 +513,13 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
   let slot = useMemo(() => {
     return {
-      open: state.menuState === MenuStates.Open,
+      open: menuState === MenuState.Open,
     } satisfies ItemsRenderPropArg
-  }, [state.menuState])
+  }, [menuState])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
-    'aria-activedescendant':
-      state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
-    'aria-labelledby': state.buttonElement?.id,
+    'aria-activedescendant': useSlice(machine, machine.selectors.activeDescendantId),
+    'aria-labelledby': useSlice(machine, (state) => state.buttonElement?.id),
     id,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
@@ -812,12 +527,12 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     // When the `Menu` is closed, it should not be focusable. This allows us
     // to skip focusing the `MenuItems` when pressing the tab key on an
     // open `Menu`, and go to the next focusable element.
-    tabIndex: state.menuState === MenuStates.Open ? 0 : undefined,
+    tabIndex: menuState === MenuState.Open ? 0 : undefined,
     ref: itemsRef,
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(state.buttonElement, true).width,
+      '--button-width': useElementSize(buttonElement, true).width,
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
@@ -871,27 +586,22 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 ) {
   let internalId = useId()
   let { id = `headlessui-menu-item-${internalId}`, disabled = false, ...theirProps } = props
-  let [state, dispatch] = useMenuContext('Menu.Item')
-  let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
+  let machine = useMenuMachineContext('Menu.Item')
+
+  let active = useSlice(machine, (state) => machine.selectors.isActive(state, id))
+
   let internalItemRef = useRef<HTMLElement | null>(null)
   let itemRef = useSyncRefs(ref, internalItemRef)
 
+  let shouldScrollIntoView = useSlice(machine, (state) =>
+    machine.selectors.shouldScrollIntoView(state, id)
+  )
   useIsoMorphicEffect(() => {
-    if (state.__demoMode) return
-    if (state.menuState !== MenuStates.Open) return
-    if (!active) return
-    if (state.activationTrigger === ActivationTrigger.Pointer) return
+    if (!shouldScrollIntoView) return
     return disposables().requestAnimationFrame(() => {
       internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-  }, [
-    state.__demoMode,
-    internalItemRef,
-    active,
-    state.menuState,
-    state.activationTrigger,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex,
-  ])
+  }, [shouldScrollIntoView, internalItemRef])
 
   let getTextValue = useTextValue(internalItemRef)
 
@@ -908,23 +618,23 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   }, [bag, disabled])
 
   useIsoMorphicEffect(() => {
-    dispatch({ type: ActionTypes.RegisterItem, id, dataRef: bag })
-    return () => dispatch({ type: ActionTypes.UnregisterItem, id })
+    machine.actions.registerItem(id, bag)
+    return () => machine.send({ type: ActionTypes.UnregisterItem, id })
   }, [bag, id])
 
   let close = useEvent(() => {
-    dispatch({ type: ActionTypes.CloseMenu })
+    machine.send({ type: ActionTypes.CloseMenu })
   })
 
   let handleClick = useEvent((event: MouseEvent) => {
     if (disabled) return event.preventDefault()
-    dispatch({ type: ActionTypes.CloseMenu })
-    restoreFocusIfNecessary(state.buttonElement)
+    machine.send({ type: ActionTypes.CloseMenu })
+    restoreFocusIfNecessary(machine.state.buttonElement)
   })
 
   let handleFocus = useEvent(() => {
-    if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
+    if (disabled) return machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
+    machine.send({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   })
 
   let pointer = useTrackedPointer()
@@ -933,7 +643,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     pointer.update(evt)
     if (disabled) return
     if (active) return
-    dispatch({
+    machine.send({
       type: ActionTypes.GoToItem,
       focus: Focus.Specific,
       id,
@@ -945,7 +655,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
-    dispatch({
+    machine.send({
       type: ActionTypes.GoToItem,
       focus: Focus.Specific,
       id,
@@ -957,7 +667,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
+    machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 
   let [labelledby, LabelProvider] = useLabels()
