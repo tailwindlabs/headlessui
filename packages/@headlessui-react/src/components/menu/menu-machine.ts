@@ -45,7 +45,7 @@ export enum ActionTypes {
   Search,
   ClearSearch,
   RegisterItems,
-  UnregisterItem,
+  UnregisterItems,
 
   SetButtonElement,
   SetItemsElement,
@@ -95,7 +95,7 @@ export type Actions =
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterItems; items: { id: string; dataRef: MenuItemDataRef }[] }
-  | { type: ActionTypes.UnregisterItem; id: string }
+  | { type: ActionTypes.UnregisterItems; items: string[] }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
   | { type: ActionTypes.SortItems }
@@ -283,12 +283,24 @@ let reducers: {
       pendingShouldSort: true,
     }
   },
-  [ActionTypes.UnregisterItem]: (state, action) => {
+  [ActionTypes.UnregisterItems]: (state, action) => {
     let items = state.items
-    let idx = items.findIndex((a) => a.id === action.id)
-    if (idx !== -1) {
+
+    let idxs = []
+    let ids = new Set(action.items)
+    for (let [idx, item] of items.entries()) {
+      if (ids.has(item.id)) {
+        idxs.push(idx)
+        ids.delete(item.id)
+        if (ids.size === 0) break
+      }
+    }
+
+    if (idxs.length > 0) {
       items = items.slice()
-      items.splice(idx, 1)
+      for (let idx of idxs.reverse()) {
+        items.splice(idx, 1)
+      }
     }
 
     return {
@@ -297,6 +309,7 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
+
   [ActionTypes.SetButtonElement]: (state, action) => {
     if (state.buttonElement === action.element) return state
     return { ...state, buttonElement: action.element }
@@ -357,6 +370,14 @@ export class MenuMachine extends Machine<State, Actions> {
       return [
         (id: string, dataRef: MenuItemDataRef) => items.push({ id, dataRef }),
         () => this.send({ type: ActionTypes.RegisterItems, items: items.splice(0) }),
+      ]
+    }),
+    unregisterItem: batch(() => {
+      let items: string[] = []
+
+      return [
+        (id: string) => items.push(id),
+        () => this.send({ type: ActionTypes.UnregisterItems, items: items.splice(0) }),
       ]
     }),
   }

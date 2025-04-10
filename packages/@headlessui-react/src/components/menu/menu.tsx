@@ -619,7 +619,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
   useIsoMorphicEffect(() => {
     machine.actions.registerItem(id, bag)
-    return () => machine.send({ type: ActionTypes.UnregisterItem, id })
+    return () => machine.actions.unregisterItem(id)
   }, [bag, id])
 
   let close = useEvent(() => {
