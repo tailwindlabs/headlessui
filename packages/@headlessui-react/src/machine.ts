@@ -68,33 +68,52 @@ export function shallowEqual(a: any, b: any): boolean {
   // Exact same reference
   if (Object.is(a, b)) return true
 
+  // Must be some type of object
+  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false
+
   // Arrays
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false
-
-    for (let i = 0; i < a.length; i++) {
-      if (!Object.is(a[i], b[i])) return false
-    }
-
-    return true
+    return compareEntries(a[Symbol.iterator](), b[Symbol.iterator]())
   }
 
-  // Objects
-  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false
-
-  let aKeys = Object.keys(a)
-  let bKeys = Object.keys(b)
-
-  if (aKeys.length !== bKeys.length) return false
-
-  for (let key of aKeys) {
-    if (!Object.is(a[key], b[key])) return false
+  // Map and Set
+  if ((a instanceof Map && b instanceof Map) || (a instanceof Set && b instanceof Set)) {
+    if (a.size !== b.size) return false
+    return compareEntries(a.entries(), b.entries())
   }
 
-  // Assumption: everything else is considered equal
-  // TODO: Add more specific checks for other types when needed such as Map,
-  // Set, ...
-  return true
+  // Plain objects
+  if (isPlainObject(a) && isPlainObject(b)) {
+    return compareEntries(
+      Object.entries(a)[Symbol.iterator](),
+      Object.entries(b)[Symbol.iterator]()
+    )
+  }
+
+  // TODO: Not sure how to compare other types of objects
+  return false
+}
+
+function compareEntries(a: IterableIterator<any>, b: IterableIterator<any>): boolean {
+  do {
+    let aResult = a.next()
+    let bResult = b.next()
+
+    if (aResult.done && bResult.done) return true
+    if (aResult.done || bResult.done) return false
+
+    if (!Object.is(aResult.value, bResult.value)) return false
+  } while (true)
+}
+
+function isPlainObject<T>(value: T): value is T & Record<keyof T, unknown> {
+  if (Object.prototype.toString.call(value) !== '[object Object]') {
+    return false
+  }
+
+  let prototype = Object.getPrototypeOf(value)
+  return prototype === null || Object.getPrototypeOf(prototype) === null
 }
 
 export function batch<F extends (...args: any[]) => void, P extends any[] = Parameters<F>>(
