@@ -371,10 +371,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         flushSync(() => machine.actions.openListbox())
-        if (!data.value)
-          machine.actions.goToOption({
-            focus: Focus.First,
-          })
+        if (!data.value) machine.actions.goToOption({ focus: Focus.First })
         break
 
       case Keys.ArrowUp:
