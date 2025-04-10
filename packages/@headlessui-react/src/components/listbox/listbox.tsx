@@ -603,19 +603,18 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let isSelected = useEvent((compareValue: unknown) => data.compare(frozenValue, compareValue))
 
-  let options = useSlice(machine, (state) => state.options)
-
-  let selectedOptionIndex = useMemo(() => {
+  let selectedOptionIndex = useSlice(machine, (state) => {
     if (anchor == null) return null
     if (!anchor?.to?.includes('selection')) return null
 
     // Only compute the selected option index when using `selection` in the
     // `anchor` prop.
-    let idx = options.findIndex((option) => isSelected(option.dataRef.current.value))
+    let idx = state.options.findIndex((option) => isSelected(option.dataRef.current.value))
     // Ensure that if no data is selected, we default to the first item.
     if (idx === -1) idx = 0
+
     return idx
-  }, [anchor, options])
+  })
 
   let anchorOptions = (() => {
     if (anchor == null) return undefined
@@ -734,8 +733,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     }
   })
 
-  let activeOptionIndex = useSlice(machine, (state) => state.activeOptionIndex)
   let labelledby = useSlice(machine, (state) => state.buttonElement?.id)
+
   let slot = useMemo(() => {
     return {
       open: listboxState === ListboxStates.Open,
@@ -745,8 +744,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,
     ref: optionsRef,
-    'aria-activedescendant':
-      activeOptionIndex === null ? undefined : options[activeOptionIndex]?.id,
+    'aria-activedescendant': useSlice(machine, machine.selectors.activeDescendantId),
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     'aria-orientation': data.orientation,
@@ -851,32 +849,15 @@ function OptionFn<
     }
   })
 
-  let [listboxState, activationTrigger, __demoMode, activeOptionIndex] = useSlice(
-    machine,
-    (state) => [
-      state.listboxState,
-      state.activationTrigger,
-      state.__demoMode,
-      state.activeOptionIndex,
-    ]
+  let shouldScrollIntoView = useSlice(machine, (state) =>
+    machine.selectors.shouldScrollIntoView(state, id)
   )
   useIsoMorphicEffect(() => {
-    if (__demoMode) return
-    if (listboxState !== ListboxStates.Open) return
-    if (!active) return
-    if (activationTrigger === ActivationTrigger.Pointer) return
+    if (!shouldScrollIntoView) return
     return disposables().requestAnimationFrame(() => {
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-  }, [
-    internalOptionRef,
-    active,
-    __demoMode,
-    listboxState,
-    activationTrigger,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */
-    activeOptionIndex,
-  ])
+  }, [shouldScrollIntoView, internalOptionRef])
 
   useIsoMorphicEffect(() => {
     if (usedInSelectedOption) return

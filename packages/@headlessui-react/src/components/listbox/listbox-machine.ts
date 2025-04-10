@@ -428,11 +428,24 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
   }
 
   selectors = {
+    activeDescendantId(state: State<T>) {
+      let activeOptionIndex = state.activeOptionIndex
+      let options = state.options
+      return activeOptionIndex === null ? undefined : options[activeOptionIndex]?.id
+    },
+
     isActive(state: State<T>, id: string) {
       let activeOptionIndex = state.activeOptionIndex
       let options = state.options
 
       return activeOptionIndex !== null ? options[activeOptionIndex]?.id === id : false
+    },
+
+    shouldScrollIntoView(state: State<T>, id: string) {
+      if (state.__demoMode) return false
+      if (state.listboxState !== ListboxStates.Open) return false
+      if (state.activationTrigger === ActivationTrigger.Pointer) return false
+      return this.isActive(state, id)
     },
   }
 
