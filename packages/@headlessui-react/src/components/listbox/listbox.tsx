@@ -394,6 +394,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   })
 
   let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+    if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
       flushSync(() => machine.actions.closeListbox())
