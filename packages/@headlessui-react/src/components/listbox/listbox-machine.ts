@@ -72,7 +72,7 @@ export enum ActionTypes {
   ClearSearch,
 
   RegisterOptions,
-  UnregisterOption,
+  UnregisterOptions,
 
   SetButtonElement,
   SetOptionsElement,
@@ -124,7 +124,7 @@ type Actions<T> =
       type: ActionTypes.RegisterOptions
       options: { id: string; dataRef: ListboxOptionDataRef<T> }[]
     }
-  | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.UnregisterOptions; options: string[] }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
   | { type: ActionTypes.SortOptions }
@@ -328,12 +328,24 @@ let reducers: {
       pendingShouldSort: true,
     }
   },
-  [ActionTypes.UnregisterOption]: (state, action) => {
+  [ActionTypes.UnregisterOptions]: (state, action) => {
     let options = state.options
-    let idx = options.findIndex((a) => a.id === action.id)
-    if (idx !== -1) {
+
+    let idxs = []
+    let ids = new Set(action.options)
+    for (let [idx, option] of options.entries()) {
+      if (ids.has(option.id)) {
+        idxs.push(idx)
+        ids.delete(option.id)
+        if (ids.size === 0) break
+      }
+    }
+
+    if (idxs.length > 0) {
       options = options.slice()
-      options.splice(idx, 1)
+      for (let idx of idxs.reverse()) {
+        options.splice(idx, 1)
+      }
     }
 
     return {
@@ -418,6 +430,15 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
         (id: string, dataRef: ListboxOptionDataRef<T>) => options.push({ id, dataRef }),
         () => {
           this.send({ type: ActionTypes.RegisterOptions, options: options.splice(0) })
+        },
+      ]
+    }),
+    unregisterOption: batch(() => {
+      let options: string[] = []
+      return [
+        (id: string) => options.push(id),
+        () => {
+          this.send({ type: ActionTypes.UnregisterOptions, options: options.splice(0) })
         },
       ]
     }),
