@@ -749,11 +749,16 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let render = useRender()
 
+  // We want to use the local `isSelected` with frozen values when we are in
+  // single value mode.
+  let newData = useMemo(
+    () => (data.mode === ValueMode.Multi ? data : { ...data, isSelected }),
+    [data, isSelected]
+  )
+
   return (
     <Portal enabled={portal ? props.static || visible : false} ownerDocument={portalOwnerDocument}>
-      <ListboxDataContext.Provider
-        value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
-      >
+      <ListboxDataContext.Provider value={newData}>
         {render({
           ourProps,
           theirProps,
