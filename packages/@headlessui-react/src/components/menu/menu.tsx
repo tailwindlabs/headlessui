@@ -438,11 +438,11 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       case Keys.Enter:
         event.preventDefault()
         event.stopPropagation()
-        machine.send({ type: ActionTypes.CloseMenu })
         if (machine.state.activeItemIndex !== null) {
           let { dataRef } = machine.state.items[machine.state.activeItemIndex]
           dataRef.current?.domRef.current?.click()
         }
+        machine.send({ type: ActionTypes.CloseMenu })
         restoreFocusIfNecessary(buttonElement)
         break
 
