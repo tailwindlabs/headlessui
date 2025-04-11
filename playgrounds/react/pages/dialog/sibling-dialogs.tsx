@@ -30,23 +30,23 @@ export default function App() {
             </MenuButton>
             <MenuItems
               anchor="bottom start"
-              className="z-50 flex w-[calc(var(--button-width)*2)] flex-col rounded bg-white p-1 shadow outline-none"
+              className="z-50 flex w-[calc(var(--button-width)*2)] flex-col rounded-sm bg-white p-1 shadow-sm outline-hidden"
             >
               <MenuItem
                 as="button"
-                className="rounded px-2 py-1 text-left data-[active]:bg-gray-100"
+                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
               >
                 Item A
               </MenuItem>
               <MenuItem
                 as="button"
-                className="rounded px-2 py-1 text-left data-[active]:bg-gray-100"
+                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
               >
                 Item B
               </MenuItem>
               <MenuItem
                 as="button"
-                className="rounded px-2 py-1 text-left data-[active]:bg-gray-100"
+                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
                 onClick={() => setOpenDelete(true)}
               >
                 Delete
@@ -125,7 +125,7 @@ function MyDialog({ level = 0, open, onClose, children }: any) {
             style={{
               transform: `translate(calc(50px * ${level}), calc(50px * ${level}))`,
             }}
-            className="relative z-10 flex w-96 -translate-y-24 flex-col rounded bg-white p-4 shadow-xl"
+            className="relative z-10 flex w-96 -translate-y-24 flex-col rounded-sm bg-white p-4 shadow-xl"
           >
             {children}
           </DialogPanel>

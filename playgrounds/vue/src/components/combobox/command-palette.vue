@@ -66,13 +66,13 @@ export default defineComponent({
         <Combobox
           as="div"
           v-model="activePerson"
-          class="w-full overflow-hidden rounded border border-black/5 bg-white bg-clip-padding shadow-sm"
+          class="w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding shadow-xs"
           v-slot="{ activeOption, open }"
         >
           <div class="flex w-full flex-col">
             <ComboboxInput
               @change="query = $event.target.value"
-              class="w-full rounded-none border-none px-3 py-1 outline-none"
+              class="w-full rounded-none border-none px-3 py-1 outline-hidden"
               placeholder="Search users…"
               :displayValue="displayValue"
             />
@@ -83,7 +83,7 @@ export default defineComponent({
               ]"
             >
               <ComboboxOptions
-                class="shadow-xs max-h-60 flex-1 overflow-auto py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
+                class="shadow-2xs max-h-60 flex-1 overflow-auto py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
               >
                 <ComboboxOption
                   v-for="person in people"
@@ -93,7 +93,7 @@ export default defineComponent({
                 >
                   <div
                     :class="[
-                      'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-none',
+                      'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-hidden',
                       active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                     ]"
                   >

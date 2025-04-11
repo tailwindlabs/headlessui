@@ -46,7 +46,7 @@ export default function App() {
                   name="notifications"
                   className={({ checked }) =>
                     classNames(
-                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -72,7 +72,7 @@ export default function App() {
                   value="apple"
                   className={({ checked }) =>
                     classNames(
-                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -95,7 +95,7 @@ export default function App() {
                   value="banana"
                   className={({ checked }) =>
                     classNames(
-                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -122,7 +122,7 @@ export default function App() {
                       value={size}
                       className={({ active }) =>
                         classNames(
-                          'relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                          'relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                           active ? 'z-10 border-blue-200 bg-blue-50' : 'border-gray-200'
                         )
                       }
@@ -191,7 +191,7 @@ export default function App() {
                       </Listbox.Button>
 
                       <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                        <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
+                        <Listbox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5">
                           {people.map((person) => (
                             <Listbox.Option
                               key={person.id}
@@ -260,7 +260,7 @@ export default function App() {
                       <div className="flex w-full flex-col">
                         <Combobox.Input
                           onChange={(e) => setQuery(e.target.value)}
-                          className="w-full rounded rounded-md border-gray-300 bg-clip-padding px-3 py-1 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          className="w-full rounded-sm rounded-md border-gray-300 bg-clip-padding px-3 py-1 shadow-xs focus:border-gray-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                           placeholder="Search users..."
                         />
                         <div
@@ -270,7 +270,7 @@ export default function App() {
                           )}
                         >
                           <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                            <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                            <Combobox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
                               {locations
                                 .filter((location) =>
                                   location.toLowerCase().includes(query.toLowerCase())
@@ -335,13 +335,13 @@ export default function App() {
         </div>
 
         <div className="space-x-4">
-          <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
+          <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
             Submit
           </button>
 
           <button
             type="reset"
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
           >
             Reset
           </button>

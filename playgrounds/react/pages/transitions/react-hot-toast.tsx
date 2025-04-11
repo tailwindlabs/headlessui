@@ -9,7 +9,7 @@ const TailwindToaster = () => {
           appear
           as="div"
           show={t.visible}
-          className="flex transform rounded bg-white p-4 shadow-lg"
+          className="flex transform rounded-sm bg-white p-4 shadow-lg"
           enter="transition-all duration-500"
           enterFrom="opacity-0 scale-50"
           enterTo="opacity-100 scale-100"
@@ -29,7 +29,7 @@ export default function App() {
   return (
     <div className="m-8">
       <button
-        className="rounded bg-blue-500 p-4 text-white"
+        className="rounded-sm bg-blue-500 p-4 text-white"
         onClick={() => toast.success('This is Tailwind CSS')}
       >
         Create TailwindCSS Toast

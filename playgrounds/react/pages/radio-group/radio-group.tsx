@@ -44,7 +44,7 @@ export default function Home() {
                       access.length - 1 === i && 'rounded-bl-md rounded-br-md',
 
                       // Shared
-                      'relative flex border p-4 focus:outline-none',
+                      'relative flex border p-4 focus:outline-hidden',
                       active ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'
                     )
                   }

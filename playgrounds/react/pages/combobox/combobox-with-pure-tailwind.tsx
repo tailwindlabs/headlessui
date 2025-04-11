@@ -60,10 +60,10 @@ export default function Home() {
             </Combobox.Label>
 
             <div className="relative">
-              <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-sm">
+              <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
                 <Combobox.Input
                   onChange={(e) => setQuery(e.target.value)}
-                  className="border-none px-3 py-1 outline-none"
+                  className="border-none px-3 py-1 outline-hidden"
                 />
                 <Combobox.Button as={Button}>
                   <span className="pointer-events-none flex items-center px-2">
@@ -85,14 +85,14 @@ export default function Home() {
               </span>
 
               <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
+                <Combobox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5">
                   {people.map((name) => (
                     <Combobox.Option
                       key={name}
                       value={name}
                       className={({ active }) => {
                         return classNames(
-                          'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                          'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
                           active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                         )
                       }}

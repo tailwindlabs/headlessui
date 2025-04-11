@@ -73,14 +73,14 @@ export default defineComponent({
           </ComboboxLabel>
 
           <div class="relative">
-            <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-sm">
+            <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
               <ComboboxInput
                 @change="query = $event.target.value"
                 :displayValue="(person) => person?.name ?? ''"
-                class="border-none px-3 py-1 outline-none"
+                class="border-none px-3 py-1 outline-hidden"
               />
               <ComboboxButton
-                class="cursor-default border-l bg-gray-100 px-1 text-indigo-600 focus:outline-none"
+                class="cursor-default border-l bg-gray-100 px-1 text-indigo-600 focus:outline-hidden"
               >
                 <span class="pointer-events-none flex items-center px-2">
                   <svg
@@ -102,7 +102,7 @@ export default defineComponent({
 
             <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ComboboxOptions
-                class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
+                class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
               >
                 <ComboboxOption
                   v-for="person in filteredPeople"
@@ -112,7 +112,7 @@ export default defineComponent({
                 >
                   <div
                     :class="[
-                      'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                      'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
                       active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                     ]"
                   >

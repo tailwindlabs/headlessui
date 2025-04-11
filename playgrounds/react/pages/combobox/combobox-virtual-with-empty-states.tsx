@@ -83,11 +83,11 @@ export default function Home() {
         </Combobox.Label>
 
         <div className="relative">
-          <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-sm">
+          <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
             <Combobox.Input
               onChange={(e) => setQuery(e.target.value)}
               displayValue={(option: Option | null) => option?.name ?? ''}
-              className="border-none px-3 py-1 outline-none"
+              className="border-none px-3 py-1 outline-hidden"
             />
             <Combobox.Button as={Button}>
               <span className="pointer-events-none flex items-center px-2">
@@ -116,7 +116,7 @@ export default function Home() {
               static={filtered.length === 0}
               ref={optionsRef}
               className={classNames(
-                'shadow-xs max-h-60 rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5',
+                'shadow-2xs max-h-60 rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5',
                 filtered.length === 0 ? 'overflow-hidden' : 'overflow-auto'
               )}
             >
@@ -130,7 +130,7 @@ export default function Home() {
                         disabled
                         // Note: Do NOT use `null` for the `value`
                         value={option ?? emptyOption.current}
-                        className="relative w-full cursor-default select-none px-3 py-2 text-center focus:outline-none"
+                        className="relative w-full cursor-default select-none px-3 py-2 text-center focus:outline-hidden"
                       >
                         <div className="relative grid h-full grid-cols-1 grid-rows-1">
                           <div className="absolute inset-0">
@@ -155,7 +155,7 @@ export default function Home() {
                             <button
                               id="add_person"
                               type="button"
-                              className="rounded bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                              className="rounded-sm bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                               onClick={() => {
                                 let person = { name: query, disabled: false }
                                 setList((list) => [...list, person])
@@ -177,7 +177,7 @@ export default function Home() {
                       value={option}
                       className={({ active }) => {
                         return classNames(
-                          'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                          'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
                           active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                         )
                       }}

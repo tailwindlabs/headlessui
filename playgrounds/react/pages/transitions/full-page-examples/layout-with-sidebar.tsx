@@ -63,7 +63,7 @@ export default function App() {
             <div className="absolute right-0 top-0 -mr-14 p-1">
               <Transition.Child
                 unmount={false}
-                className="focus:bg-cool-gray-600 flex h-12 w-12 items-center justify-center rounded-full focus:outline-none"
+                className="focus:bg-cool-gray-600 flex h-12 w-12 items-center justify-center rounded-full focus:outline-hidden"
                 aria-label="Close sidebar"
                 as="button"
                 onClick={() => setMobileOpen(false)}
@@ -83,7 +83,7 @@ export default function App() {
                 </svg>
               </Transition.Child>
             </div>
-            <div className="flex flex-shrink-0 items-center px-4">
+            <div className="flex shrink-0 items-center px-4">
               <img
                 className="h-8 w-auto"
                 src="https://tailwindui.com/img/logos/easywire-logo-on-brand.svg"
@@ -91,17 +91,17 @@ export default function App() {
               />
             </div>
           </Transition.Child>
-          <div className="w-14 flex-shrink-0">
+          <div className="w-14 shrink-0">
             {/* Dummy element to force sidebar to shrink to fit close icon */}
           </div>
         </Transition>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:flex lg:flex-shrink-0">
+        <div className="hidden lg:flex lg:shrink-0">
           <div className="flex w-64 flex-col">
             {/* Sidebar component, swap this element with another sidebar if you like */}
-            <div className="flex flex-grow flex-col overflow-y-auto bg-teal-600 pb-4 pt-5">
-              <div className="flex flex-shrink-0 items-center px-4">
+            <div className="flex grow flex-col overflow-y-auto bg-teal-600 pb-4 pt-5">
+              <div className="flex shrink-0 items-center px-4">
                 <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/easywire-logo-on-brand.svg"
@@ -111,10 +111,10 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="flex-1 overflow-auto focus:outline-none" tabIndex={0}>
-          <div className="relative z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white lg:border-none">
+        <div className="flex-1 overflow-auto focus:outline-hidden" tabIndex={0}>
+          <div className="relative z-10 flex h-16 shrink-0 border-b border-gray-200 bg-white lg:border-none">
             <button
-              className="border-cool-gray-200 text-cool-gray-400 focus:bg-cool-gray-100 focus:text-cool-gray-600 border-r px-4 focus:outline-none lg:hidden"
+              className="border-cool-gray-200 text-cool-gray-400 focus:bg-cool-gray-100 focus:text-cool-gray-600 border-r px-4 focus:outline-hidden lg:hidden"
               aria-label="Open sidebar"
               onClick={() => setMobileOpen(true)}
             >
@@ -151,7 +151,7 @@ export default function App() {
                     </div>
                     <input
                       id="search_field"
-                      className="text-cool-gray-900 placeholder-cool-gray-500 focus:placeholder-cool-gray-400 block h-full w-full rounded-md py-2 pl-8 pr-3 focus:outline-none sm:text-sm"
+                      className="text-cool-gray-900 placeholder-cool-gray-500 focus:placeholder-cool-gray-400 block h-full w-full rounded-md py-2 pl-8 pr-3 focus:outline-hidden sm:text-sm"
                       placeholder="Search"
                       type="search"
                     />

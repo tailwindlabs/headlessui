@@ -35,16 +35,16 @@ export default function Home() {
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        className="relative z-50 duration-500 data-[closed]:opacity-0"
+        className="relative z-50 duration-500 data-closed:opacity-0"
       >
         <DialogBackdrop
           transition={transitionBackdrop}
-          className="fixed inset-0 bg-black/30 duration-500 ease-out data-[closed]:opacity-0"
+          className="fixed inset-0 bg-black/30 duration-500 ease-out data-closed:opacity-0"
         />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
           <DialogPanel
             transition={transitionPanel}
-            className="w-full max-w-lg space-y-4 bg-white p-12 duration-500 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+            className="w-full max-w-lg space-y-4 bg-white p-12 duration-500 ease-out data-closed:scale-95 data-closed:opacity-0"
           >
             <h1 className="text-2xl font-bold">Dialog</h1>
             <p>

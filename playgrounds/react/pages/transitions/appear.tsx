@@ -14,7 +14,7 @@ export default function AppearExample() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="rounded-md bg-white p-4 shadow ring-1 ring-black/5">
+        <div className="rounded-md bg-white p-4 shadow-sm ring-1 ring-black/5">
           <span className="mb-2">Initial render</span>
           <div className="grid max-w-6xl grid-cols-4 gap-4">
             <Transition
@@ -152,7 +152,7 @@ export default function AppearExample() {
         </div>
 
         {lazy && (
-          <div className="rounded-md bg-white p-4 shadow ring-1 ring-black/5">
+          <div className="rounded-md bg-white p-4 shadow-sm ring-1 ring-black/5">
             <span className="mb-2">Not on the initial render</span>
             <div className="grid max-w-6xl grid-cols-4 gap-4">
               <Transition

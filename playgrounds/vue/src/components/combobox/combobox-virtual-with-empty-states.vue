@@ -74,11 +74,11 @@ let filtered = computed(() => {
       </ComboboxLabel>
 
       <div class="relative">
-        <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-sm">
+        <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
           <ComboboxInput
             @change="(e) => (query = e.target.value)"
             :displayValue="(option: Option | null) => option?.name ?? ''"
-            class="border-none px-3 py-1 outline-none"
+            class="border-none px-3 py-1 outline-hidden"
           />
           <ComboboxButton as="button">
             <span class="pointer-events-none flex items-center px-2">
@@ -103,7 +103,7 @@ let filtered = computed(() => {
           <ComboboxOptions
             :ref="optionsRef"
             :class="[
-              'shadow-xs max-h-60 rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5',
+              'shadow-2xs max-h-60 rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5',
               filtered.length === 0 ? 'overflow-hidden' : 'overflow-auto',
             ]"
             v-slot="{ option }"
@@ -111,7 +111,7 @@ let filtered = computed(() => {
             <template v-if="option.empty">
               <ComboboxOption
                 :value="option"
-                class="relative w-full cursor-default select-none px-3 py-2 text-center focus:outline-none"
+                class="relative w-full cursor-default select-none px-3 py-2 text-center focus:outline-hidden"
                 disabled
               >
                 <div class="relative grid h-full grid-cols-1 grid-rows-1">
@@ -147,7 +147,7 @@ let filtered = computed(() => {
               >
                 <div
                   :class="[
-                    'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                    'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
                     active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                   ]"
                 >

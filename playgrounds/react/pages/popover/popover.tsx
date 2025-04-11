@@ -5,7 +5,7 @@ let Button = forwardRef(
   (props: React.ComponentProps<'button'>, ref: React.MutableRefObject<HTMLButtonElement>) => {
     return (
       <Popover.Button
-        className="border-2 border-transparent bg-gray-300 px-3 py-2 text-left focus:border-blue-900 focus:outline-none"
+        className="border-2 border-transparent bg-gray-300 px-3 py-2 text-left focus:border-blue-900 focus:outline-hidden"
         {...props}
         ref={ref}
       />
@@ -33,7 +33,7 @@ export default function Home() {
             <Popover.Overlay className="fixed inset-0 z-20 bg-gray-500 bg-opacity-75"></Popover.Overlay>
           </Transition>
 
-          <Popover.Button className="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none">
+          <Popover.Button className="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden">
             Normal
           </Popover.Button>
           <Popover.Panel className="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">
@@ -61,7 +61,7 @@ export default function Home() {
           <Button>Portal</Button>
           <Popover.Panel
             anchor="bottom start"
-            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:theme(spacing.1)]"
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:--spacing(1)]"
           >
             {items.map((item) => (
               <Button key={item}>Portal - {item}</Button>
@@ -74,7 +74,7 @@ export default function Home() {
           <Popover.Panel
             focus
             anchor="bottom start"
-            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:theme(spacing.1)]"
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:--spacing(1)]"
           >
             {items.map((item) => (
               <Button key={item}>Focus in Portal - {item}</Button>

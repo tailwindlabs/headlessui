@@ -15,7 +15,7 @@ function MyDialog({ open, close }) {
             leaveTo="opacity-0"
           >
             <div className="fixed bottom-0 left-0 top-0 flex items-center justify-center bg-red-500 p-4">
-              <Dialog.Panel className="mx-auto w-48 rounded bg-white p-4">
+              <Dialog.Panel className="mx-auto w-48 rounded-sm bg-white p-4">
                 <p className="my-2">Gray area should be scrollable</p>
 
                 <p className="h-32 overflow-y-scroll border bg-gray-100">

@@ -21,7 +21,7 @@
                   access.length - 1 === i && 'rounded-bl-md rounded-br-md',
 
                   // Shared
-                  'relative border p-4 flex focus:outline-none',
+                  'relative border p-4 flex focus:outline-hidden',
                   active ? 'bg-indigo-50 border-indigo-200 z-10' : 'border-gray-200'
                 )
             "

@@ -24,7 +24,7 @@ export default function Home() {
         <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
           Email
         </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
+        <div className="relative mt-1 rounded-md shadow-xs">
           <input
             className="form-input block w-full sm:text-sm sm:leading-5"
             placeholder="you@example.com"
@@ -60,8 +60,8 @@ function PeopleList() {
           </Listbox.Label>
 
           <div className="relative">
-            <span className="inline-block w-full rounded-md shadow-sm">
-              <Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5">
+            <span className="inline-block w-full rounded-md shadow-xs">
+              <Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5">
                 <span className="block truncate">{active}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <svg
@@ -82,14 +82,14 @@ function PeopleList() {
             </span>
 
             <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-              <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
+              <Listbox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5">
                 {people.map((name) => (
                   <Listbox.Option
                     key={name}
                     value={name}
                     className={({ active }) => {
                       return classNames(
-                        'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                        'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                       )
                     }}
