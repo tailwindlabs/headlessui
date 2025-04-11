@@ -2,9 +2,9 @@
   <div class="flex h-full w-screen justify-center bg-gray-50 p-12">
     <div class="relative inline-block text-left">
       <Menu>
-        <span class="rounded-md shadow-xs">
+        <span class="shadow-xs rounded-md">
           <MenuButton
-            class="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm leading-5 font-medium text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-hidden active:bg-gray-50 active:text-gray-800"
+            class="focus:shadow-outline-blue focus:outline-hidden inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 active:bg-gray-50 active:text-gray-800"
           >
             <span>Options</span>
             <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -18,11 +18,11 @@
         </span>
 
         <MenuItems
-          class="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
+          class="outline-hidden absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
         >
           <div class="px-4 py-3">
             <p class="text-sm leading-5">Signed in as</p>
-            <p class="truncate text-sm leading-5 font-medium text-gray-900">tom@example.com</p>
+            <p class="truncate text-sm font-medium leading-5 text-gray-900">tom@example.com</p>
           </div>
 
           <div class="py-1">

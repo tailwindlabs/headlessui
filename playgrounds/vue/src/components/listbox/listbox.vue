@@ -3,14 +3,14 @@
     <div class="mx-auto w-full max-w-xs">
       <div class="space-y-1">
         <Listbox v-model="active">
-          <ListboxLabel class="block text-sm leading-5 font-medium text-gray-700"
+          <ListboxLabel class="block text-sm font-medium leading-5 text-gray-700"
             >Assigned to</ListboxLabel
           >
 
           <div class="relative">
-            <span class="inline-block w-full rounded-md shadow-xs">
+            <span class="shadow-xs inline-block w-full rounded-md">
               <ListboxButton
-                class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5"
               >
                 <span class="block truncate">{{ active.name }}</span>
                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -33,7 +33,7 @@
 
             <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ListboxOptions
-                class="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5"
+                class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
               >
                 <ListboxOption
                   v-for="person in people"
@@ -43,15 +43,15 @@
                   :disabled="person.disabled"
                 >
                   <li
-                    class="relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden ui-active:bg-indigo-600 ui-active:text-white ui-not-active:text-gray-900 ui-disabled:bg-gray-50 ui-disabled:text-gray-300"
+                    class="focus:outline-hidden ui-active:bg-indigo-600 ui-active:text-white ui-not-active:text-gray-900 ui-disabled:bg-gray-50 ui-disabled:text-gray-300 relative cursor-default select-none py-2 pl-3 pr-9"
                   >
                     <span
-                      class="block truncate ui-selected:font-semibold ui-not-selected:font-normal"
+                      class="ui-selected:font-semibold ui-not-selected:font-normal block truncate"
                     >
                       {{ person.name }}
                     </span>
                     <span
-                      class="absolute inset-y-0 right-0 items-center pr-4 ui-selected:flex ui-not-selected:hidden ui-active:text-white ui-not-active:text-indigo-600"
+                      class="ui-selected:flex ui-not-selected:hidden ui-active:text-white ui-not-active:text-indigo-600 absolute inset-y-0 right-0 items-center pr-4"
                     >
                       <svg class="h-5 w-5" viewbox="0 0 20 20" fill="currentColor">
                         <path

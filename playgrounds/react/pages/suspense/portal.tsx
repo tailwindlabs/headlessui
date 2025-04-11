@@ -19,7 +19,7 @@ export default function Index() {
       <h1 className="p-8 text-3xl font-bold">Suspense + Portals</h1>
 
       <Portal>
-        <div className="absolute top-24 right-48 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
+        <div className="absolute right-48 top-24 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
           <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
             Instant
           </div>
@@ -29,7 +29,7 @@ export default function Index() {
         </div>
       </Portal>
       <Portal>
-        <div className="absolute top-24 right-8 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
+        <div className="absolute right-8 top-24 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
           <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
             Instant
           </div>
@@ -44,7 +44,7 @@ export default function Index() {
           {(env) => (
             <div>
               <Portal>
-                <div className="absolute top-64 right-48 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
+                <div className="absolute right-48 top-64 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
                   <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
                     Suspense
                   </div>
@@ -54,7 +54,7 @@ export default function Index() {
                 </div>
               </Portal>
               <Portal>
-                <div className="absolute top-64 right-8 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
+                <div className="absolute right-8 top-64 z-10 flex h-32 w-32 flex-col items-center justify-center rounded-sm border border-black/5 bg-white bg-clip-padding p-px shadow-sm">
                   <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
                     Suspense
                   </div>

@@ -39,13 +39,13 @@ function MultiPeopleList() {
           }}
         >
           <Listbox value={activePersons} onChange={setActivePersons} name="people" multiple>
-            <Listbox.Label className="block text-sm leading-5 font-medium text-gray-700">
+            <Listbox.Label className="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </Listbox.Label>
 
             <div className="relative">
-              <span className="inline-block w-full rounded-md shadow-xs">
-                <Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pr-10 pl-2 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5">
+              <span className="shadow-xs inline-block w-full rounded-md">
+                <Listbox.Button className="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-2 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5">
                   <span className="block flex flex-wrap gap-2">
                     {activePersons.length === 0 ? (
                       <span className="p-0.5">Empty</span>
@@ -98,14 +98,14 @@ function MultiPeopleList() {
               </span>
 
               <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                <Listbox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
+                <Listbox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
                   {people.map((person) => (
                     <Listbox.Option
                       key={person.id}
                       value={person}
                       className={({ active }) => {
                         return classNames(
-                          'relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
+                          'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
                           active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                         )
                       }}
@@ -144,7 +144,7 @@ function MultiPeopleList() {
               </div>
             </div>
           </Listbox>
-          <button className="mt-2 inline-flex items-center rounded-sm border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+          <button className="shadow-xs focus:outline-hidden mt-2 inline-flex items-center rounded-sm border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             Submit
           </button>
         </form>

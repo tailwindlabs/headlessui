@@ -53,19 +53,19 @@ export default function Home() {
             as="div"
             value={activePerson}
             onChange={(person) => setPerson(person)}
-            className="w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding shadow-xs"
+            className="shadow-xs w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding"
           >
             {({ activeOption }) => {
               return (
                 <div className="flex w-full flex-col">
                   <Combobox.Input
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full rounded-none border-none bg-none px-3 py-1 outline-hidden"
+                    className="outline-hidden w-full rounded-none border-none bg-none px-3 py-1"
                     placeholder="Search users…"
                     displayValue={(item: typeof activeOption) => item?.name}
                   />
                   <div className="flex">
-                    <Combobox.Options className="max-h-60 flex-1 overflow-auto text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
+                    <Combobox.Options className="shadow-2xs focus:outline-hidden max-h-60 flex-1 overflow-auto text-base leading-6 sm:text-sm sm:leading-5">
                       {Array.from(groups.entries())
                         .sort(([letterA], [letterZ]) => letterA.localeCompare(letterZ))
                         .map(([letter, people]) => (
@@ -77,7 +77,7 @@ export default function Home() {
                                 value={person}
                                 className={({ active }) => {
                                   return classNames(
-                                    'relative flex cursor-default space-x-4 py-2 pr-9 pl-3 select-none focus:outline-hidden',
+                                    'focus:outline-hidden relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9',
                                     active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                                   )
                                 }}

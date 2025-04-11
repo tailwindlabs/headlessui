@@ -41,10 +41,10 @@ export default function Home() {
                     classNames(
                       // Rounded corners
                       i === 0 && 'rounded-tl-md rounded-tr-md',
-                      access.length - 1 === i && 'rounded-br-md rounded-bl-md',
+                      access.length - 1 === i && 'rounded-bl-md rounded-br-md',
 
                       // Shared
-                      'relative flex border p-4 focus:outline-hidden',
+                      'focus:outline-hidden relative flex border p-4',
                       active ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'
                     )
                   }
@@ -54,7 +54,7 @@ export default function Home() {
                       <div className="ml-3 flex cursor-pointer flex-col">
                         <span
                           className={classNames(
-                            'block text-sm leading-5 font-medium',
+                            'block text-sm font-medium leading-5',
                             active ? 'text-indigo-900' : 'text-gray-900'
                           )}
                         >

@@ -15,7 +15,7 @@ export default function Home() {
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
       <div className="relative inline-block text-left">
         <Menu>
-          <span className="rounded-md shadow-xs">
+          <span className="shadow-xs rounded-md">
             <Menu.Button as={Button}>
               <span>Options</span>
               <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -42,11 +42,11 @@ export default function Home() {
           >
             <Menu.Items
               anchor="bottom start"
-              className="w-[calc(var(--button-width)*2)] divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden [--anchor-gap:--spacing(2)]"
+              className="outline-hidden w-[calc(var(--button-width)*2)] divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg [--anchor-gap:--spacing(2)]"
             >
               <div className="px-4 py-3">
                 <p className="text-sm leading-5">Signed in as</p>
-                <p className="truncate text-sm leading-5 font-medium text-gray-900">
+                <p className="truncate text-sm font-medium leading-5 text-gray-900">
                   tom@example.com
                 </p>
               </div>

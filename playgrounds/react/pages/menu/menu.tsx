@@ -8,7 +8,7 @@ export default function Home() {
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
       <div className="relative inline-block text-left">
         <Menu>
-          <span className="rounded-md shadow-xs">
+          <span className="shadow-xs rounded-md">
             <Menu.Button as={Button}>
               <span>Options</span>
               <svg
@@ -25,10 +25,10 @@ export default function Home() {
             </Menu.Button>
           </span>
 
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden">
+          <Menu.Items className="outline-hidden absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
             <div className="px-4 py-3">
               <p className="text-sm leading-5">Signed in as</p>
-              <p className="truncate text-sm leading-5 font-medium text-gray-900">
+              <p className="truncate text-sm font-medium leading-5 text-gray-900">
                 tom@example.com
               </p>
             </div>

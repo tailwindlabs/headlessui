@@ -21,10 +21,10 @@ export default function Home() {
       <PeopleList />
 
       <div>
-        <label htmlFor="email" className="block text-sm leading-5 font-medium text-gray-700">
+        <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">
           Email
         </label>
-        <div className="relative mt-1 rounded-md shadow-xs">
+        <div className="shadow-xs relative mt-1 rounded-md">
           <input
             className="form-input block w-full sm:text-sm sm:leading-5"
             placeholder="you@example.com"
@@ -55,13 +55,13 @@ function PeopleList() {
             setActivePerson(value)
           }}
         >
-          <Listbox.Label className="block text-sm leading-5 font-medium text-gray-700">
+          <Listbox.Label className="block text-sm font-medium leading-5 text-gray-700">
             Assigned to
           </Listbox.Label>
 
           <div className="relative">
-            <span className="inline-block w-full rounded-md shadow-xs">
-              <Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5">
+            <span className="shadow-xs inline-block w-full rounded-md">
+              <Listbox.Button className="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5">
                 <span className="block truncate">{active}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <svg
@@ -82,14 +82,14 @@ function PeopleList() {
             </span>
 
             <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-              <Listbox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
+              <Listbox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
                 {people.map((name) => (
                   <Listbox.Option
                     key={name}
                     value={name}
                     className={({ active }) => {
                       return classNames(
-                        'relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
+                        'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                       )
                     }}

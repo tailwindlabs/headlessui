@@ -24,7 +24,7 @@ export default function Home() {
           onChange={setManual}
           className={({ checked }) =>
             classNames(
-              'focus:shadow-outline relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden',
+              'focus:shadow-outline focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
               checked ? 'bg-indigo-600' : 'bg-gray-200'
             )
           }
