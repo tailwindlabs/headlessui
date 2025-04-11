@@ -32,12 +32,10 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm build",
     "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.cjs",
     "watch": "../../scripts/watch.sh --external:tailwindcss",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh",
-    "lint-types": "npm run attw -P --workspaces --if-present",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {

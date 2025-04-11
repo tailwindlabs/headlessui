@@ -3,15 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "prebuild": "npm run build --workspace=@headlessui/react && npm run build --workspace=@headlessui/tailwindcss",
-    "predev": "npm run build --workspace=@headlessui/react && npm run build --workspace=@headlessui/tailwindcss",
-    "dev:tailwindcss": "npm run watch --workspace=@headlessui/tailwindcss",
-    "dev:headlessui": "npm run watch --workspace=@headlessui/react",
+    "prebuild": "pnpm --filter=@headlessui/{react,tailwindcss} build",
+    "predev": "pnpm --filter=@headlessui/{react,tailwindcss} build",
+    "dev:tailwindcss": "pnpm --filter=@headlessui/tailwindcss watch",
+    "dev:headlessui": "pnpm --filter=@headlessui/react watch",
     "dev:next": "next dev",
-    "dev": "npm-run-all -p dev:*",
+    "dev": "pnpm run '/^dev:.+/'",
     "build": "next build",
     "start": "next start",
-    "lint-types": "echo",
     "clean": "rimraf ./.next"
   },
   "dependencies": {
@@ -33,8 +32,5 @@
   },
   "devDependencies": {
     "@floating-ui/react": "^0.24.8"
-  },
-  "resolutions": {
-    "next/@swc/helpers": "0.4.36"
   }
 }
