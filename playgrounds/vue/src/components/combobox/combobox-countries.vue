@@ -61,13 +61,13 @@ export default defineComponent({
           </ComboboxLabel>
 
           <div class="relative">
-            <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
+            <span class="shadow-xs relative inline-flex flex-row overflow-hidden rounded-md border">
               <ComboboxInput
                 @change="query = $event.target.value"
-                class="border-none px-3 py-1 outline-hidden"
+                class="outline-hidden border-none px-3 py-1"
               />
               <ComboboxButton
-                class="cursor-default border-l bg-gray-100 px-1 text-indigo-600 focus:outline-hidden"
+                class="focus:outline-hidden cursor-default border-l bg-gray-100 px-1 text-indigo-600"
               >
                 <span class="pointer-events-none flex items-center px-2">
                   <svg
@@ -89,7 +89,7 @@ export default defineComponent({
 
             <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ComboboxOptions
-                class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
               >
                 <ComboboxOption
                   v-for="country in filteredCountries"
@@ -99,7 +99,7 @@ export default defineComponent({
                 >
                   <div
                     :class="[
-                      'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-hidden',
+                      'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
                       active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                     ]"
                   >

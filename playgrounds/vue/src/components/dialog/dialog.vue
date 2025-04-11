@@ -74,7 +74,7 @@
                         <Menu>
                           <MenuButton
                             ref="trigger"
-                            class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-hidden"
+                            class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 focus:outline-hidden flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100"
                           >
                             <span>Choose a reason</span>
                             <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -97,7 +97,7 @@
                             <Portal>
                               <MenuItems
                                 ref="container"
-                                class="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
+                                class="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
                               >
                                 <div class="px-4 py-3">
                                   <p class="text-sm leading-5">Signed in as</p>

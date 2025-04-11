@@ -19,7 +19,7 @@ export default function Home() {
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="focus:shadow-outline-blue m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-xs transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5"
+        className="focus:shadow-outline-blue shadow-xs focus:outline-hidden m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 sm:text-sm sm:leading-5"
       >
         Toggle!
       </button>
@@ -128,14 +128,14 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-red-700 focus:outline-hidden sm:ml-3 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-red shadow-xs focus:outline-hidden inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Deactivate
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-indigo mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden sm:mt-0 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-indigo shadow-xs focus:outline-hidden mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-500 sm:mt-0 sm:w-auto sm:text-sm"
                     >
                       Cancel
                     </button>

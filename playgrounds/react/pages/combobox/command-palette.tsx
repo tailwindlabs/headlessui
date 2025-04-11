@@ -40,14 +40,14 @@ export default function Home() {
             as="div"
             value={activePerson}
             onChange={(person) => setActivePerson(person)}
-            className="w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding shadow-xs"
+            className="shadow-xs w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding"
           >
             {({ activeOption, open }) => {
               return (
                 <div className="flex w-full flex-col">
                   <Combobox.Input
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full rounded-none border-none px-3 py-1 outline-hidden"
+                    className="outline-hidden w-full rounded-none border-none px-3 py-1"
                     placeholder="Search users…"
                     displayValue={(item: typeof activePerson) => item?.name}
                   />
@@ -57,14 +57,14 @@ export default function Home() {
                       activePerson && !open ? 'border-transparent' : 'border-gray-200'
                     )}
                   >
-                    <Combobox.Options className="shadow-2xs max-h-60 flex-1 overflow-auto py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5">
+                    <Combobox.Options className="shadow-2xs focus:outline-hidden max-h-60 flex-1 overflow-auto py-1 text-base leading-6 sm:text-sm sm:leading-5">
                       {people.map((person) => (
                         <Combobox.Option
                           key={person.id}
                           value={person}
                           className={({ active }) => {
                             return classNames(
-                              'relative  flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-hidden',
+                              'focus:outline-hidden  relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9',
                               active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                             )
                           }}

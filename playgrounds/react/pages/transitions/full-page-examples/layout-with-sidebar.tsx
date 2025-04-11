@@ -63,7 +63,7 @@ export default function App() {
             <div className="absolute right-0 top-0 -mr-14 p-1">
               <Transition.Child
                 unmount={false}
-                className="focus:bg-cool-gray-600 flex h-12 w-12 items-center justify-center rounded-full focus:outline-hidden"
+                className="focus:bg-cool-gray-600 focus:outline-hidden flex h-12 w-12 items-center justify-center rounded-full"
                 aria-label="Close sidebar"
                 as="button"
                 onClick={() => setMobileOpen(false)}
@@ -111,10 +111,10 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="flex-1 overflow-auto focus:outline-hidden" tabIndex={0}>
+        <div className="focus:outline-hidden flex-1 overflow-auto" tabIndex={0}>
           <div className="relative z-10 flex h-16 shrink-0 border-b border-gray-200 bg-white lg:border-none">
             <button
-              className="border-cool-gray-200 text-cool-gray-400 focus:bg-cool-gray-100 focus:text-cool-gray-600 border-r px-4 focus:outline-hidden lg:hidden"
+              className="border-cool-gray-200 text-cool-gray-400 focus:bg-cool-gray-100 focus:text-cool-gray-600 focus:outline-hidden border-r px-4 lg:hidden"
               aria-label="Open sidebar"
               onClick={() => setMobileOpen(true)}
             >
@@ -151,7 +151,7 @@ export default function App() {
                     </div>
                     <input
                       id="search_field"
-                      className="text-cool-gray-900 placeholder-cool-gray-500 focus:placeholder-cool-gray-400 block h-full w-full rounded-md py-2 pl-8 pr-3 focus:outline-hidden sm:text-sm"
+                      className="text-cool-gray-900 placeholder-cool-gray-500 focus:placeholder-cool-gray-400 focus:outline-hidden block h-full w-full rounded-md py-2 pl-8 pr-3 sm:text-sm"
                       placeholder="Search"
                       type="search"
                     />

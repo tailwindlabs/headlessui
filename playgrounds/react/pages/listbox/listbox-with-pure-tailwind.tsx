@@ -30,7 +30,7 @@ export default function Home() {
             <Label className="block text-sm font-medium leading-5 text-gray-700">Assigned to</Label>
 
             <div className="relative">
-              <span className="inline-block w-full rounded-md shadow-xs">
+              <span className="shadow-xs inline-block w-full rounded-md">
                 <ListboxButton className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out sm:text-sm sm:leading-5">
                   <span className="block truncate">{active}</span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -54,18 +54,18 @@ export default function Home() {
               <ListboxOptions
                 anchor="bottom"
                 transition
-                className="w-[var(--button-width)] overflow-auto rounded-md border border-gray-300 bg-white py-1 text-base leading-6 shadow-lg transition duration-200 ease-out [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 sm:text-sm sm:leading-5"
+                className="focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 w-[var(--button-width)] overflow-auto rounded-md border border-gray-300 bg-white py-1 text-base leading-6 shadow-lg transition duration-200 ease-out [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
               >
                 {people.map((name) => (
                   <ListboxOption
                     key={name}
                     value={name}
-                    className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 focus:outline-hidden data-active:bg-indigo-600 data-active:text-white"
+                    className="focus:outline-hidden data-active:bg-indigo-600 data-active:text-white group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
                   >
-                    <span className="block truncate font-normal group-data-selected:font-semibold">
+                    <span className="group-data-selected:font-semibold block truncate font-normal">
                       {name}
                     </span>
-                    <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-selected:flex group-data-active:text-white">
+                    <span className="group-data-selected:flex group-data-active:text-white absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600">
                       <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path
                           fillRule="evenodd"

@@ -13,7 +13,7 @@
               <Switch
                 :defaultChecked="true"
                 name="notifications"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <span
                   class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
@@ -29,7 +29,7 @@
               <Switch
                 name="fruit[]"
                 value="apple"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <span
                   class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
@@ -42,7 +42,7 @@
               <Switch
                 name="fruit[]"
                 value="banana"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <span
                   class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
@@ -58,7 +58,7 @@
                 v-for="size in sizes"
                 :key="size"
                 :value="size"
-                class="ui-active:z-10 ui-active:border-blue-200 ui-active:bg-blue-50 ui-not-active:border-gray-200 relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="ui-active:z-10 ui-active:border-blue-200 ui-active:bg-blue-50 ui-not-active:border-gray-200 focus:outline-hidden relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <div class="flex w-full items-center justify-between">
                   <div class="ml-3 flex cursor-pointer flex-col">
@@ -93,9 +93,9 @@
           <div class="w-full space-y-1">
             <Listbox name="person" :defaultValue="people[1]" v-slot="{ value }">
               <div class="relative">
-                <span class="inline-block w-full rounded-md shadow-xs">
+                <span class="shadow-xs inline-block w-full rounded-md">
                   <ListboxButton
-                    class="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+                    class="focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
                   >
                     <span class="block truncate">{{ value?.name?.first }}</span>
                     <span
@@ -120,7 +120,7 @@
 
                 <div class="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                   <ListboxOptions
-                    class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
+                    class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
                   >
                     <ListboxOption
                       v-for="person in people"
@@ -163,7 +163,7 @@
                 <div class="flex w-full flex-col">
                   <ComboboxInput
                     @change="query = $event.target.value"
-                    class="w-full rounded-md border-gray-300 bg-clip-padding px-3 py-1 shadow-xs focus:border-gray-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="shadow-xs focus:outline-hidden w-full rounded-md border-gray-300 bg-clip-padding px-3 py-1 focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     placeholder="Search users..."
                   />
                   <div
@@ -213,14 +213,14 @@
 
       <div class="space-x-4">
         <button
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+          class="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
         >
           Submit
         </button>
 
         <button
           type="reset"
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+          class="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
         >
           Reset
         </button>

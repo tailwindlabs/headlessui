@@ -25,7 +25,7 @@ export default function Home() {
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
       <div className="mt-64 inline-block text-left">
         <Menu>
-          <span className="inline-flex rounded-md shadow-xs">
+          <span className="shadow-xs inline-flex rounded-md">
             <Menu.Button ref={refs.setReference} as={Button}>
               <span>Options</span>
               <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -40,7 +40,7 @@ export default function Home() {
 
           <Portal>
             <Menu.Items
-              className="w-56 divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
+              className="outline-hidden w-56 divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
               ref={refs.setFloating}
               style={floatingStyles}
             >

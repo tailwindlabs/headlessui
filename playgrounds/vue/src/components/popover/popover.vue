@@ -16,7 +16,7 @@
         </transition>
 
         <PopoverButton
-          class="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden"
+          class="focus:outline-hidden relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900"
           >Normal</PopoverButton
         >
         <PopoverPanel class="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">
@@ -24,7 +24,7 @@
             v-for="(link, i) of links"
             :key="i"
             :hidden="i === 2"
-            class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-hidden"
+            class="focus:outline-hidden border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200"
           >
             Normal - {{ link }}
           </button>
@@ -33,7 +33,7 @@
 
       <Popover as="div" class="relative">
         <PopoverButton
-          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden"
+          class="focus:outline-hidden border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900"
           >Focus</PopoverButton
         >
         <PopoverPanel
@@ -43,7 +43,7 @@
           <button
             v-for="(link, i) of links"
             :key="i"
-            class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-hidden"
+            class="focus:outline-hidden border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200"
           >
             Focus - {{ link }}
           </button>
@@ -53,7 +53,7 @@
       <Popover as="div" class="relative">
         <PopoverButton
           ref="trigger1"
-          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden"
+          class="focus:outline-hidden border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900"
           >Portal</PopoverButton
         >
         <Portal>
@@ -64,7 +64,7 @@
             <button
               v-for="(link, i) of links"
               :key="i"
-              class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-hidden"
+              class="focus:outline-hidden border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200"
             >
               Portal - {{ link }}
             </button>
@@ -75,7 +75,7 @@
       <Popover as="div" class="relative">
         <PopoverButton
           ref="trigger2"
-          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden"
+          class="focus:outline-hidden border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900"
           >Focus in portal</PopoverButton
         >
         <Portal>
@@ -87,7 +87,7 @@
             <button
               v-for="(link, i) of links"
               :key="i"
-              class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-hidden"
+              class="focus:outline-hidden border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200"
             >
               Focus in Portal - {{ link }}
             </button>

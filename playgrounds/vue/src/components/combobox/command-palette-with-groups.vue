@@ -96,19 +96,19 @@ export default defineComponent({
         <Combobox
           as="div"
           v-model="activePerson"
-          class="w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding shadow-xs"
+          class="shadow-xs w-full overflow-hidden rounded-sm border border-black/5 bg-white bg-clip-padding"
           v-slot="{ activeOption }"
         >
           <div class="flex w-full flex-col">
             <ComboboxInput
               @change="query = $event.target.value"
-              class="w-full rounded-none border-none bg-none px-3 py-1 outline-hidden"
+              class="outline-hidden w-full rounded-none border-none bg-none px-3 py-1"
               placeholder="Search users…"
               :displayValue="displayValue"
             />
             <div class="flex">
               <ComboboxOptions
-                class="shadow-2xs max-h-60 flex-1 overflow-auto text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="shadow-2xs focus:outline-hidden max-h-60 flex-1 overflow-auto text-base leading-6 sm:text-sm sm:leading-5"
               >
                 <template v-for="[letter, people] of sortedGroups" :key="letter">
                   <div class="bg-gray-100 px-4 py-2">{{ letter }}</div>
@@ -120,7 +120,7 @@ export default defineComponent({
                   >
                     <div
                       :class="[
-                        'relative  flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-hidden',
+                        'focus:outline-hidden  relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9',
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                       ]"
                     >

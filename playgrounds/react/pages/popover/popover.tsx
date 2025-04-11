@@ -5,7 +5,7 @@ let Button = forwardRef(
   (props: React.ComponentProps<'button'>, ref: React.MutableRefObject<HTMLButtonElement>) => {
     return (
       <Popover.Button
-        className="border-2 border-transparent bg-gray-300 px-3 py-2 text-left focus:border-blue-900 focus:outline-hidden"
+        className="focus:outline-hidden border-2 border-transparent bg-gray-300 px-3 py-2 text-left focus:border-blue-900"
         {...props}
         ref={ref}
       />
@@ -33,7 +33,7 @@ export default function Home() {
             <Popover.Overlay className="fixed inset-0 z-20 bg-gray-500 bg-opacity-75"></Popover.Overlay>
           </Transition>
 
-          <Popover.Button className="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-hidden">
+          <Popover.Button className="focus:outline-hidden relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900">
             Normal
           </Popover.Button>
           <Popover.Panel className="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">

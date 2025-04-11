@@ -174,7 +174,7 @@ export default function Home() {
                                 <Portal>
                                   <Menu.Items
                                     ref={container}
-                                    className="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
+                                    className="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
                                   >
                                     <div className="px-4 py-3">
                                       <p className="text-sm leading-5">Signed in as</p>

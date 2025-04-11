@@ -30,23 +30,23 @@ export default function App() {
             </MenuButton>
             <MenuItems
               anchor="bottom start"
-              className="z-50 flex w-[calc(var(--button-width)*2)] flex-col rounded-sm bg-white p-1 shadow-sm outline-hidden"
+              className="outline-hidden z-50 flex w-[calc(var(--button-width)*2)] flex-col rounded-sm bg-white p-1 shadow-sm"
             >
               <MenuItem
                 as="button"
-                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
+                className="data-active:bg-gray-100 rounded-sm px-2 py-1 text-left"
               >
                 Item A
               </MenuItem>
               <MenuItem
                 as="button"
-                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
+                className="data-active:bg-gray-100 rounded-sm px-2 py-1 text-left"
               >
                 Item B
               </MenuItem>
               <MenuItem
                 as="button"
-                className="rounded-sm px-2 py-1 text-left data-active:bg-gray-100"
+                className="data-active:bg-gray-100 rounded-sm px-2 py-1 text-left"
                 onClick={() => setOpenDelete(true)}
               >
                 Delete

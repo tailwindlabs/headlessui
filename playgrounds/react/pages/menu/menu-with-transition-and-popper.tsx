@@ -23,7 +23,7 @@ export default function Home() {
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
       <div className="mt-64 inline-block text-left">
         <Menu>
-          <span className="rounded-md shadow-xs">
+          <span className="shadow-xs rounded-md">
             <Menu.Button ref={trigger} as={Button}>
               <span>Options</span>
               <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -45,7 +45,7 @@ export default function Home() {
               leaveFrom="transform scale-100 opacity-100"
               leaveTo="transform scale-95 opacity-0"
             >
-              <Menu.Items className="divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden">
+              <Menu.Items className="outline-hidden divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
                 <div className="px-4 py-3">
                   <p className="text-sm leading-5">Signed in as</p>
                   <p className="truncate text-sm font-medium leading-5 text-gray-900">

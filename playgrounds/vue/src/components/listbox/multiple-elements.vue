@@ -8,9 +8,9 @@
           >
 
           <div class="relative">
-            <span class="inline-block w-full rounded-md shadow-xs">
+            <span class="shadow-xs inline-block w-full rounded-md">
               <ListboxButton
-                class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5"
               >
                 <span class="block truncate">{{ active.name }}</span>
                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -33,7 +33,7 @@
 
             <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ListboxOptions
-                class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
               >
                 <ListboxOption
                   v-for="person in people"
@@ -76,7 +76,7 @@
 
     <div>
       <label for="email" class="block text-sm font-medium leading-5 text-gray-700"> Email </label>
-      <div class="relative mt-1 rounded-md shadow-xs">
+      <div class="shadow-xs relative mt-1 rounded-md">
         <input
           class="form-input block w-full sm:text-sm sm:leading-5"
           placeholder="you@example.com"
@@ -92,9 +92,9 @@
           >
 
           <div class="relative">
-            <span class="inline-block w-full rounded-md shadow-xs">
+            <span class="shadow-xs inline-block w-full rounded-md">
               <ListboxButton
-                class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5"
               >
                 <span class="block truncate">{{ active.name }}</span>
                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -117,7 +117,7 @@
 
             <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ListboxOptions
-                class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-hidden sm:text-sm sm:leading-5"
+                class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
               >
                 <ListboxOption
                   v-for="person in people"
