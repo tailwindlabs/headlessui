@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/router'
-import 'tailwindcss/tailwind.css'
+import './styles.css'
 
 function disposables() {
   let disposables: Function[] = []
