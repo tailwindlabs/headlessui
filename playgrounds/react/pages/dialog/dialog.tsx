@@ -23,7 +23,7 @@ function Nested({ onClose, level = 0 }) {
       <Dialog open={true} onClose={onClose} className="fixed inset-0 z-10">
         <div className="fixed inset-0 bg-gray-500 opacity-25" />
         <Dialog.Panel
-          className="fixed left-12 top-24 z-10 w-96 bg-white p-4"
+          className="fixed top-24 left-12 z-10 w-96 bg-white p-4"
           style={{
             transform: `translate(calc(50px * ${level}), calc(50px * ${level}))`,
           }}
@@ -76,7 +76,7 @@ export default function Home() {
           }}
         >
           <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+            <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
@@ -114,7 +114,7 @@ export default function Home() {
                   &#8203;
                 </span>
                 <Dialog.Panel className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                  <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         {/* Heroicon name: exclamation */}
@@ -134,10 +134,10 @@ export default function Home() {
                           />
                         </svg>
                       </div>
-                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <Dialog.Title
                           as="h3"
-                          className="text-lg font-medium leading-6 text-gray-900"
+                          className="text-lg leading-6 font-medium text-gray-900"
                         >
                           Deactivate account
                         </Dialog.Title>
@@ -174,11 +174,11 @@ export default function Home() {
                                 <Portal>
                                   <Menu.Items
                                     ref={container}
-                                    className="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
+                                    className="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
                                   >
                                     <div className="px-4 py-3">
                                       <p className="text-sm leading-5">Signed in as</p>
-                                      <p className="truncate text-sm font-medium leading-5 text-gray-900">
+                                      <p className="truncate text-sm leading-5 font-medium text-gray-900">
                                         tom@example.com
                                       </p>
                                     </div>

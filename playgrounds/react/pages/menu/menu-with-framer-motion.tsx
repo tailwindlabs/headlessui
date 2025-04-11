@@ -13,7 +13,7 @@ export default function Home() {
         <Menu>
           {({ open }) => (
             <>
-              <span className="shadow-xs rounded-md">
+              <span className="rounded-md shadow-xs">
                 <Menu.Button as={Button}>
                   <span>Options</span>
                   <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -34,11 +34,11 @@ export default function Home() {
                     initial={{ opacity: 0, y: 0 }}
                     animate={{ opacity: 1, y: '0.5rem' }}
                     exit={{ opacity: 0, y: 0 }}
-                    className="outline-hidden absolute right-0 w-56 divide-y divide-gray-100 rounded-md border border-gray-200 bg-white opacity-0 shadow-lg"
+                    className="absolute right-0 w-56 divide-y divide-gray-100 rounded-md border border-gray-200 bg-white opacity-0 shadow-lg outline-hidden"
                   >
                     <div className="px-4 py-3">
                       <p className="text-sm leading-5">Signed in as</p>
-                      <p className="truncate text-sm font-medium leading-5 text-gray-900">
+                      <p className="truncate text-sm leading-5 font-medium text-gray-900">
                         tom@example.com
                       </p>
                     </div>

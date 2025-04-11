@@ -69,16 +69,16 @@ let filtered = computed(() => {
       nullable
       as="div"
     >
-      <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
+      <ComboboxLabel class="block text-sm leading-5 font-medium text-gray-700">
         Person
       </ComboboxLabel>
 
       <div class="relative">
-        <span class="shadow-xs relative inline-flex flex-row overflow-hidden rounded-md border">
+        <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
           <ComboboxInput
             @change="(e) => (query = e.target.value)"
             :displayValue="(option: Option | null) => option?.name ?? ''"
-            class="outline-hidden border-none px-3 py-1"
+            class="border-none px-3 py-1 outline-hidden"
           />
           <ComboboxButton as="button">
             <span class="pointer-events-none flex items-center px-2">
@@ -103,7 +103,7 @@ let filtered = computed(() => {
           <ComboboxOptions
             :ref="optionsRef"
             :class="[
-              'shadow-2xs focus:outline-hidden max-h-60 rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5',
+              'max-h-60 rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5',
               filtered.length === 0 ? 'overflow-hidden' : 'overflow-auto',
             ]"
             v-slot="{ option }"
@@ -111,7 +111,7 @@ let filtered = computed(() => {
             <template v-if="option.empty">
               <ComboboxOption
                 :value="option"
-                class="focus:outline-hidden relative w-full cursor-default select-none px-3 py-2 text-center"
+                class="relative w-full cursor-default px-3 py-2 text-center select-none focus:outline-hidden"
                 disabled
               >
                 <div class="relative grid h-full grid-cols-1 grid-rows-1">
@@ -147,7 +147,7 @@ let filtered = computed(() => {
               >
                 <div
                   :class="[
-                    'focus:outline-hidden relative w-full cursor-default select-none py-2 pl-3 pr-9',
+                    'relative w-full cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
                     active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                   ]"
                 >

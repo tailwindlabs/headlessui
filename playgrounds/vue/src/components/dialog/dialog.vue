@@ -9,7 +9,7 @@
     <Dialog @close="setIsOpen">
       <div class="fixed inset-0 z-10 overflow-y-auto">
         <div
-          class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0"
+          class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0"
         >
           <TransitionChild
             as="template"
@@ -39,7 +39,7 @@
             <DialogPanel
               class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
             >
-              <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                   <div
                     class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -61,8 +61,8 @@
                       />
                     </svg>
                   </div>
-                  <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                  <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <DialogTitle as="h3" class="text-lg leading-6 font-medium text-gray-900">
                       Deactivate account
                     </DialogTitle>
                     <div class="mt-2">
@@ -74,7 +74,7 @@
                         <Menu>
                           <MenuButton
                             ref="trigger"
-                            class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 focus:outline-hidden flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100"
+                            class="flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-hidden ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2"
                           >
                             <span>Choose a reason</span>
                             <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -97,11 +97,11 @@
                             <Portal>
                               <MenuItems
                                 ref="container"
-                                class="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
+                                class="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-hidden"
                               >
                                 <div class="px-4 py-3">
                                   <p class="text-sm leading-5">Signed in as</p>
-                                  <p class="truncate text-sm font-medium leading-5 text-gray-900">
+                                  <p class="truncate text-sm leading-5 font-medium text-gray-900">
                                     tom@example.com
                                   </p>
                                 </div>

@@ -45,13 +45,13 @@ function MultiPeopleList() {
             name="people"
             multiple
           >
-            <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
+            <Combobox.Label className="block text-sm leading-5 font-medium text-gray-700">
               Assigned to
             </Combobox.Label>
 
             <div className="relative">
-              <span className="shadow-xs inline-block w-full rounded-md">
-                <div className="focus-within:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-2 pr-10 text-left transition duration-150 ease-in-out focus-within:border-blue-700 focus-within:ring-1 focus-within:ring-blue-700 sm:text-sm sm:leading-5">
+              <span className="inline-block w-full rounded-md shadow-xs">
+                <div className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pr-10 pl-2 text-left transition duration-150 ease-in-out focus-within:border-blue-700 focus-within:ring-1 focus-within:ring-blue-700 focus-within:outline-hidden sm:text-sm sm:leading-5">
                   <span className="block flex flex-wrap gap-2">
                     {activePersons.map((person) => (
                       <span
@@ -106,7 +106,7 @@ function MultiPeopleList() {
               </span>
 
               <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                <Combobox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                <Combobox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
                   {people
                     .filter((person) => person.name.toLowerCase().includes(query.toLowerCase()))
                     .map((person) => (
@@ -115,7 +115,7 @@ function MultiPeopleList() {
                         value={person}
                         className={({ active }) => {
                           return classNames(
-                            'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
+                            'relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
                             active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                           )
                         }}
@@ -154,7 +154,7 @@ function MultiPeopleList() {
               </div>
             </div>
           </Combobox>
-          <button className="shadow-xs focus:outline-hidden mt-2 inline-flex items-center rounded-sm border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <button className="mt-2 inline-flex items-center rounded-sm border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
             Submit
           </button>
         </form>

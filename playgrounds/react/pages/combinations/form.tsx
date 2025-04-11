@@ -46,7 +46,7 @@ export default function App() {
                   name="notifications"
                   className={({ checked }) =>
                     classNames(
-                      'focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -72,7 +72,7 @@ export default function App() {
                   value="apple"
                   className={({ checked }) =>
                     classNames(
-                      'focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -95,7 +95,7 @@ export default function App() {
                   value="banana"
                   className={({ checked }) =>
                     classNames(
-                      'focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden',
                       checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
@@ -122,7 +122,7 @@ export default function App() {
                       value={size}
                       className={({ active }) =>
                         classNames(
-                          'focus:outline-hidden relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                          'relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden',
                           active ? 'z-10 border-blue-200 bg-blue-50' : 'border-gray-200'
                         )
                       }
@@ -132,7 +132,7 @@ export default function App() {
                           <div className="ml-3 flex cursor-pointer flex-col">
                             <span
                               className={classNames(
-                                'block text-sm font-medium leading-5',
+                                'block text-sm leading-5 font-medium',
                                 active ? 'text-blue-900' : 'text-gray-900'
                               )}
                             >
@@ -191,14 +191,14 @@ export default function App() {
                       </Listbox.Button>
 
                       <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                        <Listbox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                        <Listbox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
                           {people.map((person) => (
                             <Listbox.Option
                               key={person.id}
                               value={person}
                               className={({ active }) => {
                                 return classNames(
-                                  'relative cursor-default select-none py-2 pl-3 pr-9 ',
+                                  'relative cursor-default py-2 pr-9 pl-3 select-none',
                                   active ? 'bg-blue-600 text-white' : 'text-gray-900'
                                 )
                               }}
@@ -260,7 +260,7 @@ export default function App() {
                       <div className="flex w-full flex-col">
                         <Combobox.Input
                           onChange={(e) => setQuery(e.target.value)}
-                          className="shadow-xs focus:outline-hidden w-full rounded-md rounded-sm border-gray-300 bg-clip-padding px-3 py-1 focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          className="w-full rounded-md rounded-sm border-gray-300 bg-clip-padding px-3 py-1 shadow-xs focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
                           placeholder="Search users..."
                         />
                         <div
@@ -270,7 +270,7 @@ export default function App() {
                           )}
                         >
                           <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                            <Combobox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                            <Combobox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs sm:text-sm sm:leading-5">
                               {locations
                                 .filter((location) =>
                                   location.toLowerCase().includes(query.toLowerCase())
@@ -281,7 +281,7 @@ export default function App() {
                                     value={location}
                                     className={({ active }) => {
                                       return classNames(
-                                        'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 ',
+                                        'relative flex cursor-default space-x-4 py-2 pr-9 pl-3 select-none',
                                         active ? 'bg-blue-600 text-white' : 'text-gray-900'
                                       )
                                     }}
@@ -335,13 +335,13 @@ export default function App() {
         </div>
 
         <div className="space-x-4">
-          <button className="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
+          <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden sm:text-sm sm:leading-5">
             Submit
           </button>
 
           <button
             type="reset"
-            className="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden sm:text-sm sm:leading-5"
           >
             Reset
           </button>

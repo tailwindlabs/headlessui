@@ -78,16 +78,16 @@ export default function Home() {
           }
         }}
       >
-        <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
+        <Combobox.Label className="block text-sm leading-5 font-medium text-gray-700">
           Person
         </Combobox.Label>
 
         <div className="relative">
-          <span className="shadow-xs relative inline-flex flex-row overflow-hidden rounded-md border">
+          <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
             <Combobox.Input
               onChange={(e) => setQuery(e.target.value)}
               displayValue={(option: Option | null) => option?.name ?? ''}
-              className="outline-hidden border-none px-3 py-1"
+              className="border-none px-3 py-1 outline-hidden"
             />
             <Combobox.Button as={Button}>
               <span className="pointer-events-none flex items-center px-2">
@@ -116,7 +116,7 @@ export default function Home() {
               static={filtered.length === 0}
               ref={optionsRef}
               className={classNames(
-                'shadow-2xs focus:outline-hidden max-h-60 rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5',
+                'max-h-60 rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5',
                 filtered.length === 0 ? 'overflow-hidden' : 'overflow-auto'
               )}
             >
@@ -130,7 +130,7 @@ export default function Home() {
                         disabled
                         // Note: Do NOT use `null` for the `value`
                         value={option ?? emptyOption.current}
-                        className="focus:outline-hidden relative w-full cursor-default select-none px-3 py-2 text-center"
+                        className="relative w-full cursor-default px-3 py-2 text-center select-none focus:outline-hidden"
                       >
                         <div className="relative grid h-full grid-cols-1 grid-rows-1">
                           <div className="absolute inset-0">
@@ -155,7 +155,7 @@ export default function Home() {
                             <button
                               id="add_person"
                               type="button"
-                              className="focus:outline-hidden rounded-sm bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                              className="rounded-sm bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
                               onClick={() => {
                                 let person = { name: query, disabled: false }
                                 setList((list) => [...list, person])
@@ -177,7 +177,7 @@ export default function Home() {
                       value={option}
                       className={({ active }) => {
                         return classNames(
-                          'focus:outline-hidden relative w-full cursor-default select-none py-2 pl-3 pr-9',
+                          'relative w-full cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
                           active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                         )
                       }}

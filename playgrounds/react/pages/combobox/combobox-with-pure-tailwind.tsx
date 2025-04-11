@@ -55,15 +55,15 @@ export default function Home() {
             }}
             as="div"
           >
-            <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
+            <Combobox.Label className="block text-sm leading-5 font-medium text-gray-700">
               Assigned to
             </Combobox.Label>
 
             <div className="relative">
-              <span className="shadow-xs relative inline-flex flex-row overflow-hidden rounded-md border">
+              <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
                 <Combobox.Input
                   onChange={(e) => setQuery(e.target.value)}
-                  className="outline-hidden border-none px-3 py-1"
+                  className="border-none px-3 py-1 outline-hidden"
                 />
                 <Combobox.Button as={Button}>
                   <span className="pointer-events-none flex items-center px-2">
@@ -85,14 +85,14 @@ export default function Home() {
               </span>
 
               <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                <Combobox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                <Combobox.Options className="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5">
                   {people.map((name) => (
                     <Combobox.Option
                       key={name}
                       value={name}
                       className={({ active }) => {
                         return classNames(
-                          'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
+                          'relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
                           active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                         )
                       }}

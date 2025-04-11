@@ -43,9 +43,9 @@ function After({ open }: { open: boolean }) {
           // Closed
           'data-closed:opacity-0',
           // Entering
-          'data-enter:data-closed:-translate-x-full data-enter:duration-300',
+          'data-enter:duration-300 data-enter:data-closed:-translate-x-full',
           // Leaving
-          'data-leave:data-closed:translate-x-full data-leave:duration-300',
+          'data-leave:duration-300 data-leave:data-closed:translate-x-full',
         ])}
       >
         Using data attributes

@@ -43,15 +43,15 @@ export default function Home() {
             }}
             as="div"
           >
-            <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
+            <Combobox.Label className="block text-sm leading-5 font-medium text-gray-700">
               Country
             </Combobox.Label>
 
             <div className="relative">
-              <span className="shadow-xs relative inline-flex flex-row overflow-hidden rounded-md border">
+              <span className="relative inline-flex flex-row overflow-hidden rounded-md border shadow-xs">
                 <Combobox.Input
                   onChange={(e) => setQuery(e.target.value)}
-                  className="outline-hidden border-none px-3 py-1"
+                  className="border-none px-3 py-1 outline-hidden"
                 />
                 <Combobox.Button as={Button}>
                   <span className="pointer-events-none flex items-center px-2">
@@ -75,7 +75,7 @@ export default function Home() {
               <Combobox.Options
                 transition
                 anchor="bottom start"
-                className="focus:outline-hidden data-closed:opacity-0 w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
+                className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] focus:outline-hidden data-closed:opacity-0 sm:text-sm sm:leading-5"
               >
                 {countries.map((country) => (
                   <Combobox.Option
@@ -83,7 +83,7 @@ export default function Home() {
                     value={country}
                     className={({ active }) => {
                       return classNames(
-                        'focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9',
+                        'relative cursor-default py-2 pr-9 pl-3 select-none focus:outline-hidden',
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                       )
                     }}

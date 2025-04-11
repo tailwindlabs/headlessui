@@ -13,10 +13,10 @@
               <Switch
                 :defaultChecked="true"
                 name="notifications"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ui-checked:bg-blue-600 ui-not-checked:bg-gray-200"
               >
                 <span
-                  class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
+                  class="inline-block h-5 w-5 transform rounded-full bg-white ui-checked:translate-x-5 ui-not-checked:translate-x-0"
                 />
               </Switch>
             </SwitchGroup>
@@ -29,10 +29,10 @@
               <Switch
                 name="fruit[]"
                 value="apple"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ui-checked:bg-blue-600 ui-not-checked:bg-gray-200"
               >
                 <span
-                  class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
+                  class="inline-block h-5 w-5 transform rounded-full bg-white ui-checked:translate-x-5 ui-not-checked:translate-x-0"
                 />
               </Switch>
             </SwitchGroup>
@@ -42,10 +42,10 @@
               <Switch
                 name="fruit[]"
                 value="banana"
-                class="ui-checked:bg-blue-600 ui-not-checked:bg-gray-200 focus:outline-hidden relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ui-checked:bg-blue-600 ui-not-checked:bg-gray-200"
               >
                 <span
-                  class="ui-checked:translate-x-5 ui-not-checked:translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white"
+                  class="inline-block h-5 w-5 transform rounded-full bg-white ui-checked:translate-x-5 ui-not-checked:translate-x-0"
                 />
               </Switch>
             </SwitchGroup>
@@ -58,12 +58,12 @@
                 v-for="size in sizes"
                 :key="size"
                 :value="size"
-                class="ui-active:z-10 ui-active:border-blue-200 ui-active:bg-blue-50 ui-not-active:border-gray-200 focus:outline-hidden relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                class="relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ui-active:z-10 ui-active:border-blue-200 ui-active:bg-blue-50 ui-not-active:border-gray-200"
               >
                 <div class="flex w-full items-center justify-between">
                   <div class="ml-3 flex cursor-pointer flex-col">
                     <span
-                      class="ui-active:text-blue-900 ui-not-active:text-gray-900 block text-sm font-medium leading-5"
+                      class="block text-sm leading-5 font-medium ui-active:text-blue-900 ui-not-active:text-gray-900"
                     >
                       {{ size }}
                     </span>
@@ -74,7 +74,7 @@
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      class="ui-checked:block ui-not-checked:hidden h-5 w-5 text-blue-500"
+                      class="h-5 w-5 text-blue-500 ui-checked:block ui-not-checked:hidden"
                     >
                       <path
                         strokeLinecap="round"
@@ -93,9 +93,9 @@
           <div class="w-full space-y-1">
             <Listbox name="person" :defaultValue="people[1]" v-slot="{ value }">
               <div class="relative">
-                <span class="shadow-xs inline-block w-full rounded-md">
+                <span class="inline-block w-full rounded-md shadow-xs">
                   <ListboxButton
-                    class="focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+                    class="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 text-left focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden sm:text-sm sm:leading-5"
                   >
                     <span class="block truncate">{{ value?.name?.first }}</span>
                     <span
@@ -120,21 +120,21 @@
 
                 <div class="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                   <ListboxOptions
-                    class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
+                    class="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs focus:outline-hidden sm:text-sm sm:leading-5"
                   >
                     <ListboxOption
                       v-for="person in people"
                       :key="person.id"
                       :value="person"
-                      class="ui-active:bg-blue-600 ui-active:text-white ui-not-active:text-gray-900 relative cursor-default select-none py-2 pl-3 pr-9"
+                      class="relative cursor-default py-2 pr-9 pl-3 select-none ui-active:bg-blue-600 ui-active:text-white ui-not-active:text-gray-900"
                     >
                       <span
-                        class="ui-selected:font-semibold ui-not-selected:font-normal block truncate"
+                        class="block truncate ui-selected:font-semibold ui-not-selected:font-normal"
                       >
                         {{ person.name.first }}
                       </span>
                       <span
-                        class="ui-selected:block ui-not-selected:hidden ui-active:text-white ui-not-active:text-blue-600 absolute inset-y-0 right-0 flex items-center pr-4"
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 ui-selected:block ui-not-selected:hidden ui-active:text-white ui-not-active:text-blue-600"
                       >
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path
@@ -163,7 +163,7 @@
                 <div class="flex w-full flex-col">
                   <ComboboxInput
                     @change="query = $event.target.value"
-                    class="shadow-xs focus:outline-hidden w-full rounded-md border-gray-300 bg-clip-padding px-3 py-1 focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="w-full rounded-md border-gray-300 bg-clip-padding px-3 py-1 shadow-xs focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
                     placeholder="Search users..."
                   />
                   <div
@@ -172,7 +172,7 @@
                   >
                     <div class="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                       <ComboboxOptions
-                        class="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
+                        class="max-h-60 overflow-auto rounded-md py-1 text-base leading-6 shadow-2xs sm:text-sm sm:leading-5"
                       >
                         <ComboboxOption
                           v-for="location in locations.filter((l) =>
@@ -180,15 +180,15 @@
                           )"
                           :key="location"
                           :value="location"
-                          class="ui-active:bg-blue-600 ui-active:text-white ui-not-active:text-gray-900 relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9"
+                          class="relative flex cursor-default space-x-4 py-2 pr-9 pl-3 select-none ui-active:bg-blue-600 ui-active:text-white ui-not-active:text-gray-900"
                         >
                           <span
-                            class="ui-selected:font-semibold ui-not-selected:font-normal block truncate"
+                            class="block truncate ui-selected:font-semibold ui-not-selected:font-normal"
                           >
                             {{ location }}
                           </span>
                           <span
-                            class="ui-active:block ui-not-active:hidden ui-active:text-white ui-not-active:text-blue-600 absolute inset-y-0 right-0 flex items-center pr-4"
+                            class="absolute inset-y-0 right-0 flex items-center pr-4 ui-active:block ui-active:text-white ui-not-active:hidden ui-not-active:text-blue-600"
                           >
                             <svg class="h-5 w-5" viewBox="0 0 25 24" fill="none">
                               <path
@@ -213,14 +213,14 @@
 
       <div class="space-x-4">
         <button
-          class="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden sm:text-sm sm:leading-5"
         >
           Submit
         </button>
 
         <button
           type="reset"
-          class="shadow-xs focus:outline-hidden rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden sm:text-sm sm:leading-5"
         >
           Reset
         </button>

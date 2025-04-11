@@ -89,7 +89,7 @@ function FullPageTransition() {
                           key={page}
                           onClick={() => setActivePage(i)}
                           className={classNames(
-                            'focus:outline-hidden rounded-md px-3 py-2 text-sm font-medium focus:bg-gray-700 focus:text-white',
+                            'rounded-md px-3 py-2 text-sm font-medium focus:bg-gray-700 focus:text-white focus:outline-hidden',
                             i === activePage
                               ? 'bg-gray-900 text-white'
                               : 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -104,7 +104,7 @@ function FullPageTransition() {
                 <div className="hidden md:block">
                   <div className="ml-4 flex items-center md:ml-6">
                     <button
-                      className="focus:outline-hidden rounded-full border-2 border-transparent p-1 text-gray-400 hover:text-white focus:bg-gray-700 focus:text-white"
+                      className="rounded-full border-2 border-transparent p-1 text-gray-400 hover:text-white focus:bg-gray-700 focus:text-white focus:outline-hidden"
                       aria-label="Notifications"
                     >
                       <svg
@@ -126,7 +126,7 @@ function FullPageTransition() {
                     <div className="relative ml-3">
                       <div>
                         <button
-                          className="focus:shadow-solid focus:outline-hidden flex max-w-xs items-center rounded-full text-sm text-white"
+                          className="focus:shadow-solid flex max-w-xs items-center rounded-full text-sm text-white focus:outline-hidden"
                           id="user-menu"
                           aria-label="User menu"
                           aria-haspopup="true"
@@ -147,7 +147,7 @@ function FullPageTransition() {
         </nav>
         <header className="py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 className="relative inline-block text-3xl font-bold leading-9 text-white">
+            <h1 className="relative inline-block text-3xl leading-9 font-bold text-white">
               {pages[activePage]}
             </h1>
           </div>

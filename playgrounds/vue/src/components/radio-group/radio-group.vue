@@ -30,7 +30,7 @@
               <div class="ml-3 flex cursor-pointer flex-col">
                 <span
                   :class="[
-                    'block text-sm font-medium leading-5',
+                    'block text-sm leading-5 font-medium',
                     active ? 'text-indigo-900' : 'text-gray-900',
                   ]"
                 >
