@@ -43,6 +43,24 @@
     "plugins": [
       "prettier-plugin-organize-imports",
       "prettier-plugin-tailwindcss"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "./playgrounds/react/**/*"
+        ],
+        "options": {
+          "tailwindStylesheet": "./playgrounds/react/pages/styles.css"
+        }
+      },
+      {
+        "files": [
+          "./playgrounds/vue/**/*"
+        ],
+        "options": {
+          "tailwindStylesheet": "./playgrounds/vue/src/styles.css"
+        }
+      }
     ]
   },
   "devDependencies": {
