@@ -366,10 +366,18 @@ export class MenuMachine extends Machine<State, Actions> {
     // Batched version to register multiple items at the same time
     registerItem: batch(() => {
       let items: { id: string; dataRef: MenuItemDataRef }[] = []
+      let seen = new Set<MenuItemDataRef>()
 
       return [
-        (id: string, dataRef: MenuItemDataRef) => items.push({ id, dataRef }),
-        () => this.send({ type: ActionTypes.RegisterItems, items: items.splice(0) }),
+        (id: string, dataRef: MenuItemDataRef) => {
+          if (seen.has(dataRef)) return
+          seen.add(dataRef)
+          items.push({ id, dataRef })
+        },
+        () => {
+          seen.clear()
+          return this.send({ type: ActionTypes.RegisterItems, items: items.splice(0) })
+        },
       ]
     }),
     unregisterItem: batch(() => {
