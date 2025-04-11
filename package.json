@@ -6,34 +6,22 @@
   "repository": "https://github.com/tailwindlabs/headlessui",
   "license": "MIT",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "playgrounds/*"
-  ],
   "scripts": {
-    "react": "npm run --workspace=@headlessui/react",
-    "react-playground": "npm run --workspace=playground-react dev",
-    "playground-react": "npm run --workspace=playground-react dev",
-    "vue": "npm run --workspace=@headlessui/vue",
-    "playground-vue": "npm run --workspace=playground-vue dev",
-    "vue-playground": "npm run --workspace=playground-vue dev",
-    "clean": "npm run clean --workspaces --if-present",
-    "build": "npm-run-all -p 'react build' 'vue build'",
+    "react": "pnpm --filter @headlessui/react",
+    "react-playground": "pnpm --filter playground-react dev",
+    "playground-react": "pnpm --filter playground-react dev",
+    "build:react": "pnpm --filter @headlessui/react build",
+    "vue": "pnpm --filter @headlessui/vue",
+    "playground-vue": "pnpm --filter playground-vue dev",
+    "vue-playground": "pnpm --filter playground-vue dev",
+    "build:vue": "pnpm --filter @headlessui/vue build",
+    "clean": "pnpm --recursive run clean",
+    "build": "pnpm run '/^build:.+/'",
     "test": "./scripts/test.sh",
-    "lint": "./scripts/lint.sh",
-    "lint-check": "CI=true ./scripts/lint.sh",
-    "lint-types": "CI=true npm run lint-types --workspaces --if-present",
+    "lint": "pnpm --recursive run lint",
     "release-channel": "node ./scripts/release-channel.js",
     "release-notes": "node ./scripts/release-notes.js",
     "package-path": "node ./scripts/package-path.js"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*": "npm run lint"
   },
   "prettier": {
     "printWidth": 100,
@@ -54,10 +42,7 @@
     "@types/node": "^14.14.22",
     "esbuild": "^0.17.8",
     "fast-glob": "^3.2.11",
-    "husky": "^4.3.8",
     "jest": "26",
-    "lint-staged": "^12.2.1",
-    "npm-run-all": "^4.1.5",
     "prettier": "^3.1.0",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.7",
@@ -65,5 +50,6 @@
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
     "typescript": "^5.4.3"
-  }
+  },
+  "packageManager": "pnpm@9.6.0"
 }

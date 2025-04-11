@@ -6,14 +6,13 @@
     "example": "examples"
   },
   "scripts": {
-    "prebuild": "npm run build --workspace=@headlessui/vue && npm run build --workspace=@headlessui/tailwindcss",
-    "predev": "npm run build --workspace=@headlessui/vue && npm run build --workspace=@headlessui/tailwindcss",
-    "dev:tailwindcss": "npm run watch --workspace=@headlessui/tailwindcss",
-    "dev:headlessui": "npm run watch --workspace=@headlessui/vue",
+    "prebuild": "pnpm --filter=@headlessui/{vue,tailwindcss} build",
+    "predev": "pnpm --filter=@headlessui/{vue,tailwindcss} build",
+    "dev:tailwindcss": "pnpm --filter=@headlessui/tailwindcss watch",
+    "dev:headlessui": "pnpm --filter=@headlessui/vue watch",
     "dev:next": "vite serve",
-    "dev": "npm-run-all -p dev:*",
+    "dev": "pnpm run '/^dev:.+/'",
     "build": "NODE_ENV=production vite build",
-    "lint-types": "echo",
     "clean": "rimraf ./dist"
   },
   "dependencies": {

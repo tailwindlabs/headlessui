@@ -32,13 +32,12 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm build",
     "build": "../../scripts/build.sh --external:vue",
     "watch": "../../scripts/watch.sh --external:vue",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh",
-    "lint-types": "npm run attw -P --workspaces --if-present",
-    "playground": "npm run dev --workspace=playground-vue",
+    "lint": "pnpm attw --pack",
+    "playground": "pnpm dev --filter=playground-vue",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {

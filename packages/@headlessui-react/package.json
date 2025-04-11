@@ -36,9 +36,8 @@
     "build": "../../scripts/build.sh --external:react --external:react-dom --external:use-sync-external-store",
     "watch": "../../scripts/watch.sh --external:react --external:react-dom --external:use-sync-external-store",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh",
-    "lint-types": "npm run attw -P --workspaces --if-present",
-    "playground": "npm run dev --workspace=playground-react",
+    "lint": "pnpm attw --pack",
+    "playground": "pnpm run dev --filter=playground-react",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {
