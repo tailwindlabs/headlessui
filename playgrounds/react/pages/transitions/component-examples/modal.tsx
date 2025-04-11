@@ -19,11 +19,11 @@ export default function Home() {
     <div>
       <div className="flex space-x-4 p-12">
         <div className="inline-block p-12">
-          <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <span className="shadow-xs mt-3 flex w-full rounded-md sm:mt-0 sm:w-auto">
             <button
               onClick={toggle}
               type="button"
-              className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
+              className="focus:shadow-outline-blue shadow-xs focus:outline-hidden inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 sm:text-sm sm:leading-5"
             >
               Show modal
             </button>
@@ -97,7 +97,7 @@ export default function Home() {
           >
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                   {/* Heroicon name: exclamation */}
                   <svg
                     className="h-6 w-6 text-red-600"
@@ -132,7 +132,7 @@ export default function Home() {
                       >
                         Email address
                       </label>
-                      <div className="relative mt-1 rounded-md shadow-sm">
+                      <div className="shadow-xs relative mt-1 rounded-md">
                         <input
                           ref={inputRef}
                           value={email}
@@ -149,19 +149,19 @@ export default function Home() {
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <span className="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+              <span className="shadow-xs flex w-full rounded-md sm:ml-3 sm:w-auto">
                 <button
                   type="button"
-                  className="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium leading-6 text-white shadow-sm transition duration-150 ease-in-out hover:bg-red-500 focus:border-red-700 focus:outline-none sm:text-sm sm:leading-5"
+                  className="focus:shadow-outline-red shadow-xs focus:outline-hidden inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium leading-6 text-white transition duration-150 ease-in-out hover:bg-red-500 focus:border-red-700 sm:text-sm sm:leading-5"
                 >
                   Deactivate
                 </button>
               </span>
-              <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+              <span className="shadow-xs mt-3 flex w-full rounded-md sm:mt-0 sm:w-auto">
                 <button
                   onClick={toggle}
                   type="button"
-                  className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
+                  className="focus:shadow-outline-blue shadow-xs focus:outline-hidden inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 sm:text-sm sm:leading-5"
                 >
                   Cancel
                 </button>

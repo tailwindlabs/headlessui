@@ -42,7 +42,7 @@
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                   <div
-                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                    class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
                   >
                     <!-- Heroicon name: exclamation -->
                     <svg
@@ -74,7 +74,7 @@
                         <Menu>
                           <MenuButton
                             ref="trigger"
-                            class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none"
+                            class="focus:outline-hidden ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100"
                           >
                             <span>Choose a reason</span>
                             <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -97,7 +97,7 @@
                             <Portal>
                               <MenuItems
                                 ref="container"
-                                class="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none"
+                                class="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
                               >
                                 <div class="px-4 py-3">
                                   <p class="text-sm leading-5">Signed in as</p>

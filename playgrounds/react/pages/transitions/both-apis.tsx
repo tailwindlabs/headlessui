@@ -41,11 +41,11 @@ function After({ open }: { open: boolean }) {
           // Defaults
           'h-20 w-48 border bg-blue-500 p-2 text-white transition ease-in-out',
           // Closed
-          'data-[closed]:opacity-0',
+          'data-closed:opacity-0',
           // Entering
-          'data-[enter]:data-[closed]:-translate-x-full data-[enter]:duration-300',
+          'data-enter:duration-300 data-enter:data-closed:-translate-x-full',
           // Leaving
-          'data-[leave]:data-[closed]:translate-x-full data-[leave]:duration-300',
+          'data-leave:duration-300 data-leave:data-closed:translate-x-full',
         ])}
       >
         Using data attributes

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/router'
-import 'tailwindcss/tailwind.css'
+import './styles.css'
 
 function disposables() {
   let disposables: Function[] = []
@@ -122,7 +122,7 @@ function KeyCaster() {
   if (keys.length <= 0) return null
 
   return (
-    <div className="pointer-events-none fixed bottom-4 right-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow">
+    <div className="pointer-events-none fixed bottom-4 right-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow-sm">
       {keys.slice().reverse().join(' ')}
     </div>
   )
@@ -137,7 +137,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
-        <header className="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
+        <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/">
             <Logo className="h-6" />
           </Link>

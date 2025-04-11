@@ -2,10 +2,10 @@
   <div class="flex h-full w-screen justify-center bg-gray-50 p-12">
     <div class="relative mt-64 inline-block text-left">
       <Menu>
-        <span class="inline-flex rounded-md shadow-sm">
+        <span class="shadow-xs inline-flex rounded-md">
           <MenuButton
             ref="trigger"
-            class="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
+            class="focus:shadow-outline-blue focus:outline-hidden inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 active:bg-gray-50 active:text-gray-800"
           >
             <span>Options</span>
             <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -28,7 +28,7 @@
             leave-to-class="transform scale-95 opacity-0"
           >
             <MenuItems
-              class="w-full divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none"
+              class="outline-hidden w-full divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
             >
               <div class="px-4 py-3">
                 <p class="text-sm leading-5">Signed in as</p>

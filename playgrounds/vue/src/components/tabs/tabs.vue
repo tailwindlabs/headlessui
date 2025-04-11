@@ -12,7 +12,7 @@
     </SwitchGroup>
 
     <TabGroup class="flex w-full max-w-3xl flex-col" as="div" :manual="manual">
-      <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow">
+      <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow-sm">
         <Tab
           v-for="(tab, tabIdx) in tabs"
           :key="tab.name"
@@ -38,7 +38,7 @@
       </TabList>
 
       <TabPanels class="mt-4">
-        <TabPanel v-for="tab in tabs" class="rounded-lg bg-white p-4 shadow" key="tab.name">
+        <TabPanel v-for="tab in tabs" class="rounded-lg bg-white p-4 shadow-sm" key="tab.name">
           {{ tab.content }}
         </TabPanel>
       </TabPanels>
@@ -80,7 +80,7 @@ export default {
       manual,
       resolveSwitchClass({ checked }) {
         return classNames(
-          'relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline',
+          'relative inline-flex shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-hidden focus:shadow-outline',
           checked ? 'bg-indigo-600' : 'bg-gray-200'
         )
       },

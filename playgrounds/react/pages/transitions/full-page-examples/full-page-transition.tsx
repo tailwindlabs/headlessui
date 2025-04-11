@@ -35,11 +35,11 @@ enum Direction {
 
 let pages = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
 let colors = [
-  'bg-gradient-to-r from-teal-400 to-blue-400',
-  'bg-gradient-to-r from-blue-400 to-orange-400',
-  'bg-gradient-to-r from-orange-400 to-purple-400',
-  'bg-gradient-to-r from-purple-400 to-green-400',
-  'bg-gradient-to-r from-green-400 to-teal-400',
+  'bg-linear-to-r from-teal-400 to-blue-400',
+  'bg-linear-to-r from-blue-400 to-orange-400',
+  'bg-linear-to-r from-orange-400 to-purple-400',
+  'bg-linear-to-r from-purple-400 to-green-400',
+  'bg-linear-to-r from-green-400 to-teal-400',
 ]
 
 function FullPageTransition() {
@@ -75,7 +75,7 @@ function FullPageTransition() {
             <div className="border-b border-gray-700">
               <div className="flex h-16 items-center justify-between px-4 sm:px-0">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <img
                       className="h-8 w-8"
                       src="https://tailwindui.com/img/logos/workflow-mark-on-dark.svg"
@@ -89,7 +89,7 @@ function FullPageTransition() {
                           key={page}
                           onClick={() => setActivePage(i)}
                           className={classNames(
-                            'rounded-md px-3 py-2 text-sm font-medium focus:bg-gray-700 focus:text-white focus:outline-none',
+                            'focus:outline-hidden rounded-md px-3 py-2 text-sm font-medium focus:bg-gray-700 focus:text-white',
                             i === activePage
                               ? 'bg-gray-900 text-white'
                               : 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -104,7 +104,7 @@ function FullPageTransition() {
                 <div className="hidden md:block">
                   <div className="ml-4 flex items-center md:ml-6">
                     <button
-                      className="rounded-full border-2 border-transparent p-1 text-gray-400 hover:text-white focus:bg-gray-700 focus:text-white focus:outline-none"
+                      className="focus:outline-hidden rounded-full border-2 border-transparent p-1 text-gray-400 hover:text-white focus:bg-gray-700 focus:text-white"
                       aria-label="Notifications"
                     >
                       <svg
@@ -126,7 +126,7 @@ function FullPageTransition() {
                     <div className="relative ml-3">
                       <div>
                         <button
-                          className="focus:shadow-solid flex max-w-xs items-center rounded-full text-sm text-white focus:outline-none"
+                          className="focus:shadow-solid focus:outline-hidden flex max-w-xs items-center rounded-full text-sm text-white"
                           id="user-menu"
                           aria-label="User menu"
                           aria-haspopup="true"
@@ -156,7 +156,7 @@ function FullPageTransition() {
 
       <main className="-mt-32">
         <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
+          <div className="rounded-lg bg-white px-5 py-6 shadow-sm sm:px-6">
             <div className="relative h-96 overflow-hidden rounded-lg">
               {pages.map((page, i) => (
                 <Transition

@@ -19,7 +19,7 @@ export default function Home() {
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="focus:shadow-outline-blue m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
+        className="focus:shadow-outline-blue shadow-xs focus:outline-hidden m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 sm:text-sm sm:leading-5"
       >
         Toggle!
       </button>
@@ -89,7 +89,7 @@ export default function Home() {
                 <Dialog.Panel className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         {/* Heroicon name: exclamation */}
                         <svg
                           className="h-6 w-6 text-red-600"
@@ -128,14 +128,14 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-red shadow-xs focus:outline-hidden inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Deactivate
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-indigo mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-indigo shadow-xs focus:outline-hidden mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-500 sm:mt-0 sm:w-auto sm:text-sm"
                     >
                       Cancel
                     </button>

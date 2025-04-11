@@ -5,10 +5,10 @@ import { Button } from '../../components/button'
 function Modal(props) {
   return (
     <Dialog className="relative z-50" {...props}>
-      <div className="fixed inset-0 bg-green-500 bg-opacity-90 backdrop-blur backdrop-filter" />
+      <div className="fixed inset-0 bg-green-500 bg-opacity-90 backdrop-blur-sm backdrop-filter" />
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
-          <Dialog.Panel className="relative m-5 flex w-full max-w-3xl gap-4 rounded-lg bg-white p-10 shadow">
+          <Dialog.Panel className="relative m-5 flex w-full max-w-3xl gap-4 rounded-lg bg-white p-10 shadow-sm">
             <Button>One</Button>
             <Button>Two</Button>
           </Dialog.Panel>

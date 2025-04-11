@@ -13,7 +13,7 @@ if (typeof document !== 'undefined') {
 
     connectedCallback() {
       let button = document.createElement('button')
-      button.textContent = 'Inside shadow root (closed)'
+      button.textContent = 'Inside shadow-sm root (closed)'
       this.shadow.appendChild(button)
     }
   }
@@ -33,7 +33,7 @@ function ShadowChildren({ id }: { id: string }) {
     let button = document.createElement('button')
     button.id = id
     button.style.display = 'block'
-    button.textContent = 'Inside shadow root (open)'
+    button.textContent = 'Inside shadow-sm root (open)'
 
     let mce = document.createElement('my-custom-element')
 
@@ -54,7 +54,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 bg-gray-900/75 backdrop-blur-lg">
           <div>
             <button
-              className="m-4 rounded border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"
+              className="m-4 rounded-sm border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"
               id="btn_outside_light"
             >
               Outside shadow root
@@ -65,7 +65,7 @@ export default function App() {
         <Dialog.Panel className="fixed left-16 top-16 z-50 h-64 w-64 rounded-lg border border-black/10 bg-white bg-clip-padding p-12 shadow-lg">
           <div>
             <button
-              className="m-4 rounded border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"
+              className="m-4 rounded-sm border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"
               id="btn_inside_light"
             >
               Outside shadow root

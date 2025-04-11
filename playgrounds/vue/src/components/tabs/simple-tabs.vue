@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full w-screen flex-col items-start space-y-12 bg-gray-50 p-12">
     <TabGroup class="flex w-full max-w-3xl flex-col" as="div">
-      <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow">
+      <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow-sm">
         <Tab
           v-for="tab in tabs"
           :key="tab.name"
@@ -19,7 +19,7 @@
       </TabList>
 
       <TabPanels class="mt-4">
-        <TabPanel v-for="tab in tabs" class="rounded-lg bg-white p-4 shadow" :key="tab.name">
+        <TabPanel v-for="tab in tabs" class="rounded-lg bg-white p-4 shadow-sm" :key="tab.name">
           {{ tab.content }}
         </TabPanel>
       </TabPanels>

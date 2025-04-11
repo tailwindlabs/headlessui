@@ -8,7 +8,7 @@ export default function Home() {
       <Dropdown />
 
       <div>
-        <div className="relative rounded-md shadow-sm">
+        <div className="shadow-xs relative rounded-md">
           <input
             className="form-input block w-full sm:text-sm sm:leading-5"
             placeholder="you@example.com"
@@ -33,7 +33,7 @@ function Dropdown() {
   return (
     <div className="relative inline-block text-left">
       <Menu>
-        <span className="inline-flex rounded-md shadow-sm">
+        <span className="shadow-xs inline-flex rounded-md">
           <Menu.Button as={Button}>
             <span>Options</span>
             <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -46,7 +46,7 @@ function Dropdown() {
           </Menu.Button>
         </span>
 
-        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none">
+        <Menu.Items className="outline-hidden absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
           <div className="px-4 py-3">
             <p className="text-sm leading-5">Signed in as</p>
             <p className="truncate text-sm font-medium leading-5 text-gray-900">tom@example.com</p>

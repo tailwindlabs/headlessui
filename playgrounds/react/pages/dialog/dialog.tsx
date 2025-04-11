@@ -116,7 +116,7 @@ export default function Home() {
                 <Dialog.Panel className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         {/* Heroicon name: exclamation */}
                         <svg
                           className="h-6 w-6 text-red-600"
@@ -174,7 +174,7 @@ export default function Home() {
                                 <Portal>
                                   <Menu.Items
                                     ref={container}
-                                    className="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none"
+                                    className="outline-hidden z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg"
                                   >
                                     <div className="px-4 py-3">
                                       <p className="text-sm leading-5">Signed in as</p>

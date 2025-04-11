@@ -9,16 +9,16 @@
             </ListboxLabel>
 
             <div class="relative">
-              <span class="inline-block w-full rounded-md shadow-sm">
+              <span class="shadow-xs inline-block w-full rounded-md">
                 <ListboxButton
-                  class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-2 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
+                  class="focus:shadow-outline-blue focus:outline-hidden relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-2 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 sm:text-sm sm:leading-5"
                 >
                   <span class="block flex flex-wrap gap-2">
                     <span v-if="activePersons.length === 0" class="p-0.5">Empty</span>
                     <span
                       v-for="person in activePersons"
                       :key="person.id"
-                      class="flex items-center gap-1 rounded bg-blue-50 px-2 py-0.5"
+                      class="flex items-center gap-1 rounded-sm bg-blue-50 px-2 py-0.5"
                     >
                       <span>{{ person.name }}</span>
                       <svg
@@ -60,7 +60,7 @@
 
               <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
                 <ListboxOptions
-                  class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
+                  class="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5"
                 >
                   <ListboxOption
                     v-for="person in people"
@@ -70,7 +70,7 @@
                     v-slot="{ active, selected }"
                   >
                     <li
-                      class="relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none"
+                      class="focus:outline-hidden relative cursor-default select-none py-2 pl-3 pr-9"
                       :class="active ? 'bg-indigo-600 text-white' : 'text-gray-900'"
                     >
                       <span
@@ -99,7 +99,7 @@
             </div>
           </Listbox>
           <button
-            class="mt-2 inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="shadow-xs focus:outline-hidden mt-2 inline-flex items-center rounded-sm border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
             Submit
           </button>

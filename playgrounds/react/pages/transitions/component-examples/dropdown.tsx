@@ -22,10 +22,10 @@ function Dropdown() {
   return (
     <div className="relative inline-block text-left">
       <div>
-        <span className="rounded-md shadow-sm">
+        <span className="shadow-xs rounded-md">
           <button
             type="button"
-            className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
+            className="focus:shadow-outline-blue focus:outline-hidden inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 active:bg-gray-50 active:text-gray-800"
             id="options-menu"
             aria-haspopup="true"
             aria-expanded={isOpen}
@@ -54,7 +54,7 @@ function Dropdown() {
         leaveTo="transform opacity-0 scale-95"
         className="absolute right-0 mt-2 w-56 origin-top-right rounded-md shadow-lg"
       >
-        <div className="shadow-xs rounded-md bg-white">
+        <div className="shadow-2xs rounded-md bg-white">
           <div
             className="py-1"
             role="menu"
@@ -63,21 +63,21 @@ function Dropdown() {
           >
             <a
               href="/"
-              className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none"
+              className="focus:outline-hidden block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900"
               role="menuitem"
             >
               Account settings
             </a>
             <a
               href="/"
-              className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none"
+              className="focus:outline-hidden block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900"
               role="menuitem"
             >
               Support
             </a>
             <a
               href="/"
-              className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none"
+              className="focus:outline-hidden block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900"
               role="menuitem"
             >
               License
@@ -85,7 +85,7 @@ function Dropdown() {
             <form method="POST" action="#">
               <button
                 type="submit"
-                className="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none"
+                className="focus:outline-hidden block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900"
                 role="menuitem"
               >
                 Sign out
