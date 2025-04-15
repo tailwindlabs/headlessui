@@ -75,7 +75,7 @@ export default function Home() {
               <Combobox.Options
                 transition
                 anchor="bottom start"
-                className="focus:outline-hidden data-closed:opacity-0 w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
+                className="focus:outline-hidden data-closed:opacity-0 w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-300 [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
               >
                 {countries.map((country) => (
                   <Combobox.Option
