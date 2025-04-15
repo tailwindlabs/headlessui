@@ -8,58 +8,58 @@ interface MutableRefObject<T> {
   current: T
 }
 
-enum ComboboxState {
+export enum ComboboxState {
   Open,
   Closed,
 }
 
-enum ValueMode {
+export enum ValueMode {
   Single,
   Multi,
 }
 
-enum ActivationTrigger {
+export enum ActivationTrigger {
   Pointer,
   Focus,
   Other,
 }
 
-type ComboboxOptionDataRef<T> = MutableRefObject<{
+export type ComboboxOptionDataRef<T> = MutableRefObject<{
   disabled: boolean
   value: T
   domRef: MutableRefObject<HTMLElement | null>
   order: number | null
 }>
 
-interface State<T> {
-  dataRef: MutableRefObject<
-    {
-      value: unknown
-      defaultValue: unknown
-      disabled: boolean
-      invalid: boolean
-      mode: ValueMode
-      activeOptionIndex: number | null
-      immediate: boolean
+export interface State<T> {
+  dataRef: MutableRefObject<{
+    value: unknown
+    defaultValue: unknown
+    disabled: boolean
+    invalid: boolean
+    mode: ValueMode
+    immediate: boolean
+    onChange: (value: T) => void
+    onClose?: () => void
+    compare(a: unknown, z: unknown): boolean
+    isSelected(value: unknown): boolean
 
-      virtual: { options: T[]; disabled: (value: T) => boolean } | null
-      calculateIndex(value: unknown): number
-      compare(a: unknown, z: unknown): boolean
-      isSelected(value: unknown): boolean
-      isActive(value: unknown): boolean
+    virtual: { options: T[]; disabled: (value: T) => boolean } | null
+    calculateIndex(value: unknown): number
 
-      __demoMode: boolean
+    __demoMode: boolean
 
-      optionsPropsRef: MutableRefObject<{
-        static: boolean
-        hold: boolean
-      }>
-    } & Omit<State<T>, 'dataRef'>
-  >
+    optionsPropsRef: MutableRefObject<{
+      static: boolean
+      hold: boolean
+    }>
+  }>
 
   virtual: { options: T[]; disabled: (value: unknown) => boolean } | null
 
   comboboxState: ComboboxState
+
+  defaultToFirstOption: boolean
 
   options: { id: string; dataRef: ComboboxOptionDataRef<T> }[]
   activeOptionIndex: number | null
@@ -74,7 +74,7 @@ interface State<T> {
   __demoMode: boolean
 }
 
-enum ActionTypes {
+export enum ActionTypes {
   OpenCombobox,
   CloseCombobox,
 
@@ -83,6 +83,8 @@ enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
+
+  DefaultToFirstOption,
 
   SetActivationTrigger,
 
@@ -145,6 +147,7 @@ type Actions<T> =
       payload: { id: string; dataRef: ComboboxOptionDataRef<T> }
     }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.DefaultToFirstOption; value: boolean }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
   | {
       type: ActionTypes.UpdateVirtualConfiguration
@@ -303,7 +306,7 @@ let reducers: {
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      if (state.dataRef.current?.isSelected(action.payload.dataRef.current.value)) {
+      if (state.dataRef.current.isSelected?.(action.payload.dataRef.current.value)) {
         adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
       }
     }
@@ -338,6 +341,14 @@ let reducers: {
       ...state,
       ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
+    }
+  },
+  [ActionTypes.DefaultToFirstOption]: (state, action) => {
+    if (state.defaultToFirstOption === action.value) return state
+
+    return {
+      ...state,
+      defaultToFirstOption: action.value,
     }
   },
   [ActionTypes.SetActivationTrigger]: (state, action) => {
@@ -411,6 +422,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       comboboxState: __demoMode ? ComboboxState.Open : ComboboxState.Closed,
       isTyping: false,
       options: [],
+      // @ts-expect-error TODO: Ensure we use the correct type
       virtual: virtual
         ? { options: virtual.options, disabled: virtual.disabled ?? (() => false) }
         : null,
@@ -424,20 +436,128 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
   }
 
   actions = {
-    onChange() {},
-    registerOption() {},
-    goToOption() {},
-    setIsTyping() {},
-    closeCombobox() {},
-    openCombobox() {},
-    setActivationTrigger() {},
-    selectActiveOption() {},
-    setInputElement() {},
-    setButtonElement() {},
-    setOptionsElement() {},
+    onChange: (newValue: T) => {
+      let { onChange, compare, mode, value } = this.state.dataRef.current
+
+      return match(mode, {
+        [ValueMode.Single]: () => {
+          return onChange?.(newValue)
+        },
+        [ValueMode.Multi]: () => {
+          let copy = (value as T[]).slice()
+
+          let idx = copy.findIndex((item) => compare(item, newValue))
+          if (idx === -1) {
+            copy.push(newValue)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return onChange?.(copy as T)
+        },
+      })
+    },
+    registerOption: (id: string, dataRef: ComboboxOptionDataRef<T>) => {
+      this.send({ type: ActionTypes.RegisterOption, payload: { id, dataRef } })
+      return () => {
+        // When we are unregistering the currently active option, then we also have to make sure to
+        // reset the `defaultToFirstOption` flag, so that visually something is selected and the next
+        // time you press a key on your keyboard it will go to the proper next or previous option in
+        // the list.
+        //
+        // Since this was the active option and it could have been anywhere in the list, resetting to
+        // the very first option seems like a fine default. We _could_ be smarter about this by going
+        // to the previous / next item in list if we know the direction of the keyboard navigation,
+        // but that might be too complex/confusing from an end users perspective.
+        if (this.selectors.isActive(this.state, dataRef.current.value)) {
+          this.send({ type: ActionTypes.DefaultToFirstOption, value: true })
+        }
+
+        this.send({ type: ActionTypes.UnregisterOption, id })
+      }
+    },
+    goToOption: (
+      focus: { focus: Focus.Specific; idx: number } | { focus: Exclude<Focus, Focus.Specific> },
+      trigger?: ActivationTrigger
+    ) => {
+      this.send({ type: ActionTypes.DefaultToFirstOption, value: false })
+      return this.send({ type: ActionTypes.GoToOption, ...focus, trigger })
+    },
+    setIsTyping: (isTyping: boolean) => {
+      this.send({ type: ActionTypes.SetTyping, isTyping })
+    },
+    closeCombobox: () => {
+      this.send({ type: ActionTypes.CloseCombobox })
+      this.send({ type: ActionTypes.DefaultToFirstOption, value: false })
+      this.state.dataRef.current.onClose?.()
+    },
+    openCombobox: () => {
+      this.send({ type: ActionTypes.OpenCombobox })
+      this.send({ type: ActionTypes.DefaultToFirstOption, value: true })
+    },
+    setActivationTrigger: (trigger: ActivationTrigger) => {
+      this.send({ type: ActionTypes.SetActivationTrigger, trigger })
+    },
+    selectActiveOption: () => {
+      let activeOptionIndex = this.selectors.activeOptionIndex(this.state)
+      if (activeOptionIndex === null) return
+
+      this.actions.setIsTyping(false)
+
+      if (this.state.virtual) {
+        this.actions.onChange(this.state.virtual.options[activeOptionIndex])
+      } else {
+        let { dataRef } = this.state.options[activeOptionIndex]
+        this.actions.onChange(dataRef.current.value)
+      }
+
+      // It could happen that the `activeOptionIndex` stored in state is actually null, but we are
+      // getting the fallback active option back instead.
+      this.actions.goToOption({ focus: Focus.Specific, idx: activeOptionIndex })
+    },
+    setInputElement: (element: HTMLInputElement | null) => {
+      this.send({ type: ActionTypes.SetInputElement, element })
+    },
+    setButtonElement: (element: HTMLButtonElement | null) => {
+      this.send({ type: ActionTypes.SetButtonElement, element })
+    },
+    setOptionsElement: (element: HTMLElement | null) => {
+      this.send({ type: ActionTypes.SetOptionsElement, element })
+    },
   }
 
-  selectors = {}
+  selectors = {
+    activeOptionIndex: (state: State<T>) => {
+      if (
+        state.defaultToFirstOption &&
+        state.activeOptionIndex === null &&
+        (state.virtual ? state.virtual.options.length > 0 : state.options.length > 0)
+      ) {
+        if (state.virtual) {
+          let { options, disabled } = state.virtual
+          let localActiveOptionIndex = options.findIndex((option) => !(disabled?.(option) ?? false))
+
+          if (localActiveOptionIndex !== -1) {
+            return localActiveOptionIndex
+          }
+        }
+
+        let localActiveOptionIndex = state.options.findIndex((option) => {
+          return !option.dataRef.current.disabled
+        })
+
+        if (localActiveOptionIndex !== -1) {
+          return localActiveOptionIndex
+        }
+      }
+
+      return state.activeOptionIndex
+    },
+
+    isActive: (state: State<T>, other: T) => {
+      return this.selectors.activeOptionIndex(state) === state.dataRef.current.calculateIndex(other)
+    },
+  }
 
   reduce(state: Readonly<State<T>>, action: Actions<T>): State<T> {
     return match(action.type, reducers, state, action) as State<T>
