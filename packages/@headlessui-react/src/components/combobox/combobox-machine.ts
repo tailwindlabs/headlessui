@@ -559,19 +559,19 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       ) {
         if (state.virtual) {
           let { options, disabled } = state.virtual
-          let localActiveOptionIndex = options.findIndex((option) => !(disabled?.(option) ?? false))
+          let activeOptionIndex = options.findIndex((option) => !(disabled?.(option) ?? false))
 
-          if (localActiveOptionIndex !== -1) {
-            return localActiveOptionIndex
+          if (activeOptionIndex !== -1) {
+            return activeOptionIndex
           }
         }
 
-        let localActiveOptionIndex = state.options.findIndex((option) => {
+        let activeOptionIndex = state.options.findIndex((option) => {
           return !option.dataRef.current.disabled
         })
 
-        if (localActiveOptionIndex !== -1) {
-          return localActiveOptionIndex
+        if (activeOptionIndex !== -1) {
+          return activeOptionIndex
         }
       }
 
