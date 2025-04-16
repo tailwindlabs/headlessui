@@ -330,7 +330,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let { show, appear, initial } = useTransitionContext()
 
-  let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
+  let [treeState, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
   let parentNesting = useParentNesting()
   let { register, unregister } = parentNesting
@@ -343,26 +343,26 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     if (!container.current) return
 
     // Make sure that we are visible
-    if (show && state !== TreeStates.Visible) {
+    if (show && treeState !== TreeStates.Visible) {
       setState(TreeStates.Visible)
       return
     }
 
-    return match(state, {
+    return match(treeState, {
       [TreeStates.Hidden]: () => unregister(container),
       [TreeStates.Visible]: () => register(container),
     })
-  }, [state, container, register, unregister, show, strategy])
+  }, [treeState, container, register, unregister, show, strategy])
 
   let ready = useServerHandoffComplete()
 
   useIsoMorphicEffect(() => {
     if (!requiresRef) return
 
-    if (ready && state === TreeStates.Visible && container.current === null) {
+    if (ready && treeState === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
-  }, [container, state, ready, requiresRef])
+  }, [container, treeState, ready, requiresRef])
 
   // Skipping initial transition
   let skip = initial && !appear
@@ -470,8 +470,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   })
 
   let openClosedState = 0
-  if (state === TreeStates.Visible) openClosedState |= State.Open
-  if (state === TreeStates.Hidden) openClosedState |= State.Closed
+  if (treeState === TreeStates.Visible) openClosedState |= State.Open
+  if (treeState === TreeStates.Hidden) openClosedState |= State.Closed
   if (transitionData.enter) openClosedState |= State.Opening
   if (transitionData.leave) openClosedState |= State.Closing
 
@@ -485,7 +485,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
           theirProps,
           defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
           features: TransitionChildRenderFeatures,
-          visible: state === TreeStates.Visible,
+          visible: treeState === TreeStates.Visible,
           name: 'Transition.Child',
         })}
       </OpenClosedProvider>
