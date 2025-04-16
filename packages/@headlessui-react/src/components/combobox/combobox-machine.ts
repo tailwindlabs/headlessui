@@ -469,7 +469,10 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
         // the very first option seems like a fine default. We _could_ be smarter about this by going
         // to the previous / next item in list if we know the direction of the keyboard navigation,
         // but that might be too complex/confusing from an end users perspective.
-        if (this.selectors.isActive(this.state, dataRef.current.value)) {
+        if (
+          this.state.activeOptionIndex ===
+          this.state.dataRef.current.calculateIndex(dataRef.current.value)
+        ) {
           this.send({ type: ActionTypes.DefaultToFirstOption, value: true })
         }
 
@@ -584,17 +587,15 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
           : state.options[activeOptionIndex]?.dataRef.current.value ?? null
     },
 
-    isActive: (state: State<T>, other: T) => {
-      return this.selectors.activeOptionIndex(state) === state.dataRef.current.calculateIndex(other)
-    },
-
-    isActiveOption: (state: State<T>, value: T, id: string) => {
+    isActive: (state: State<T>, value: T, id: string) => {
       let activeOptionIndex = this.selectors.activeOptionIndex(state)
-      return state.virtual
-        ? activeOptionIndex === state.dataRef.current.calculateIndex(value)
-        : activeOptionIndex === null
-          ? false
-          : state.options[activeOptionIndex]?.id === id
+      if (activeOptionIndex === null) return false
+
+      if (state.virtual) {
+        return activeOptionIndex === state.dataRef.current.calculateIndex(value)
+      }
+
+      return state.options[activeOptionIndex]?.id === id
     },
 
     shouldScrollIntoView: (state: State<T>, value: T, id: string): boolean => {
@@ -603,7 +604,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       if (state.comboboxState !== ComboboxState.Open) return false
       if (state.activationTrigger === ActivationTrigger.Pointer) return false
 
-      let active = this.selectors.isActiveOption(state, value, id)
+      let active = this.selectors.isActive(state, value, id)
       if (!active) return false
 
       return true

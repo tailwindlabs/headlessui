@@ -1414,7 +1414,7 @@ function OptionFn<
 
   let active = useSlice(
     machine,
-    useCallback((state) => machine.selectors.isActiveOption(state, value, id), [value, id])
+    useCallback((state) => machine.selectors.isActive(state, value, id), [value, id])
   )
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLElement | null>(null)
