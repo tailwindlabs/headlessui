@@ -527,6 +527,27 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
   }
 
   selectors = {
+    activeDescendantId: (state: State<T>) => {
+      let activeOptionIndex = this.selectors.activeOptionIndex(state)
+      if (activeOptionIndex === null) {
+        return undefined
+      }
+
+      if (!state.virtual) {
+        return state.options[activeOptionIndex]?.id
+      }
+
+      return state.options.find((option) => {
+        return (
+          !option.dataRef.current.disabled &&
+          state.dataRef.current.compare(
+            option.dataRef.current.value,
+            state.virtual!.options[activeOptionIndex]
+          )
+        )
+      })?.id
+    },
+
     activeOptionIndex: (state: State<T>) => {
       if (
         state.defaultToFirstOption &&
@@ -554,8 +575,38 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       return state.activeOptionIndex
     },
 
+    activeOption: (state: State<T>) => {
+      let activeOptionIndex = this.selectors.activeOptionIndex(state)
+      return activeOptionIndex === null
+        ? null
+        : state.virtual
+          ? state.virtual.options[activeOptionIndex ?? 0]
+          : state.options[activeOptionIndex]?.dataRef.current.value ?? null
+    },
+
     isActive: (state: State<T>, other: T) => {
       return this.selectors.activeOptionIndex(state) === state.dataRef.current.calculateIndex(other)
+    },
+
+    isActiveOption: (state: State<T>, value: T, id: string) => {
+      let activeOptionIndex = this.selectors.activeOptionIndex(state)
+      return state.virtual
+        ? activeOptionIndex === state.dataRef.current.calculateIndex(value)
+        : activeOptionIndex === null
+          ? false
+          : state.options[activeOptionIndex]?.id === id
+    },
+
+    shouldScrollIntoView: (state: State<T>, value: T, id: string): boolean => {
+      if (state.virtual) return false
+      if (state.__demoMode) return false
+      if (state.comboboxState !== ComboboxState.Open) return false
+      if (state.activationTrigger === ActivationTrigger.Pointer) return false
+
+      let active = this.selectors.isActiveOption(state, value, id)
+      if (!active) return false
+
+      return true
     },
   }
 

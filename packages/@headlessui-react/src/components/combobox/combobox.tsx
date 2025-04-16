@@ -415,19 +415,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   )
 
   let activeOptionIndex = useSlice(machine, machine.selectors.activeOptionIndex)
-  let activeOption = useSlice(
-    machine,
-    useCallback(
-      (state) => {
-        return activeOptionIndex === null
-          ? null
-          : state.virtual
-            ? state.virtual.options[activeOptionIndex ?? 0]
-            : (state.options[activeOptionIndex]?.dataRef.current.value as TValue) ?? null
-      },
-      [activeOptionIndex]
-    )
-  )
+  let activeOption = useSlice(machine, machine.selectors.activeOption)
 
   let slot = useMemo(() => {
     return {
@@ -912,29 +900,6 @@ function InputFn<
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let optionsElement = useSlice(machine, (state) => state.optionsElement)
-  let activedescendantId = useSlice(
-    machine,
-    useCallback((state) => {
-      let activeOptionIndex = machine.selectors.activeOptionIndex(state)
-      if (activeOptionIndex === null) {
-        return undefined
-      }
-
-      if (!state.virtual) {
-        return state.options[activeOptionIndex]?.id
-      }
-
-      return state.options.find((option) => {
-        return (
-          !option.dataRef.current.disabled &&
-          state.dataRef.current.compare(
-            option.dataRef.current.value,
-            state.virtual!.options[activeOptionIndex]
-          )
-        )
-      })?.id
-    }, [])
-  )
 
   let slot = useMemo(() => {
     return {
@@ -955,7 +920,7 @@ function InputFn<
       type,
       'aria-controls': optionsElement?.id,
       'aria-expanded': comboboxState === ComboboxState.Open,
-      'aria-activedescendant': activedescendantId,
+      'aria-activedescendant': useSlice(machine, machine.selectors.activeDescendantId),
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
       'aria-autocomplete': 'list',
@@ -1449,16 +1414,8 @@ function OptionFn<
 
   let active = useSlice(
     machine,
-    useCallback((state) => {
-      let activeOptionIndex = machine.selectors.activeOptionIndex(state)
-      return state.virtual
-        ? activeOptionIndex === state.dataRef.current.calculateIndex(value)
-        : activeOptionIndex === null
-          ? false
-          : state.options[activeOptionIndex]?.id === id
-    }, [])
+    useCallback((state) => machine.selectors.isActiveOption(state, value, id), [value, id])
   )
-
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLElement | null>(null)
 
@@ -1482,32 +1439,17 @@ function OptionFn<
   })
   useIsoMorphicEffect(() => machine.actions.registerOption(id, bag), [bag, id])
 
-  let activeOptionIndex = useSlice(machine, machine.selectors.activeOptionIndex)
-
-  let enableScrollIntoView = useRef(data.virtual || data.__demoMode ? false : true)
-  useIsoMorphicEffect(() => {
-    if (data.virtual) return
-    if (data.__demoMode) return
-    return disposables().requestAnimationFrame(() => {
-      enableScrollIntoView.current = true
-    })
-  }, [data.virtual, data.__demoMode])
+  let shouldScrollIntoView = useSlice(
+    machine,
+    useCallback((state) => machine.selectors.shouldScrollIntoView(state, value, id), [value, id])
+  )
 
   useIsoMorphicEffect(() => {
-    if (!enableScrollIntoView.current) return
-    if (machine.state.comboboxState !== ComboboxState.Open) return
-    if (!active) return
-    if (machine.state.activationTrigger === ActivationTrigger.Pointer) return
+    if (!shouldScrollIntoView) return
     return disposables().requestAnimationFrame(() => {
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-  }, [
-    internalOptionRef,
-    active,
-    machine.state.comboboxState,
-    machine.state.activationTrigger,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ activeOptionIndex,
-  ])
+  }, [shouldScrollIntoView, internalOptionRef])
 
   let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
     // We use the `mousedown` event here since it fires before the focus event,
