@@ -472,8 +472,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let openClosedState = 0
   if (treeState === TreeStates.Visible) openClosedState |= State.Open
   if (treeState === TreeStates.Hidden) openClosedState |= State.Closed
-  if (transitionData.enter) openClosedState |= State.Opening
-  if (transitionData.leave) openClosedState |= State.Closing
+  if (show && treeState === TreeStates.Hidden) openClosedState |= State.Opening
+  if (!show && treeState === TreeStates.Visible) openClosedState |= State.Closing
 
   let render = useRender()
 
