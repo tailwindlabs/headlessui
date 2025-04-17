@@ -151,6 +151,8 @@ let VirtualProvider = defineComponent({
     })
 
     let virtualizer = useVirtualizer<HTMLDivElement, HTMLLIElement>(
+      // @ts-expect-error TODO: Drop when using `pnpm` and `@tanstack/virtual-vue`
+      // has been rolled back to the older version.
       computed(() => {
         return {
           scrollPaddingStart: padding.value.start,
@@ -173,6 +175,8 @@ let VirtualProvider = defineComponent({
       baseKey.value += 1
     })
 
+    // @ts-expect-error TODO: Drop when using `pnpm` and `@tanstack/virtual-vue`
+    // has been rolled back to the older version.
     provide(VirtualContext, api.virtual.value ? virtualizer : null)
 
     return () => {

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `Listbox` component performance ([#3688](https://github.com/tailwindlabs/headlessui/pull/3688))
 - Open `Menu` and `Listbox` on `mousedown` ([#3689](https://github.com/tailwindlabs/headlessui/pull/3689))
 - Fix `Transition` component from incorrectly exposing the `Closing` state ([#3696](https://github.com/tailwindlabs/headlessui/pull/3696))
+- Improve `Combobox` component performance ([#3697](https://github.com/tailwindlabs/headlessui/pull/3697))
 
 ## [2.2.1] - 2025-04-04
 

@@ -1,0 +1,51 @@
+diff --git a/node_modules/@tanstack/virtual-core/dist/cjs/index.cjs b/node_modules/@tanstack/virtual-core/dist/cjs/index.cjs
+index dd4e77f..127987e 100644
+--- a/node_modules/@tanstack/virtual-core/dist/cjs/index.cjs
++++ b/node_modules/@tanstack/virtual-core/dist/cjs/index.cjs
+@@ -665,9 +665,9 @@ class Virtualizer {
+             this.options.getItemKey(index)
+           );
+           if (elementInDOM) {
+-            const [latestOffset] = utils.notUndefined(
+-              this.getOffsetForIndex(index, align)
+-            );
++            const result = this.getOffsetForIndex(index, align)
++            if (!result) return
++            const [latestOffset] = result
+             if (!utils.approxEqual(latestOffset, this.getScrollOffset())) {
+               this.scrollToIndex(index, { align, behavior });
+             }
+diff --git a/node_modules/@tanstack/virtual-core/dist/esm/index.js b/node_modules/@tanstack/virtual-core/dist/esm/index.js
+index 8da519d..8c78af8 100644
+--- a/node_modules/@tanstack/virtual-core/dist/esm/index.js
++++ b/node_modules/@tanstack/virtual-core/dist/esm/index.js
+@@ -663,9 +663,9 @@ class Virtualizer {
+             this.options.getItemKey(index)
+           );
+           if (elementInDOM) {
+-            const [latestOffset] = notUndefined(
+-              this.getOffsetForIndex(index, align)
+-            );
++            const result = this.getOffsetForIndex(index, align)
++            if (!result) return
++            const [latestOffset] = result
+             if (!approxEqual(latestOffset, this.getScrollOffset())) {
+               this.scrollToIndex(index, { align, behavior });
+             }
+diff --git a/node_modules/@tanstack/virtual-core/src/index.ts b/node_modules/@tanstack/virtual-core/src/index.ts
+index 3a0c446..4a9e792 100644
+--- a/node_modules/@tanstack/virtual-core/src/index.ts
++++ b/node_modules/@tanstack/virtual-core/src/index.ts
+@@ -1003,9 +1003,9 @@ export class Virtualizer<
+         )
+ 
+         if (elementInDOM) {
+-          const [latestOffset] = notUndefined(
+-            this.getOffsetForIndex(index, align),
+-          )
++          const result = this.getOffsetForIndex(index, align)
++          if (!result) return
++          const [latestOffset] = result
+ 
+           if (!approxEqual(latestOffset, this.getScrollOffset())) {
+             this.scrollToIndex(index, { align, behavior })

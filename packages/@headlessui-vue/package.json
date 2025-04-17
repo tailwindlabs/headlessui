@@ -50,6 +50,6 @@
     "vue": "3.2.37"
   },
   "dependencies": {
-    "@tanstack/vue-virtual": "3.0.0-beta.60"
+    "@tanstack/vue-virtual": "3.13.6"
   }
 }
