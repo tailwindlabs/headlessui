@@ -1,5 +1,5 @@
-import {computed, defineComponent, h, nextTick, reactive, ref, watch, type PropType} from 'vue'
-import {State, useOpenClosed, useOpenClosedProvider} from '../../internal/open-closed'
+import { computed, defineComponent, h, nextTick, reactive, ref, watch, type PropType } from 'vue'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
   ComboboxMode,
   ComboboxState,
@@ -26,7 +26,7 @@ import {
   getComboboxOptions,
   getComboboxes,
 } from '../../test-utils/accessibility-assertions'
-import {html} from '../../test-utils/html'
+import { html } from '../../test-utils/html'
 import {
   Keys,
   MouseButton,
@@ -40,8 +40,8 @@ import {
   type,
   word,
 } from '../../test-utils/interactions'
-import {suppressConsoleLogs} from '../../test-utils/suppress-console-logs'
-import {createRenderTemplate, render} from '../../test-utils/vue-testing-library'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
   ComboboxButton,
@@ -113,14 +113,14 @@ describe('safeguards', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(null)}),
+        setup: () => ({ value: ref(null) }),
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 })
@@ -142,23 +142,23 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
 
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -177,40 +177,40 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await press(Keys.Enter, getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         // The input should also be disabled
         assertComboboxInput({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-input-1', disabled: ''},
+          attributes: { id: 'headlessui-combobox-input-1', disabled: '' },
         })
 
         // And even if we try to focus it, it should not open the combobox
         await focus(getComboboxInput())
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
 
@@ -218,9 +218,9 @@ describe('Rendering', () => {
       'should not crash in multiple mode',
       suppressConsoleLogs(async () => {
         let options = [
-          {id: 1, name: 'Alice'},
-          {id: 2, name: 'Bob'},
-          {id: 3, name: 'Charlie'},
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+          { id: 3, name: 'Charlie' },
         ]
 
         renderTemplate({
@@ -240,7 +240,7 @@ describe('Rendering', () => {
           `,
           setup: () => {
             let value = ref(options[1])
-            return {options, value}
+            return { options, value }
           },
         })
 
@@ -255,9 +255,9 @@ describe('Rendering', () => {
 
     describe('Equality', () => {
       let options = [
-        {id: 1, name: 'Alice'},
-        {id: 2, name: 'Bob'},
-        {id: 3, name: 'Charlie'},
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
       ]
 
       it(
@@ -280,7 +280,7 @@ describe('Rendering', () => {
             `,
             setup: () => {
               let value = ref(options[1])
-              return {options, value}
+              return { options, value }
             },
           })
 
@@ -288,7 +288,7 @@ describe('Rendering', () => {
 
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveTextContent(
-            JSON.stringify({active: true, selected: true, disabled: false})
+            JSON.stringify({ active: true, selected: true, disabled: false })
           )
         })
       )
@@ -313,7 +313,7 @@ describe('Rendering', () => {
             `,
             setup: () => {
               let value = ref(null)
-              return {options, value}
+              return { options, value }
             },
           })
 
@@ -321,13 +321,13 @@ describe('Rendering', () => {
 
           let [alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveTextContent(
-            JSON.stringify({active: true, selected: false, disabled: false})
+            JSON.stringify({ active: true, selected: false, disabled: false })
           )
           expect(bob).toHaveTextContent(
-            JSON.stringify({active: false, selected: false, disabled: false})
+            JSON.stringify({ active: false, selected: false, disabled: false })
           )
           expect(charlie).toHaveTextContent(
-            JSON.stringify({active: false, selected: false, disabled: false})
+            JSON.stringify({ active: false, selected: false, disabled: false })
           )
         })
       )
@@ -351,8 +351,8 @@ describe('Rendering', () => {
               </Combobox>
             `,
             setup: () => {
-              let value = ref({id: 2, name: 'Bob'})
-              return {options, value}
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
             },
           })
 
@@ -360,7 +360,7 @@ describe('Rendering', () => {
 
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveTextContent(
-            JSON.stringify({active: true, selected: true, disabled: false})
+            JSON.stringify({ active: true, selected: true, disabled: false })
           )
         })
       )
@@ -384,8 +384,8 @@ describe('Rendering', () => {
               </Combobox>
             `,
             setup: () => {
-              let value = ref({id: 2, name: 'Bob'})
-              return {options, value, compare: (a: any, z: any) => a.id === z.id}
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value, compare: (a: any, z: any) => a.id === z.id }
             },
           })
 
@@ -393,7 +393,7 @@ describe('Rendering', () => {
 
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveTextContent(
-            JSON.stringify({active: true, selected: true, disabled: false})
+            JSON.stringify({ active: true, selected: true, disabled: false })
           )
         })
       )
@@ -413,8 +413,8 @@ describe('Rendering', () => {
               </Combobox>
             `,
             setup: () => {
-              let value = ref({id: 2, name: 'Bob'})
-              return {options, value}
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
             },
           })
 
@@ -426,14 +426,14 @@ describe('Rendering', () => {
 
           await click(getComboboxOptions()[2])
           await click(getComboboxButton())
-            ;[alice, bob, charlie] = getComboboxOptions()
+          ;[alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveAttribute('aria-selected', 'false')
           expect(bob).toHaveAttribute('aria-selected', 'false')
           expect(charlie).toHaveAttribute('aria-selected', 'true')
 
           await click(getComboboxOptions()[1])
           await click(getComboboxButton())
-            ;[alice, bob, charlie] = getComboboxOptions()
+          ;[alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveAttribute('aria-selected', 'false')
           expect(bob).toHaveAttribute('aria-selected', 'true')
           expect(charlie).toHaveAttribute('aria-selected', 'false')
@@ -455,8 +455,8 @@ describe('Rendering', () => {
               </Combobox>
             `,
             setup: () => {
-              let value = ref([{id: 2, name: 'Bob'}])
-              return {options, value}
+              let value = ref([{ id: 2, name: 'Bob' }])
+              return { options, value }
             },
           })
 
@@ -469,7 +469,7 @@ describe('Rendering', () => {
           expect(charlie).toHaveAttribute('aria-selected', 'true')
 
           await click(getComboboxOptions()[2])
-            ;[alice, bob, charlie] = getComboboxOptions()
+          ;[alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveAttribute('aria-selected', 'false')
           expect(bob).toHaveAttribute('aria-selected', 'true')
           expect(charlie).toHaveAttribute('aria-selected', 'false')
@@ -481,9 +481,9 @@ describe('Rendering', () => {
       'should not crash when a defaultValue is not given',
       suppressConsoleLogs(async () => {
         let data = [
-          {id: 1, name: 'alice', label: 'Alice'},
-          {id: 2, name: 'bob', label: 'Bob'},
-          {id: 3, name: 'charlie', label: 'Charlie'},
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
         ]
 
         renderTemplate({
@@ -498,7 +498,7 @@ describe('Rendering', () => {
               <ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({person: ref(data[0]), data, displayValue: () => String(Math.random())}),
+          setup: () => ({ person: ref(data[0]), data, displayValue: () => String(Math.random()) }),
         })
 
         let value = getComboboxInput()?.value
@@ -523,9 +523,9 @@ describe('Rendering', () => {
       'should not crash when a defaultValue is not given',
       suppressConsoleLogs(async () => {
         let data = [
-          {id: 1, name: 'alice', label: 'Alice'},
-          {id: 2, name: 'bob', label: 'Bob'},
-          {id: 3, name: 'charlie', label: 'Charlie'},
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
         ]
 
         renderTemplate({
@@ -539,7 +539,7 @@ describe('Rendering', () => {
               <ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({data}),
+          setup: () => ({ data }),
         })
       })
     )
@@ -548,9 +548,9 @@ describe('Rendering', () => {
       'should close the Combobox when the input is blurred',
       suppressConsoleLogs(async () => {
         let data = [
-          {id: 1, name: 'alice', label: 'Alice'},
-          {id: 2, name: 'bob', label: 'Bob'},
-          {id: 3, name: 'charlie', label: 'Charlie'},
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
         ]
 
         renderTemplate({
@@ -565,20 +565,20 @@ describe('Rendering', () => {
               <ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({data}),
+          setup: () => ({ data }),
         })
 
         // Open the combobox
         await click(getComboboxButton())
 
         // Verify it is open
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
 
         // Close the combobox
         await blur(getComboboxInput())
 
         // Verify it is closed
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
   })
@@ -599,18 +599,18 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         // TODO: Rendering Example directly reveals a vue bug — I think it's been fixed for a while but I can't find the commit
         renderTemplate(Example)
 
-        assertComboboxInput({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxInput({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxInput({state: ComboboxState.Visible})
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxInput({ state: ComboboxState.Visible })
+        assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])
 
@@ -633,14 +633,14 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         renderTemplate(Example)
 
         await click(getComboboxButton())
 
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])
 
@@ -664,7 +664,7 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(undefined)}),
+          setup: () => ({ value: ref(undefined) }),
         })
 
         renderTemplate(Example)
@@ -701,7 +701,7 @@ describe('Rendering', () => {
             <button @click="suffix = !suffix">Toggle suffix</button>
           </Combobox>
         `,
-        setup: () => ({value: ref(null), suffix: ref(false)}),
+        setup: () => ({ value: ref(null), suffix: ref(false) }),
       })
 
       renderTemplate(Example)
@@ -746,7 +746,7 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         renderTemplate(Example)
@@ -888,26 +888,26 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-3'},
+          attributes: { id: 'headlessui-combobox-button-3' },
         })
         assertComboboxLabel({
-          attributes: {id: 'headlessui-combobox-label-1'},
-          textContent: JSON.stringify({open: false, disabled: false}),
+          attributes: { id: 'headlessui-combobox-label-1' },
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxLabel({
-          attributes: {id: 'headlessui-combobox-label-1'},
-          textContent: JSON.stringify({open: true, disabled: false}),
+          attributes: { id: 'headlessui-combobox-label-1' },
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
         assertComboboxLabelLinkedWithCombobox()
         assertComboboxButtonLinkedWithComboboxLabel()
       })
@@ -924,7 +924,7 @@ describe('Rendering', () => {
               <ComboboxLabel>Label</ComboboxLabel>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         await new Promise<void>(nextTick)
@@ -950,23 +950,23 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxLabel({
-          attributes: {id: 'headlessui-combobox-label-1'},
-          textContent: JSON.stringify({open: false, disabled: false}),
+          attributes: { id: 'headlessui-combobox-label-1' },
+          textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
         assertComboboxLabel({
-          attributes: {id: 'headlessui-combobox-label-1'},
-          textContent: JSON.stringify({open: true, disabled: false}),
+          attributes: { id: 'headlessui-combobox-label-1' },
+          textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
       })
     )
   })
@@ -987,24 +987,24 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
-          textContent: JSON.stringify({open: false, disabled: false, value: null}),
+          attributes: { id: 'headlessui-combobox-button-2' },
+          textContent: JSON.stringify({ open: false, disabled: false, value: null }),
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: {id: 'headlessui-combobox-button-2'},
-          textContent: JSON.stringify({open: true, disabled: false, value: null}),
+          attributes: { id: 'headlessui-combobox-button-2' },
+          textContent: JSON.stringify({ open: true, disabled: false, value: null }),
         })
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -1025,24 +1025,24 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
-          textContent: JSON.stringify({open: false, disabled: false, value: null}),
+          attributes: { id: 'headlessui-combobox-button-2' },
+          textContent: JSON.stringify({ open: false, disabled: false, value: null }),
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: {id: 'headlessui-combobox-button-2'},
-          textContent: JSON.stringify({open: true, disabled: false, value: null}),
+          attributes: { id: 'headlessui-combobox-button-2' },
+          textContent: JSON.stringify({ open: true, disabled: false, value: null }),
         })
-        assertComboboxList({state: ComboboxState.Visible})
+        assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -1062,16 +1062,16 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         await new Promise(requestAnimationFrame)
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-3'},
+          attributes: { id: 'headlessui-combobox-button-3' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxButtonLinkedWithComboboxLabel()
       })
     )
@@ -1085,7 +1085,7 @@ describe('Rendering', () => {
               <ComboboxButton>Trigger</ComboboxButton>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         expect(getComboboxButton()).toHaveAttribute('type', 'button')
@@ -1099,7 +1099,7 @@ describe('Rendering', () => {
               <ComboboxButton type="submit"> Trigger </ComboboxButton>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         expect(getComboboxButton()).toHaveAttribute('type', 'submit')
@@ -1109,7 +1109,7 @@ describe('Rendering', () => {
         'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
         suppressConsoleLogs(async () => {
           let CustomButton = defineComponent({
-            setup: (props) => () => h('button', {...props}),
+            setup: (props) => () => h('button', { ...props }),
           })
 
           renderTemplate({
@@ -1139,7 +1139,7 @@ describe('Rendering', () => {
               <ComboboxButton as="div"> Trigger </ComboboxButton>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         expect(getComboboxButton()).not.toHaveAttribute('type')
@@ -1187,25 +1187,25 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
 
         assertComboboxList({
           state: ComboboxState.Visible,
-          textContent: JSON.stringify({open: true}),
+          textContent: JSON.stringify({ open: true }),
         })
 
         assertActiveElement(getComboboxInput())
@@ -1225,7 +1225,7 @@ describe('Rendering', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(null)}),
+        setup: () => ({ value: ref(null) }),
       })
 
       // Let's verify that the combobox is already there
@@ -1245,17 +1245,17 @@ describe('Rendering', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(null)}),
+        setup: () => ({ value: ref(null) }),
       })
 
       await new Promise<void>(nextTick)
 
-      assertComboboxList({state: ComboboxState.InvisibleHidden})
+      assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
       // Let's open the combobox, to see if it is not hidden anymore
       await click(getComboboxButton())
 
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
     })
   })
 
@@ -1273,31 +1273,31 @@ describe('Rendering', () => {
               </ComboboxOptions>
             </Combobox>
           `,
-          setup: () => ({value: ref(null)}),
+          setup: () => ({ value: ref(null) }),
         })
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: {id: 'headlessui-combobox-button-2'},
+          attributes: { id: 'headlessui-combobox-button-2' },
         })
         assertComboboxList({
           state: ComboboxState.Visible,
-          textContent: JSON.stringify({active: true, selected: false, disabled: false}),
+          textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
         })
       })
     )
   })
 
   it('should guarantee the order of DOM nodes when performing actions', async () => {
-    let props = reactive({hide: false})
+    let props = reactive({ hide: false })
 
     renderTemplate({
       template: html`
@@ -1330,7 +1330,7 @@ describe('Rendering', () => {
     props.hide = false
     await nextFrame()
 
-    assertComboboxList({state: ComboboxState.Visible})
+    assertComboboxList({ state: ComboboxState.Visible })
 
     let options = getComboboxOptions()
 
@@ -1349,7 +1349,7 @@ describe('Rendering', () => {
   })
 
   it('should guarantee the order of options based on `order` when performing actions', async () => {
-    let props = reactive({hide: false})
+    let props = reactive({ hide: false })
 
     renderTemplate({
       template: html`
@@ -1382,7 +1382,7 @@ describe('Rendering', () => {
     props.hide = false
     await nextFrame()
 
-    assertComboboxList({state: ComboboxState.Visible})
+    assertComboboxList({ state: ComboboxState.Visible })
 
     let options = getComboboxOptions()
 
@@ -1442,7 +1442,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Alice should be submitted
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'alice'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
 
       // Open combobox
       await click(getComboboxButton())
@@ -1454,7 +1454,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Charlie should be submitted
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'charlie'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
     })
 
     it('should expose the value via the render prop', async () => {
@@ -1504,7 +1504,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Alice should be submitted
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'alice'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
 
       // Open combobox
       await click(getComboboxButton())
@@ -1518,7 +1518,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Charlie should be submitted
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'charlie'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
     })
 
     it('should be possible to provide a default value', async () => {
@@ -1550,7 +1550,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Bob is the defaultValue
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'bob'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
 
       // Open combobox
       await click(getComboboxButton())
@@ -1562,7 +1562,7 @@ describe('Rendering', () => {
       await click(document.getElementById('submit'))
 
       // Alice should be submitted
-      expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'alice'})
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
     })
 
     it(
@@ -1597,7 +1597,7 @@ describe('Rendering', () => {
         await click(document.getElementById('submit'))
 
         // Bob is the defaultValue
-        expect(handleSubmission).toHaveBeenLastCalledWith({assignee: 'bob'})
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
 
         // Open combobox
         await click(getComboboxButton())
@@ -1626,9 +1626,9 @@ describe('Rendering', () => {
         let handleSubmission = jest.fn()
 
         let data = [
-          {id: 1, name: 'alice', label: 'Alice'},
-          {id: 2, name: 'bob', label: 'Bob'},
-          {id: 3, name: 'charlie', label: 'Charlie'},
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
         ]
 
         renderTemplate({
@@ -1789,7 +1789,7 @@ describe('Rendering', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({CustomComponent}),
+        setup: () => ({ CustomComponent }),
       })
 
       // Open combobox
@@ -1814,20 +1814,20 @@ describe('Rendering composition', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(null)}),
+        setup: () => ({ value: ref(null) }),
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify options are buttons now
-      getComboboxOptions().forEach((option) => assertComboboxOption(option, {tag: 'button'}))
+      getComboboxOptions().forEach((option) => assertComboboxOption(option, { tag: 'button' }))
     })
   )
 
@@ -1862,7 +1862,7 @@ describe('Rendering composition', () => {
             </div>
           </Combobox>
         `,
-        setup: () => ({value: ref(null)}),
+        setup: () => ({ value: ref(null) }),
       })
 
       // Open combobox
@@ -1883,8 +1883,8 @@ describe('Rendering composition', () => {
 
 describe('Composition', () => {
   let OpenClosedWrite = defineComponent({
-    props: {open: {type: Boolean}},
-    setup(props, {slots}) {
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
       useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
       return () => slots.default?.()
     },
@@ -1892,7 +1892,7 @@ describe('Composition', () => {
 
   let OpenClosedRead = defineComponent({
     emits: ['read'],
-    setup(_, {slots, emit}) {
+    setup(_, { slots, emit }) {
       let state = useOpenClosed()
       watch([state], ([value]) => emit('read', value))
       return () => slots.default?.()
@@ -1903,7 +1903,7 @@ describe('Composition', () => {
     'should always open the ComboboxOptions because of a wrapping OpenClosed component',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {OpenClosedWrite},
+        components: { OpenClosedWrite },
         template: html`
           <Combobox>
             <ComboboxInput />
@@ -1918,13 +1918,13 @@ describe('Composition', () => {
       await new Promise<void>(nextTick)
 
       // Verify the combobox is visible
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
 
       // Let's try and open the combobox
       await click(getComboboxButton())
 
       // Verify the combobox is still visible
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
     })
   )
 
@@ -1932,7 +1932,7 @@ describe('Composition', () => {
     'should always close the ComboboxOptions because of a wrapping OpenClosed component',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {OpenClosedWrite},
+        components: { OpenClosedWrite },
         template: html`
           <Combobox>
             <ComboboxInput />
@@ -1947,13 +1947,13 @@ describe('Composition', () => {
       await new Promise<void>(nextTick)
 
       // Verify the combobox is hidden
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Let's try and open the combobox
       await click(getComboboxButton())
 
       // Verify the combobox is still hidden
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -1962,7 +1962,7 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       let readFn = jest.fn()
       renderTemplate({
-        components: {OpenClosedRead},
+        components: { OpenClosedRead },
         template: html`
           <Combobox v-model="value">
             <ComboboxInput />
@@ -1975,14 +1975,14 @@ describe('Composition', () => {
           </Combobox>
         `,
         setup() {
-          return {value: ref(null), readFn}
+          return { value: ref(null), readFn }
         },
       })
 
       await new Promise<void>(nextTick)
 
       // Verify the combobox is hidden
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Let's toggle the combobox 3 times
       await click(getComboboxButton())
@@ -1990,7 +1990,7 @@ describe('Composition', () => {
       await click(getComboboxButton())
 
       // Verify the combobox is visible
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
 
       expect(readFn).toHaveBeenCalledTimes(3)
       expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
@@ -2009,9 +2009,9 @@ describe('Composition', () => {
 // embedded in
 // `node_modules/@tanstack/virtual-react/node_modules/@tanstack/virtual-core`
 // which wasn't patchable via patch-package. Pnpm will solve this.
-describe.each([{virtual: false}, {virtual: false}])(
+describe.each([{ virtual: false }, { virtual: false }])(
   'Keyboard interactions %s',
-  ({virtual}) => {
+  ({ virtual }) => {
     let data = ['Option A', 'Option B', 'Option C']
     let MyCombobox = defineComponent({
       components: getDefaultComponents(),
@@ -2044,17 +2044,17 @@ describe.each([{virtual: false}, {virtual: false}])(
       `,
 
       props: {
-        options: {default: data.slice()},
-        useComboboxOptions: {default: true},
+        options: { default: data.slice() },
+        useComboboxOptions: { default: true },
         comboboxProps: {},
-        inputProps: {default: {}},
-        buttonProps: {default: {}},
-        optionProps: {default: {}},
+        inputProps: { default: {} },
+        buttonProps: { default: {} },
+        optionProps: { default: {} },
       },
 
       setup(props) {
         // @ts-expect-error
-        let {value = 'test', update, ...comboboxProps} = props.comboboxProps ?? {}
+        let { value = 'test', update, ...comboboxProps } = props.comboboxProps ?? {}
         function isDisabled(option: any) {
           return typeof option === 'string'
             ? false
@@ -2071,7 +2071,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           comboboxProps,
           isDisabled,
           virtual: computed(() => {
-            return virtual ? {options: props.options, disabled: isDisabled} : null
+            return virtual ? { options: props.options, disabled: isDisabled } : null
           }),
         }
       },
@@ -2083,15 +2083,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the Combobox with Enter',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2103,10 +2103,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveElement(getComboboxInput())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2114,7 +2114,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option) => assertComboboxOption(option, {selected: false}))
+            options.forEach((option) => assertComboboxOption(option, { selected: false }))
 
             assertActiveComboboxOption(options[0])
             assertNoSelectedComboboxOption()
@@ -2125,15 +2125,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with Enter when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Try to focus the button
             getComboboxButton()?.focus()
@@ -2144,9 +2144,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -2154,15 +2154,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with Enter, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2174,10 +2174,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveElement(getComboboxInput())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2185,7 +2185,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2209,16 +2209,16 @@ describe.each([{virtual: false}, {virtual: false}])(
                   </ComboboxOptions>
                 </Combobox>
               `,
-              setup: () => ({value: ref('b'), virtual}),
+              setup: () => ({ value: ref('b'), virtual }),
             })
 
             await new Promise<void>(nextTick)
 
             assertComboboxButton({
               state: ComboboxState.InvisibleHidden,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleHidden})
+            assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2230,10 +2230,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveElement(getComboboxInput())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2247,7 +2247,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveComboboxOption(options[0])
 
             // Verify that Option B is still selected
-            assertComboboxOption(options[1], {selected: true})
+            assertComboboxOption(options[1], { selected: true })
 
             // Close/Hide the combobox
             await press(Keys.Escape)
@@ -2257,7 +2257,7 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             // Verify we have combobox options
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2268,15 +2268,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with Enter, and focus the selected option (with a list of objects)',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2288,10 +2288,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveElement(getComboboxInput())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2299,7 +2299,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2310,11 +2310,11 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2325,7 +2325,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we moved focus to the input field
             assertActiveElement(getComboboxInput())
 
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -2338,15 +2338,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with Space',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2358,10 +2358,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             assertActiveElement(getComboboxInput())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2378,15 +2378,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with Space when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null, disabled: true }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2397,9 +2397,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -2407,13 +2407,13 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with Space, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
             assertComboboxList({
               state: ComboboxState.InvisibleUnmounted,
@@ -2426,10 +2426,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.Space)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2437,7 +2437,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2448,7 +2448,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
@@ -2461,7 +2461,7 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             // Open combobox
             await press(Keys.Space)
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -2472,20 +2472,20 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option upon Space key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'alice', children: 'alice', disabled: true},
-                  {value: 'bob', children: 'bob', disabled: true},
-                  {value: 'charlie', children: 'charlie', disabled: true},
+                  { value: 'alice', children: 'alice', disabled: true },
+                  { value: 'bob', children: 'bob', disabled: true },
+                  { value: 'charlie', children: 'charlie', disabled: true },
                 ],
               }),
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
             assertComboboxList({
               state: ComboboxState.InvisibleUnmounted,
@@ -2507,7 +2507,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to close an open combobox with Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -2515,10 +2515,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await click(getComboboxButton())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2531,8 +2531,8 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.Escape)
 
             // Verify it is closed
-            assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Verify the input is focused again
             assertActiveElement(getComboboxInput())
@@ -2544,7 +2544,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           suppressConsoleLogs(async () => {
             let handleKeyDown = jest.fn()
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -2568,7 +2568,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           suppressConsoleLogs(async () => {
             let handleKeyDown = jest.fn()
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -2593,15 +2593,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowDown',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2610,10 +2610,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowDown)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2632,15 +2632,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with ArrowDown when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{disabled:true}" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2651,9 +2651,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -2661,15 +2661,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowDown, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2678,10 +2678,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowDown)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2689,7 +2689,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2700,18 +2700,18 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
 
             // Open combobox
             await press(Keys.ArrowDown)
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -2724,15 +2724,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowUp and the last option should be active',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2741,10 +2741,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowUp)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2763,15 +2763,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2782,9 +2782,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -2792,15 +2792,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowUp, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2809,10 +2809,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowUp)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -2820,7 +2820,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -2831,18 +2831,18 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
 
             // Open combobox
             await press(Keys.ArrowUp)
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -2853,22 +2853,22 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'alice', children: 'alice', disabled: false},
-                  {value: 'bob', children: 'bob', disabled: true},
-                  {value: 'charlie', children: 'charlie', disabled: true},
+                  { value: 'alice', children: 'alice', disabled: false },
+                  { value: 'bob', children: 'bob', disabled: true },
+                  { value: 'charlie', children: 'charlie', disabled: true },
                 ],
               }),
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             getComboboxButton()?.focus()
@@ -2893,7 +2893,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           suppressConsoleLogs(async () => {
             let handleChange = jest.fn()
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
               setup: () => {
                 let model = ref(null)
@@ -2909,15 +2909,15 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
 
             // Activate the first combobox option
             let options = getComboboxOptions()
@@ -2927,8 +2927,8 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.Enter)
 
             // Verify it is closed
-            assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Verify we got the change event
             expect(handleChange).toHaveBeenCalledTimes(1)
@@ -2951,7 +2951,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             let submits = jest.fn()
 
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <form @submit="handleSubmit" @keyup="handleKeyUp">
                   <MyCombobox :comboboxProps="{ value, update, name: 'option' }" />
@@ -2998,7 +2998,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             let submits = jest.fn()
 
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <form @submit="handleSubmit" @keyup="handleKeyUp">
                   <MyCombobox :comboboxProps="{ value, update, name: 'option' }" />
@@ -3044,7 +3044,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'pressing Tab should select the active item and move to the next DOM node',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <input id="before-combobox" />
                 <MyCombobox :comboboxProps="{ value, update }" />
@@ -3063,9 +3063,9 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3077,8 +3077,8 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.Tab)
 
             // Verify it is closed
-            assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // That the selected value was the highlighted one
             expect(getComboboxInput()?.value).toBe('Option B')
@@ -3092,7 +3092,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'pressing Shift+Tab should select the active item and move to the previous DOM node',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <input id="before-combobox" />
                 <MyCombobox :comboboxProps="{ value, update }" />
@@ -3111,9 +3111,9 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3125,8 +3125,8 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(shift(Keys.Tab))
 
             // Verify it is closed
-            assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // That the selected value was the highlighted one
             expect(getComboboxInput()?.value).toBe('Option B')
@@ -3142,7 +3142,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to close an open combobox with Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -3150,10 +3150,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await click(getComboboxButton())
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3162,8 +3162,8 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.Escape)
 
             // Verify it is closed
-            assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Verify the button is focused again
             assertActiveElement(getComboboxInput())
@@ -3187,7 +3187,7 @@ describe.each([{virtual: false}, {virtual: false}])(
                   </ComboboxOptions>
                 </Combobox>
               `,
-              setup: () => ({value: ref(null), virtual}),
+              setup: () => ({ value: ref(null), virtual }),
             })
 
             let spy = jest.fn()
@@ -3199,7 +3199,7 @@ describe.each([{virtual: false}, {virtual: false}])(
                   spy()
                 }
               },
-              {capture: true}
+              { capture: true }
             )
 
             window.addEventListener('keydown', (evt) => {
@@ -3230,7 +3230,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should bubble escape when not using Combobox.Options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :useComboboxOptions="false" />`,
             })
 
@@ -3243,7 +3243,7 @@ describe.each([{virtual: false}, {virtual: false}])(
                   spy()
                 }
               },
-              {capture: true}
+              { capture: true }
             )
 
             window.addEventListener('keydown', (evt) => {
@@ -3274,7 +3274,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should sync the input field correctly and reset it when pressing Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
@@ -3302,15 +3302,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowDown',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3319,10 +3319,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowDown)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3341,15 +3341,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with ArrowDown when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null, disabled: true }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3360,9 +3360,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -3370,15 +3370,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowDown, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3387,10 +3387,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowDown)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3398,7 +3398,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -3409,18 +3409,18 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
 
             // Open combobox
             await press(Keys.ArrowDown)
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -3431,15 +3431,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowDown to navigate the combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3469,13 +3469,13 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowDown to navigate the combobox options and skip the first disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: false},
-                  {value: 'c', children: 'Option C', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: false },
                 ],
               }),
             })
@@ -3484,9 +3484,9 @@ describe.each([{virtual: false}, {virtual: false}])(
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3507,22 +3507,22 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowDown to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
                 ],
               }),
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3543,15 +3543,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to go to the next item if no value is set',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3575,15 +3575,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowUp and the last option should be active',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3592,10 +3592,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowUp)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3614,15 +3614,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3633,9 +3633,9 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify it is still closed
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
 
@@ -3643,15 +3643,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to open the combobox with ArrowUp, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3660,10 +3660,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowUp)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3671,7 +3671,7 @@ describe.each([{virtual: false}, {virtual: false}])(
             // Verify we have combobox options
             let options = getComboboxOptions()
             expect(options).toHaveLength(3)
-            options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+            options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
             // Verify that the second combobox option is active (because it is already selected)
             assertActiveComboboxOption(options[1])
@@ -3682,18 +3682,18 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="[]" />`,
             })
 
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
 
             // Open combobox
             await press(Keys.ArrowUp)
-            assertComboboxList({state: ComboboxState.Visible})
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
 
             assertNoActiveComboboxOption()
@@ -3704,22 +3704,22 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: false},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
                 ],
               }),
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3739,22 +3739,22 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to navigate up or down if there is only a single non-disabled option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
                 ],
               }),
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
             await click(getComboboxButton())
@@ -3782,15 +3782,15 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use ArrowUp to navigate the combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: {id: 'headlessui-combobox-button-2'},
+              attributes: { id: 'headlessui-combobox-button-2' },
             })
-            assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
             getComboboxInput()?.focus()
@@ -3799,10 +3799,10 @@ describe.each([{virtual: false}, {virtual: false}])(
             await press(Keys.ArrowUp)
 
             // Verify it is visible
-            assertComboboxButton({state: ComboboxState.Visible})
+            assertComboboxButton({ state: ComboboxState.Visible })
             assertComboboxList({
               state: ComboboxState.Visible,
-              attributes: {id: 'headlessui-combobox-options-3'},
+              attributes: { id: 'headlessui-combobox-options-3' },
             })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
@@ -3833,7 +3833,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the End key to go to the last combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -3855,14 +3855,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the End key to go to the last non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: false},
-                  {value: 'b', children: 'Option B', disabled: false},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -3885,14 +3885,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the End key to go to the first combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: false},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -3916,14 +3916,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option upon End key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -3947,7 +3947,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageDown key to go to the last combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox />`,
             })
 
@@ -3969,14 +3969,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageDown key to go to the last non disabled Combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: false},
-                  {value: 'b', children: 'Option B', disabled: false},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -4002,14 +4002,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageDown key to go to the first combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: false},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -4033,14 +4033,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option upon PageDown key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -4064,7 +4064,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the Home key to go to the first combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
@@ -4089,14 +4089,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the Home key to go to the first non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: false},
-                  {value: 'd', children: 'Option D', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                  { value: 'd', children: 'Option D', disabled: false },
                 ],
               }),
             })
@@ -4121,14 +4121,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the Home key to go to the last combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: false },
                 ],
               }),
             })
@@ -4152,14 +4152,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option upon Home key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -4183,7 +4183,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageUp key to go to the first combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
@@ -4208,14 +4208,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageUp key to go to the first non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: false},
-                  {value: 'd', children: 'Option D', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                  { value: 'd', children: 'Option D', disabled: false },
                 ],
               }),
             })
@@ -4239,14 +4239,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to use the PageUp key to go to the last combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: false},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: false },
                 ],
               }),
             })
@@ -4270,14 +4270,14 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should have no active combobox option upon PageUp key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`<MyCombobox :options="options" />`,
               setup: () => ({
                 options: [
-                  {value: 'a', children: 'Option A', disabled: true},
-                  {value: 'b', children: 'Option B', disabled: true},
-                  {value: 'c', children: 'Option C', disabled: true},
-                  {value: 'd', children: 'Option D', disabled: true},
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
                 ],
               }),
             })
@@ -4322,7 +4322,7 @@ describe.each([{virtual: false}, {virtual: false}])(
               setup: () => {
                 let value = ref('bob')
                 watch([value], () => handleChange(value.value))
-                return {value, virtual}
+                return { value, virtual }
               },
             })
 
@@ -4393,7 +4393,7 @@ describe.each([{virtual: false}, {virtual: false}])(
 
           props: {
             people: {
-              type: Array as PropType<{value: string; name: string; disabled: boolean}[]>,
+              type: Array as PropType<{ value: string; name: string; disabled: boolean }[]>,
               required: true,
             },
           },
@@ -4405,24 +4405,24 @@ describe.each([{virtual: false}, {virtual: false}])(
               return query.value === ''
                 ? props.people
                 : props.people.filter((person) =>
-                  person.name.toLowerCase().includes(query.value.toLowerCase())
-                )
+                    person.name.toLowerCase().includes(query.value.toLowerCase())
+                  )
             })
 
             return {
               value,
               query,
               filteredPeople,
-              setQuery: (event: Event & {target: HTMLInputElement}) => {
+              setQuery: (event: Event & { target: HTMLInputElement }) => {
                 query.value = event.target.value
               },
               virtual: computed(() => {
                 return virtual
                   ? {
-                    options: filteredPeople.value,
-                    disabled: (person: {value: string; name: string; disabled: boolean}) =>
-                      person?.disabled ?? false,
-                  }
+                      options: filteredPeople.value,
+                      disabled: (person: { value: string; name: string; disabled: boolean }) =>
+                        person?.disabled ?? false,
+                    }
                   : null
               }),
             }
@@ -4433,7 +4433,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to type a full word that has a perfect match',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <MyCombobox
                   :people="[
@@ -4485,7 +4485,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to type a partial of a word',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <MyCombobox
                   :people="[
@@ -4532,7 +4532,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should be possible to type words with spaces',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <MyCombobox
                   :people="[
@@ -4579,7 +4579,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should not be possible to search and activate a disabled option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <MyCombobox
                   :people="[
@@ -4607,7 +4607,7 @@ describe.each([{virtual: false}, {virtual: false}])(
           'should maintain activeIndex and activeOption when filtering',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: {MyCombobox},
+              components: { MyCombobox },
               template: html`
                 <MyCombobox
                   :people="[
@@ -4678,11 +4678,11 @@ describe.each([{virtual: false}, {virtual: false}])(
                 : options.value.filter((option) => option.includes(query.value))
             })
 
-            function filter(event: Event & {target: HTMLInputElement}) {
+            function filter(event: Event & { target: HTMLInputElement }) {
               query.value = event.target.value
             }
 
-            return {value, options: filteredOptions, filter, virtual}
+            return { value, options: filteredOptions, filter, virtual }
           },
         })
 
@@ -4728,7 +4728,7 @@ describe.each([{virtual: false}, {virtual: false}])(
 // embedded in
 // `node_modules/@tanstack/virtual-react/node_modules/@tanstack/virtual-core`
 // which wasn't patchable via patch-package. Pnpm will solve this.
-describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({virtual}) => {
+describe.each([{ virtual: false }, { virtual: false }])('Mouse interactions %s', ({ virtual }) => {
   let data = ['Option A', 'Option B', 'Option C']
   let MyCombobox = defineComponent({
     components: getDefaultComponents(),
@@ -4769,19 +4769,19 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     `,
 
     props: {
-      options: {default: data.slice()},
-      label: {default: true},
-      useComboboxOptions: {default: true},
+      options: { default: data.slice() },
+      label: { default: true },
+      useComboboxOptions: { default: true },
       comboboxProps: {},
-      inputProps: {default: {}},
-      buttonProps: {default: {}},
-      optionProps: {default: {}},
-      optionsProps: {default: {}},
+      inputProps: { default: {} },
+      buttonProps: { default: {} },
+      optionProps: { default: {} },
+      optionsProps: { default: {} },
     },
 
     setup(props) {
       // @ts-expect-error
-      let {value = 'test', update, ...comboboxProps} = props.comboboxProps ?? {}
+      let { value = 'test', update, ...comboboxProps } = props.comboboxProps ?? {}
       function isDisabled(option: any) {
         return typeof option === 'string'
           ? false
@@ -4798,7 +4798,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
         comboboxProps,
         isDisabled,
         virtual: computed(() => {
-          return virtual ? {options: props.options, disabled: isDisabled} : null
+          return virtual ? { options: props.options, disabled: isDisabled } : null
         }),
       }
     },
@@ -4808,7 +4808,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should focus the ComboboxButton when we click the ComboboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
       })
 
@@ -4827,7 +4827,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not focus the ComboboxInput when we right click the ComboboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
       })
 
@@ -4846,24 +4846,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to open the combobox by focusing the input with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :label="false" :comboboxProps="{ immediate: true }" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
       await focus(getComboboxInput())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
       assertComboboxList({
         state: ComboboxState.Visible,
-        attributes: {id: 'headlessui-combobox-options-3'},
+        attributes: { id: 'headlessui-combobox-options-3' },
       })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
@@ -4879,24 +4879,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to open the combobox by focusing the input with immediate mode disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-3'},
+        attributes: { id: 'headlessui-combobox-button-3' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
       await focus(getComboboxInput())
 
       // Verify it is invisible
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-options-3'},
+        attributes: { id: 'headlessui-combobox-options-3' },
       })
     })
   )
@@ -4905,24 +4905,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to open the combobox by focusing the input with immediate mode enabled when button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ immediate: true, disabled: true }" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-3'},
+        attributes: { id: 'headlessui-combobox-button-3' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
       await focus(getComboboxInput())
 
       // Verify it is invisible
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-options-3'},
+        attributes: { id: 'headlessui-combobox-options-3' },
       })
     })
   )
@@ -4931,7 +4931,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to close a combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
 
@@ -4939,14 +4939,14 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
 
       // Click to close
       await click(getComboboxButton())
 
       // Verify it is closed
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       assertActiveElement(getComboboxInput())
     })
   )
@@ -4955,24 +4955,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to close a focused combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox by focusing input
       await focus(getComboboxInput())
       assertActiveElement(getComboboxInput())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
 
       // Click to close
       await click(getComboboxButton())
 
       // Verify it is closed
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       assertActiveElement(getComboboxInput())
     })
   )
@@ -4981,24 +4981,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to open the combobox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :label="false" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
       assertComboboxList({
         state: ComboboxState.Visible,
-        attributes: {id: 'headlessui-combobox-options-3'},
+        attributes: { id: 'headlessui-combobox-options-3' },
       })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
@@ -5014,21 +5014,21 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to open the combobox on right click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :label="false" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
       await click(getComboboxButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -5036,7 +5036,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to open the combobox on click when the button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox
           :comboboxProps="{ value: null, disabled: true }"
           :label="false"
@@ -5045,9 +5045,9 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
       await click(getComboboxButton())
@@ -5055,9 +5055,9 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       // Verify it is still closed
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -5065,24 +5065,24 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to open the combobox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" :label="false" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
       assertComboboxList({
         state: ComboboxState.Visible,
-        attributes: {id: 'headlessui-combobox-options-3'},
+        attributes: { id: 'headlessui-combobox-options-3' },
       })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
@@ -5090,7 +5090,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       // Verify we have combobox options
       let options = getComboboxOptions()
       expect(options).toHaveLength(3)
-      options.forEach((option, i) => assertComboboxOption(option, {selected: i === 1}))
+      options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
 
       // Verify that the second combobox option is active (because it is already selected)
       assertActiveComboboxOption(options[1])
@@ -5101,7 +5101,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to close a combobox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
@@ -5109,14 +5109,14 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({state: ComboboxState.Visible})
+      assertComboboxButton({ state: ComboboxState.Visible })
 
       // Click to close
       await click(getComboboxButton())
 
       // Verify it is closed
-      assertComboboxButton({state: ComboboxState.InvisibleUnmounted})
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -5124,18 +5124,18 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be a no-op when we click outside of a closed combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
       // Verify that the window is closed
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Click something that is not related to the combobox
       await click(document.body)
 
       // Should still be closed
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -5145,7 +5145,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`
           <MyCombobox />
           <div tabindex="-1" data-test-focusable>after</div>
@@ -5154,14 +5154,14 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       // Click something that is not related to the combobox
       await click(getByText('after'))
 
       // Should be closed now
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the input is focused again
       assertActiveElement(getByText('after'))
@@ -5172,7 +5172,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to click outside of the combobox on another combobox button which should close the current combobox and open the new combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`
           <div>
             <MyCombobox />
@@ -5204,20 +5204,20 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to click outside of the combobox which should close the combobox (even if we press the combobox button)',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       // Click the combobox button again
       await click(getComboboxButton())
 
       // Should be closed now
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the input is focused again
       assertActiveElement(getComboboxInput())
@@ -5229,7 +5229,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     suppressConsoleLogs(async () => {
       let focusFn = jest.fn()
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`
           <div>
             <MyCombobox :inputProps="{ onFocus }" />
@@ -5247,13 +5247,13 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       await click(getComboboxButton())
 
       // Ensure the combobox is open
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
 
       // Click the span inside the button
       await click(getByText('Next'))
 
       // Ensure the combobox is closed
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Ensure the outside button is focused
       assertActiveElement(document.getElementById('btn'))
@@ -5267,7 +5267,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
@@ -5306,7 +5306,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(null), virtual}),
+        setup: () => ({ value: ref(null), virtual }),
       })
 
       await nextTick()
@@ -5331,7 +5331,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
@@ -5349,7 +5349,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be a no-op when we move the mouse and the combobox option is already active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
@@ -5373,13 +5373,13 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be a no-op when we move the mouse and the combobox option is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :options="options" />`,
         setup: () => ({
           options: [
-            {value: 'alice', children: 'alice', disabled: false},
-            {value: 'bob', children: 'bob', disabled: true},
-            {value: 'charlie', children: 'charlie', disabled: false},
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
           ],
         }),
       })
@@ -5398,13 +5398,13 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :options="options" />`,
         setup: () => ({
           options: [
-            {value: 'alice', children: 'alice', disabled: false},
-            {value: 'bob', children: 'bob', disabled: true},
-            {value: 'charlie', children: 'charlie', disabled: false},
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
           ],
         }),
       })
@@ -5426,7 +5426,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox />`,
       })
 
@@ -5462,13 +5462,13 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :options="options" />`,
         setup: () => ({
           options: [
-            {value: 'alice', children: 'alice', disabled: false},
-            {value: 'bob', children: 'bob', disabled: true},
-            {value: 'charlie', children: 'charlie', disabled: false},
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
           ],
         }),
       })
@@ -5492,7 +5492,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
         setup: () => {
           let value = ref(null)
@@ -5508,14 +5508,14 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('Option B')
 
@@ -5534,7 +5534,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to click a combobox option, which closes the combobox with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
 
@@ -5542,13 +5542,13 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
       await focus(getComboboxInput())
       assertActiveElement(getComboboxInput())
 
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -5557,16 +5557,16 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :options="options" :comboboxProps="{ value, update }" />`,
         setup: () => {
           let value = ref(null)
           return {
             value,
             options: [
-              {value: 'alice', children: 'Alice', disabled: false},
-              {value: 'bob', children: 'Bob', disabled: true},
-              {value: 'charlie', children: 'Charlie', disabled: false},
+              { value: 'alice', children: 'Alice', disabled: false },
+              { value: 'bob', children: 'Bob', disabled: true },
+              { value: 'charlie', children: 'Charlie', disabled: false },
             ],
             update(newValue: any) {
               value.value = newValue
@@ -5578,14 +5578,14 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should not be able to click the disabled option
       await click(options[1])
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertNotActiveComboboxOption(options[1])
       assertActiveElement(getComboboxInput())
       expect(handleChange).toHaveBeenCalledTimes(0)
@@ -5607,7 +5607,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible focus a combobox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
         setup: () => {
           let value = ref(null)
@@ -5622,7 +5622,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
@@ -5640,20 +5640,20 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should not be possible to focus a combobox option which is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :options="options" />`,
         setup: () => ({
           options: [
-            {value: 'alice', disabled: false, children: 'alice'},
-            {value: 'bob', disabled: true, children: 'bob'},
-            {value: 'charlie', disabled: false, children: 'charlie'},
+            { value: 'alice', disabled: false, children: 'alice' },
+            { value: 'bob', disabled: true, children: 'bob' },
+            { value: 'charlie', disabled: false, children: 'charlie' },
           ],
         }),
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
@@ -5668,23 +5668,23 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should be possible to hold the last active option',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`<MyCombobox :optionsProps="{ hold: true }" :label="false" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.InvisibleUnmounted})
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       await click(getComboboxButton())
 
       assertComboboxButton({
         state: ComboboxState.Visible,
-        attributes: {id: 'headlessui-combobox-button-2'},
+        attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({state: ComboboxState.Visible})
+      assertComboboxList({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
@@ -5734,7 +5734,7 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
         `,
         setup: () => ({
           value: ref('bob'),
-          virtual: computed(() => (virtual ? {options: ['alice', 'bob', 'charlie']} : null)),
+          virtual: computed(() => (virtual ? { options: ['alice', 'bob', 'charlie'] } : null)),
         }),
       })
 
@@ -5781,15 +5781,15 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
         `,
         setup: () => {
           let people = [
-            {id: 1, name: 'Alice'},
-            {id: 2, name: 'Bob'},
-            {id: 3, name: 'Charlie'},
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+            { id: 3, name: 'Charlie' },
           ]
 
           return {
             people,
             value: ref(people[1]),
-            virtual: computed(() => (virtual ? {options: people} : null)),
+            virtual: computed(() => (virtual ? { options: people } : null)),
           }
         },
       })
@@ -5815,12 +5815,12 @@ describe.each([{virtual: false}, {virtual: false}])('Mouse interactions %s', ({v
     'should sync the input field correctly and reset it when resetting the value from outside (when using displayValue)',
     suppressConsoleLogs(async () => {
       let people = [
-        {id: 1, name: 'Alice'},
-        {id: 2, name: 'Bob'},
-        {id: 3, name: 'Charlie'},
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
       ]
       renderTemplate({
-        components: {MyCombobox},
+        components: { MyCombobox },
         template: html`
           <MyCombobox
             :options="people"
@@ -5875,21 +5875,21 @@ describe('Multi-select', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(['bob', 'charlie'])}),
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
       })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify that we have an open combobox with multiple mode
-      assertCombobox({state: ComboboxState.Visible, mode: ComboboxMode.Multiple})
+      assertCombobox({ state: ComboboxState.Visible, mode: ComboboxMode.Multiple })
 
       // Verify that we have multiple selected combobox options
       let options = getComboboxOptions()
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: true})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
     })
   )
 
@@ -5908,7 +5908,7 @@ describe('Multi-select', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(['bob', 'charlie'])}),
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
       })
 
       // Open combobox
@@ -5934,18 +5934,18 @@ describe('Multi-select', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(['bob', 'charlie'])}),
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({state: ComboboxState.Visible})
+      assertCombobox({ state: ComboboxState.Visible })
 
       // Verify that bob is the active option
       await click(getComboboxOptions()[0])
 
       // Verify that the combobox is still open
-      assertCombobox({state: ComboboxState.Visible})
+      assertCombobox({ state: ComboboxState.Visible })
     })
   )
 
@@ -5964,32 +5964,32 @@ describe('Multi-select', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({value: ref(['bob', 'charlie'])}),
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({state: ComboboxState.Visible})
+      assertCombobox({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: true})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
 
       // Click on bob
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: false})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: false })
+      assertComboboxOption(options[2], { selected: true })
 
       // Click on bob again
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: true})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
     })
   )
 
@@ -6010,39 +6010,39 @@ describe('Multi-select', () => {
         `,
         setup: () => {
           let people = [
-            {id: 1, name: 'alice'},
-            {id: 2, name: 'bob'},
-            {id: 3, name: 'charlie'},
+            { id: 1, name: 'alice' },
+            { id: 2, name: 'bob' },
+            { id: 3, name: 'charlie' },
           ]
 
           let value = ref([people[1], people[2]])
-          return {people, value}
+          return { people, value }
         },
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({state: ComboboxState.Visible})
+      assertCombobox({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: true})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
 
       // Click on bob
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: false})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: false })
+      assertComboboxOption(options[2], { selected: true })
 
       // Click on bob again
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], {selected: false})
-      assertComboboxOption(options[1], {selected: true})
-      assertComboboxOption(options[2], {selected: true})
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
     })
   )
 
@@ -6068,13 +6068,13 @@ describe('Multi-select', () => {
           let users = ['alice', 'bob', 'charlie']
 
           let value = ref([])
-          return {users, value}
+          return { users, value }
         },
       })
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({state: ComboboxState.Visible})
+      assertCombobox({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
@@ -6267,19 +6267,19 @@ describe('Form compatibility', () => {
             id: 1,
             value: 'pickup',
             label: 'Pickup',
-            extra: {info: 'Some extra info'},
+            extra: { info: 'Some extra info' },
           },
           {
             id: 2,
             value: 'home-delivery',
             label: 'Home delivery',
-            extra: {info: 'Some extra info'},
+            extra: { info: 'Some extra info' },
           },
           {
             id: 3,
             value: 'dine-in',
             label: 'Dine in',
-            extra: {info: 'Some extra info'},
+            extra: { info: 'Some extra info' },
           },
         ])
         let value = ref(options.value[0])
