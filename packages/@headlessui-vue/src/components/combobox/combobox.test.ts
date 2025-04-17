@@ -4710,7 +4710,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
   }
 )
 
-describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', ({ virtual }) => {
+// TODO: Re-enable virtual tests once we migrated from `npm` to `pnpm` and
+// rolled back the `@tanstack/virtual-vue` version.
+//
+// We had to bump `@tanstack/virtual-vue` such that the `@tanstack/virtual-core`
+// version was the same _and_ hoisted such that we could write a patch for it.
+// Different versions meant that the `@tanstack/virtual-core` version was
+// embedded in
+// `node_modules/@tanstack/virtual-react/node_modules/@tanstack/virtual-core`
+// which wasn't patchable via patch-package. Pnpm will solve this.
+describe.each([{ virtual: false }, { virtual: false }])('Mouse interactions %s', ({ virtual }) => {
   let data = ['Option A', 'Option B', 'Option C']
   let MyCombobox = defineComponent({
     components: getDefaultComponents(),
