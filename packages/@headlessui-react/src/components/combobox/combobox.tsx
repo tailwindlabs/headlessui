@@ -132,7 +132,6 @@ function VirtualProvider(props: {
 }) {
   let machine = useComboboxMachineContext('VirtualProvider')
   let data = useData('VirtualProvider')
-  let d = useDisposables()
   let { options } = data.virtual!
 
   let optionsElement = useSlice(machine, (state) => state.optionsElement)
@@ -188,24 +187,15 @@ function VirtualProvider(props: {
           height: `${virtualizer.getTotalSize()}px`,
         }}
         ref={(el) => {
-          if (!el) {
-            d.dispose()
-            return
-          }
+          if (!el) return
 
           // Do not scroll when the mouse/pointer is being used
-          if (isPointerActivationTrigger) {
-            return
-          }
+          if (isPointerActivationTrigger) return
 
           // Scroll to the active index
-          //
-          // Workaround for: https://github.com/TanStack/virtual/issues/879
-          d.nextFrame(() => {
-            if (activeOptionIndex !== null && options.length > activeOptionIndex) {
-              virtualizer.scrollToIndex(activeOptionIndex)
-            }
-          })
+          if (activeOptionIndex !== null && options.length > activeOptionIndex) {
+            virtualizer.scrollToIndex(activeOptionIndex)
+          }
         }}
       >
         {items.map((item) => {
