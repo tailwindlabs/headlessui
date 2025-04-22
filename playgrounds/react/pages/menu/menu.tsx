@@ -55,8 +55,10 @@ function CustomMenuItem(props) {
   return (
     <Menu.Item {...props}>
       {({ active, disabled }) => (
-        <a
-          href={props.href}
+        <button
+          onClick={() => {
+            alert(`You clicked on ${props.href}`)
+          }}
           className={classNames(
             'flex w-full justify-between px-4 py-2 text-left text-sm leading-5',
             active ? 'bg-indigo-500 text-white' : 'text-gray-700',
@@ -65,7 +67,7 @@ function CustomMenuItem(props) {
         >
           <span className={classNames(active && 'font-bold')}>{props.children}</span>
           <kbd className={classNames('font-sans', active && 'text-indigo-50')}>⌘K</kbd>
-        </a>
+        </button>
       )}
     </Menu.Item>
   )
