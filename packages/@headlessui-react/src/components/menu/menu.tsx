@@ -671,6 +671,13 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 
+  // Scenario: Mousedown on the MenuButton, hold and drag over an MenuItem, then
+  // release the cursor over an MenuItem. This will invoke this quick trigger
+  // function.
+  let handleQuickTrigger = useEvent(() => {
+    internalItemRef?.current?.click()
+  })
+
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
 
@@ -695,6 +702,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,
     onMouseLeave: handleLeave,
+    onMouseUp: handleQuickTrigger,
+    onPointerUp: handleQuickTrigger,
   }
 
   let render = useRender()
