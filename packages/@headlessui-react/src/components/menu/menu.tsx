@@ -640,8 +640,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
   let pointer = useTrackedPointer()
 
-  let handleEnter = useEvent((evt) => {
-    pointer.update(evt)
+  let handleEnter = useEvent((event) => {
+    pointer.update(event)
     if (disabled) return
     if (active) return
     machine.send({
@@ -652,8 +652,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     })
   })
 
-  let handleMove = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return
+  let handleMove = useEvent((event) => {
+    if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (active) return
     machine.send({
@@ -664,8 +664,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     })
   })
 
-  let handleLeave = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return
+  let handleLeave = useEvent((event) => {
+    if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (!active) return
     machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
