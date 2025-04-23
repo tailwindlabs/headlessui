@@ -28,6 +28,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -224,10 +225,37 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let [menuState, itemsElement] = useSlice(machine, (state) => [
+  let [menuState, buttonElement, itemsElement] = useSlice(machine, (state) => [
     state.menuState,
+    state.buttonElement,
     state.itemsElement,
   ])
+
+  let enableQuickRelease = menuState === MenuState.Open
+  useQuickRelease(enableQuickRelease, {
+    trigger: buttonElement,
+    action: useCallback(
+      (e) => {
+        if (buttonElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        let item = e.target.closest('[role="menuitem"]')
+        if (item !== null) {
+          return QuickReleaseAction.Select(item as HTMLElement)
+        }
+
+        if (itemsElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        return QuickReleaseAction.Close
+      },
+      [buttonElement, itemsElement]
+    ),
+    close: useCallback(() => machine.send({ type: ActionTypes.CloseMenu }), []),
+    select: useCallback((target) => target.click(), []),
+  })
 
   let handleMouseDown = useEvent((event: ReactMouseEvent) => {
     if (event.button !== 0) return // Only handle left clicks
@@ -671,13 +699,6 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 
-  // Scenario: Mousedown on the MenuButton, hold and drag over an MenuItem, then
-  // release the cursor over an MenuItem. This will invoke this quick trigger
-  // function.
-  let handleQuickTrigger = useEvent(() => {
-    internalItemRef?.current?.click()
-  })
-
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
 
@@ -702,8 +723,6 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,
     onMouseLeave: handleLeave,
-    onMouseUp: handleQuickTrigger,
-    onPointerUp: handleQuickTrigger,
   }
 
   let render = useRender()

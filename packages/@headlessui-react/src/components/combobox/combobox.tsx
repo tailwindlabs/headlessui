@@ -17,6 +17,7 @@ import React, {
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -34,6 +35,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useRefocusableInput } from '../../hooks/use-refocusable-input'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
@@ -989,8 +991,42 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     ...theirProps
   } = props
 
-  let inputElement = useSlice(machine, (state) => state.inputElement)
+  let [comboboxState, inputElement, optionsElement] = useSlice(machine, (state) => [
+    state.comboboxState,
+    state.inputElement,
+    state.optionsElement,
+  ])
   let refocusInput = useRefocusableInput(inputElement)
+
+  let enableQuickRelease = comboboxState === ComboboxState.Open
+  useQuickRelease(enableQuickRelease, {
+    trigger: localButtonElement,
+    action: useCallback(
+      (e) => {
+        if (localButtonElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        if (inputElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        let option = e.target.closest('[role="option"]')
+        if (option !== null) {
+          return QuickReleaseAction.Select(option as HTMLElement)
+        }
+
+        if (optionsElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        return QuickReleaseAction.Close
+      },
+      [localButtonElement, inputElement, optionsElement]
+    ),
+    close: machine.actions.closeCombobox,
+    select: machine.actions.selectActiveOption,
+  })
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     switch (event.key) {
@@ -1073,11 +1109,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
-
-  let [comboboxState, optionsElement] = useSlice(machine, (state) => [
-    state.comboboxState,
-    state.optionsElement,
-  ])
 
   let slot = useMemo(() => {
     return {
