@@ -18,3 +18,18 @@ Object.defineProperty(HTMLElement.prototype, 'innerText', {
     this.textContent = value
   },
 })
+
+// Source: https://github.com/testing-library/react-testing-library/issues/838#issuecomment-735259406
+//
+// Polyfill the PointerEvent class for JSDOM
+class PointerEvent extends Event {
+  constructor(type, props) {
+    super(type, props)
+    if (props.button != null) {
+      // @ts-expect-error JSDOM doesn't support `button` yet...
+      this.button = props.button
+    }
+  }
+}
+// @ts-expect-error JSDOM doesn't support `PointerEvent` yet...
+window.PointerEvent = PointerEvent
