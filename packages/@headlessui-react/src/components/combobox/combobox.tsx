@@ -1080,9 +1080,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
-    // We use the `mousedown` event here since it fires before the focus event,
-    // allowing us to cancel the event before focus is moved from the
+  let handlePointerDown = useEvent((event: ReactPointerEvent<HTMLButtonElement>) => {
+    // We use the `poitnerdown` event here since it fires before the focus
+    // event, allowing us to cancel the event before focus is moved from the
     // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
     // preserving the cursor position and any text selection.
     event.preventDefault()
@@ -1133,7 +1133,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-labelledby': labelledBy,
       disabled: disabled || undefined,
       autoFocus,
-      onMouseDown: handleMouseDown,
+      onPointerDown: handlePointerDown,
       onKeyDown: handleKeyDown,
     },
     focusProps,

@@ -15,7 +15,7 @@ import React, {
   type ElementType,
   type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -426,7 +426,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
     if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
@@ -478,7 +478,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
-      onMouseDown: handleMouseDown,
+      onPointerDown: handlePointerDown,
     },
     focusProps,
     hoverProps,

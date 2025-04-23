@@ -13,7 +13,7 @@ import React, {
   type CSSProperties,
   type ElementType,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -257,7 +257,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     select: useCallback((target) => target.click(), []),
   })
 
-  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
     if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
@@ -302,7 +302,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
-      onMouseDown: handleMouseDown,
+      onPointerDown: handlePointerDown,
     },
     focusProps,
     hoverProps,
