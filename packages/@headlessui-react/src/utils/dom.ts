@@ -1,7 +1,7 @@
 // This file contains a bunch of utilities to verify that an element is of a
 // specific type.
 //
-// Normally you can use `elemenent instanceof HTMLElement`, but if you are in
+// Normally you can use `element instanceof HTMLElement`, but if you are in
 // different JS Context (e.g.: inside an iframe) then the `HTMLElement` will be
 // a different class and the check will fail.
 //
