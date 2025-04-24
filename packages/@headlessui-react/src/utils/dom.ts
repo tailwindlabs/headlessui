@@ -31,6 +31,10 @@ export function isHTMLorSVGElement(element: unknown): element is HTMLOrSVGElemen
   return isElement(element) && 'tabIndex' in element
 }
 
+export function hasInlineStyle(element: unknown): element is ElementCSSInlineStyle {
+  return isElement(element) && 'style' in element
+}
+
 export function isHTMLIframeElement(element: unknown): element is HTMLIFrameElement {
   return isHTMLElement(element) && element.nodeName === 'IFRAME'
 }
