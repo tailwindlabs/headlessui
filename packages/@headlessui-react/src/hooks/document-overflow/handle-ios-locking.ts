@@ -1,4 +1,5 @@
 import { disposables } from '../../utils/disposables'
+import * as DOM from '../../utils/dom'
 import { isIOS } from '../../utils/platform'
 import type { ScrollLockStep } from './overflow-store'
 
@@ -51,7 +52,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           doc,
           'click',
           (e) => {
-            if (!(e.target instanceof HTMLElement)) {
+            if (!DOM.isHTMLElement(e.target)) {
               return
             }
 
@@ -70,8 +71,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
         // Rely on overscrollBehavior to prevent scrolling outside of the Dialog.
         d.addEventListener(doc, 'touchstart', (e) => {
-          if (e.target instanceof HTMLElement) {
-            if (inAllowedContainer(e.target as HTMLElement)) {
+          if (DOM.isHTMLElement(e.target)) {
+            if (inAllowedContainer(e.target)) {
               // Find the root of the allowed containers
               let rootContainer = e.target
               while (
@@ -93,14 +94,14 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           'touchmove',
           (e) => {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
-            if (e.target instanceof HTMLElement) {
+            if (DOM.isHTMLElement(e.target)) {
               // Some inputs like `<input type=range>` use touch events to
               // allow interaction. We should not prevent this event.
-              if (e.target.tagName === 'INPUT') {
+              if (DOM.isHTMLInputElement(e.target)) {
                 return
               }
 
-              if (inAllowedContainer(e.target as HTMLElement)) {
+              if (inAllowedContainer(e.target)) {
                 // Even if we are in an allowed container, on iOS the main page can still scroll, we
                 // have to make sure that we `event.preventDefault()` this event to prevent that.
                 //

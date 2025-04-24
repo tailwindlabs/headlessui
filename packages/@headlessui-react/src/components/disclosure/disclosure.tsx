@@ -35,6 +35,7 @@ import {
 } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import * as DOM from '../../utils/dom'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
@@ -210,8 +211,8 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
 
     let restoreElement = (() => {
       if (!focusableElement) return ownerDocument.getElementById(buttonId)
-      if (focusableElement instanceof HTMLElement) return focusableElement
-      if (focusableElement.current instanceof HTMLElement) return focusableElement.current
+      if (DOM.isHTMLElement(focusableElement)) return focusableElement
+      if (DOM.isHTMLElement(focusableElement.current)) return focusableElement.current
 
       return ownerDocument.getElementById(buttonId)
     })()

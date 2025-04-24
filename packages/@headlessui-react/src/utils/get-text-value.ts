@@ -1,3 +1,5 @@
+import * as DOM from './dom'
+
 let emojiRegex =
   /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g
 
@@ -19,7 +21,7 @@ function getTextContents(element: HTMLElement): string {
   // This is probably the slowest part, but if you want complete control over the text value, then
   // it is better to set an `aria-label` instead.
   let copy = element.cloneNode(true)
-  if (!(copy instanceof HTMLElement)) {
+  if (!DOM.isHTMLElement(copy)) {
     return currentInnerText
   }
 

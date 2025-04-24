@@ -21,6 +21,7 @@ import { useWatch } from '../../hooks/use-watch'
 import { Hidden, HiddenFeatures } from '../../internal/hidden'
 import type { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
+import * as DOM from '../../utils/dom'
 import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
@@ -39,7 +40,7 @@ function resolveContainers(containers?: Containers): Set<HTMLElement> {
 
   let all = new Set<HTMLElement>()
   for (let container of containers.current) {
-    if (container.current instanceof HTMLElement) {
+    if (DOM.isHTMLElement(container.current)) {
       all.add(container.current)
     }
   }
@@ -163,10 +164,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       if (!(features & FocusTrapFeatures.FocusLock)) return
 
       let allContainers = resolveContainers(containers)
-      if (container.current instanceof HTMLElement) allContainers.add(container.current)
+      if (DOM.isHTMLElement(container.current)) allContainers.add(container.current)
 
       let relatedTarget = e.relatedTarget
-      if (!(relatedTarget instanceof HTMLElement)) return
+      if (!DOM.isHTMLElement(relatedTarget)) return
 
       // Known guards, leave them alone!
       if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
@@ -190,7 +191,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
         // It was invoked via something else (e.g.: click, programmatically, ...). Redirect to the
         // previous active item in the FocusTrap
-        else if (e.target instanceof HTMLElement) {
+        else if (DOM.isHTMLElement(e.target)) {
           focusElement(e.target)
         }
       }
@@ -433,14 +434,14 @@ function useFocusLock(
       if (!mounted.current) return
 
       let allContainers = resolveContainers(containers)
-      if (container.current instanceof HTMLElement) allContainers.add(container.current)
+      if (DOM.isHTMLElement(container.current)) allContainers.add(container.current)
 
       let previous = previousActiveElement.current
       if (!previous) return
 
       let toElement = event.target as HTMLElement | null
 
-      if (toElement && toElement instanceof HTMLElement) {
+      if (DOM.isHTMLElement(toElement)) {
         if (!contains(allContainers, toElement)) {
           event.preventDefault()
           event.stopPropagation()

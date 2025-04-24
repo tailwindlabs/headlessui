@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react'
+import * as DOM from '../utils/dom'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
@@ -175,7 +176,7 @@ export function useOutsideClick(
       }
 
       return handleOutsideClick(event, () => {
-        if (event.target instanceof HTMLElement) {
+        if (DOM.isHTMLElement(event.target)) {
           return event.target
         }
         return null
@@ -201,7 +202,7 @@ export function useOutsideClick(
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {
-        return window.document.activeElement instanceof HTMLIFrameElement
+        return DOM.isHTMLIframeElement(window.document.activeElement)
           ? window.document.activeElement
           : null
       })

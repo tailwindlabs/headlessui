@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import * as DOM from '../utils/dom'
 
 /**
  * Resolve the actual rendered tag of a DOM node. If the `tag` provided is
@@ -22,7 +23,7 @@ export function useResolvedTag<T extends React.ElementType>(tag: T) {
         // Tag name is already known and it's a string, no need to re-render
         if (tagName) return
 
-        if (ref instanceof HTMLElement) {
+        if (DOM.isHTMLElement(ref)) {
           // Tag name is not known yet, render the component to find out
           setResolvedTag(ref.tagName.toLowerCase())
         }

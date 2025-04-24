@@ -16,6 +16,7 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 import { useDisposables } from '../hooks/use-disposables'
 import { useEvent } from '../hooks/use-event'
 import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
+import * as DOM from '../utils/dom'
 
 type Align = 'start' | 'end'
 type Placement = 'top' | 'right' | 'bottom' | 'left'
@@ -260,7 +261,7 @@ export function FloatingProvider({
               let elementAmountVisible = 0
 
               for (let child of context.elements.floating?.childNodes ?? []) {
-                if (child instanceof HTMLElement) {
+                if (DOM.isHTMLElement(child)) {
                   let childTop = child.offsetTop
                   // It can be that the child is fully visible, but we also want to keep the scroll
                   // padding into account to ensure the UI looks good. Therefore we fake that the

@@ -1,3 +1,5 @@
+import * as DOM from './dom'
+
 // See: https://github.com/facebook/react/issues/7711
 // See: https://github.com/facebook/react/pull/20612
 // See: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-disabled (2.)
@@ -5,8 +7,8 @@ export function isDisabledReactIssue7711(element: Element): boolean {
   let parent = element.parentElement
   let legend = null
 
-  while (parent && !(parent instanceof HTMLFieldSetElement)) {
-    if (parent instanceof HTMLLegendElement) legend = parent
+  while (parent && !DOM.isHTMLFieldSetElement(parent)) {
+    if (DOM.isHTMLLegendElement(parent)) legend = parent
     parent = parent.parentElement
   }
 
@@ -22,7 +24,7 @@ function isFirstLegend(element: HTMLLegendElement | null): boolean {
   let previous = element.previousElementSibling
 
   while (previous !== null) {
-    if (previous instanceof HTMLLegendElement) return false
+    if (DOM.isHTMLLegendElement(previous)) return false
     previous = previous.previousElementSibling
   }
 

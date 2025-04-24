@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, type MutableRefObject } from 'react'
 import { Hidden, HiddenFeatures } from '../internal/hidden'
+import * as DOM from '../utils/dom'
 import { getOwnerDocument } from '../utils/owner'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
@@ -23,9 +24,9 @@ export function useRootContainers({
     // Resolve default containers
     for (let container of defaultContainers) {
       if (container === null) continue
-      if (container instanceof HTMLElement) {
+      if (DOM.isHTMLElement(container)) {
         containers.push(container)
-      } else if ('current' in container && container.current instanceof HTMLElement) {
+      } else if ('current' in container && DOM.isHTMLElement(container.current)) {
         containers.push(container.current)
       }
     }
@@ -41,7 +42,7 @@ export function useRootContainers({
     for (let container of ownerDocument?.querySelectorAll('html > *, body > *') ?? []) {
       if (container === document.body) continue // Skip `<body>`
       if (container === document.head) continue // Skip `<head>`
-      if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+      if (!DOM.isHTMLElement(container)) continue // Skip non-HTMLElements
       if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
       if (mainTreeNode) {
         if (container.contains(mainTreeNode)) continue // Skip if it is the main app
@@ -126,7 +127,7 @@ export function MainTreeProvider({
               []) {
               if (container === document.body) continue // Skip `<body>`
               if (container === document.head) continue // Skip `<head>`
-              if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+              if (!DOM.isHTMLElement(container)) continue // Skip non-HTMLElements
               if (container?.contains(el)) {
                 setMainTreeNode(container)
                 break

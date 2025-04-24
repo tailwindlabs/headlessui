@@ -1,10 +1,11 @@
 import { onDocumentReady } from './document-ready'
+import * as DOM from './dom'
 import { focusableSelector } from './focus-management'
 
 export let history: HTMLElement[] = []
 onDocumentReady(() => {
   function handle(e: Event) {
-    if (!(e.target instanceof HTMLElement)) return
+    if (!DOM.isHTMLElement(e.target)) return
     if (e.target === document.body) return
     if (history[0] === e.target) return
 
