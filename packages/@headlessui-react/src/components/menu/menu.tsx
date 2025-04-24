@@ -240,7 +240,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           return QuickReleaseAction.Ignore
         }
 
-        let item = e.target.closest('[role="menuitem"]')
+        let item = e.target.closest('[role="menuitem"]:not([data-disabled])')
         if (item !== null) {
           return QuickReleaseAction.Select(item as HTMLElement)
         }

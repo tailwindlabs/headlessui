@@ -1011,7 +1011,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           return QuickReleaseAction.Ignore
         }
 
-        let option = e.target.closest('[role="option"]')
+        let option = e.target.closest('[role="option"]:not([data-disabled])')
         if (option !== null) {
           return QuickReleaseAction.Select(option as HTMLElement)
         }
