@@ -2,10 +2,10 @@ import { onDocumentReady } from './document-ready'
 import * as DOM from './dom'
 import { focusableSelector } from './focus-management'
 
-export let history: HTMLElement[] = []
+export let history: Element[] = []
 onDocumentReady(() => {
   function handle(e: Event) {
-    if (!DOM.isHTMLElement(e.target)) return
+    if (!DOM.isElement(e.target)) return
     if (e.target === document.body) return
     if (history[0] === e.target) return
 
@@ -21,7 +21,7 @@ onDocumentReady(() => {
     //   <span>Click me</span>
     // </button>
     // ```
-    focusableElement = focusableElement.closest(focusableSelector) as HTMLElement
+    focusableElement = focusableElement.closest(focusableSelector) as Element
 
     history.unshift(focusableElement ?? e.target)
 
