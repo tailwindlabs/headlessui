@@ -22,6 +22,15 @@ export function isHTMLElement(element: unknown): element is HTMLElement {
   return isElement(element) && 'accessKey' in element
 }
 
+// HTMLOrSVGElement doesn't inherit from HTMLElement or from Element. But this
+// is the type that contains the `tabIndex` property.
+//
+// Once we know that this is an `HTMLOrSVGElement` we also know that it is an
+// `Element` (that contains more information)
+export function isHTMLorSVGElement(element: unknown): element is HTMLOrSVGElement & Element {
+  return isElement(element) && 'tabIndex' in element
+}
+
 export function isHTMLIframeElement(element: unknown): element is HTMLIFrameElement {
   return isHTMLElement(element) && element.nodeName === 'IFRAME'
 }
