@@ -26,7 +26,7 @@ export const Action = {
 // in the dropdown, and we should close the dropdown after the click.
 //
 // Pointerdown -> drag over an item -> pointer up -> "click" on the item
-const POINTER_HOLD_THRESHOLD = 100
+const POINTER_HOLD_THRESHOLD = 200
 
 type PointerEventWithTarget = Exclude<PointerEvent, 'target'> & {
   target: HTMLElement
