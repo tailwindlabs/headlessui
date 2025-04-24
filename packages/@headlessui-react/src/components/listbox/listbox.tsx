@@ -15,7 +15,7 @@ import React, {
   type ElementType,
   type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -34,6 +34,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -359,6 +360,38 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let buttonRef = useSyncRefs(ref, useFloatingReference(), machine.actions.setButtonElement)
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
+  let [listboxState, buttonElement, optionsElement] = useSlice(machine, (state) => [
+    state.listboxState,
+    state.buttonElement,
+    state.optionsElement,
+  ])
+
+  let enableQuickRelease = listboxState === ListboxStates.Open
+  useQuickRelease(enableQuickRelease, {
+    trigger: buttonElement,
+    action: useCallback(
+      (e) => {
+        if (buttonElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        let option = e.target.closest('[role="option"]:not([data-disabled])')
+        if (option !== null) {
+          return QuickReleaseAction.Select(option as HTMLElement)
+        }
+
+        if (optionsElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        return QuickReleaseAction.Close
+      },
+      [buttonElement, optionsElement]
+    ),
+    close: machine.actions.closeListbox,
+    select: machine.actions.selectActiveOption,
+  })
+
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/#keyboard-interaction-13
@@ -393,7 +426,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
     if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
@@ -415,8 +448,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let listboxState = useSlice(machine, (state) => state.listboxState)
-
   let slot = useMemo(() => {
     return {
       open: listboxState === ListboxStates.Open,
@@ -431,10 +462,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   }, [listboxState, data.value, disabled, hover, focus, active, data.invalid, autoFocus])
 
   let open = useSlice(machine, (state) => state.listboxState === ListboxStates.Open)
-  let [buttonElement, optionsElement] = useSlice(machine, (state) => [
-    state.buttonElement,
-    state.optionsElement,
-  ])
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
     {
@@ -451,7 +478,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
-      onMouseDown: handleMouseDown,
+      onPointerDown: handlePointerDown,
     },
     focusProps,
     hoverProps,

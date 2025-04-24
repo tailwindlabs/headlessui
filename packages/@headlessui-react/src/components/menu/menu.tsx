@@ -13,7 +13,7 @@ import React, {
   type CSSProperties,
   type ElementType,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -28,6 +28,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -224,12 +225,39 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let [menuState, itemsElement] = useSlice(machine, (state) => [
+  let [menuState, buttonElement, itemsElement] = useSlice(machine, (state) => [
     state.menuState,
+    state.buttonElement,
     state.itemsElement,
   ])
 
-  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+  let enableQuickRelease = menuState === MenuState.Open
+  useQuickRelease(enableQuickRelease, {
+    trigger: buttonElement,
+    action: useCallback(
+      (e) => {
+        if (buttonElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        let item = e.target.closest('[role="menuitem"]:not([data-disabled])')
+        if (item !== null) {
+          return QuickReleaseAction.Select(item as HTMLElement)
+        }
+
+        if (itemsElement?.contains(e.target)) {
+          return QuickReleaseAction.Ignore
+        }
+
+        return QuickReleaseAction.Close
+      },
+      [buttonElement, itemsElement]
+    ),
+    close: useCallback(() => machine.send({ type: ActionTypes.CloseMenu }), []),
+    select: useCallback((target) => target.click(), []),
+  })
+
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
     if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
@@ -274,7 +302,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
-      onMouseDown: handleMouseDown,
+      onPointerDown: handlePointerDown,
     },
     focusProps,
     hoverProps,
@@ -640,8 +668,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
   let pointer = useTrackedPointer()
 
-  let handleEnter = useEvent((evt) => {
-    pointer.update(evt)
+  let handleEnter = useEvent((event) => {
+    pointer.update(event)
     if (disabled) return
     if (active) return
     machine.send({
@@ -652,8 +680,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     })
   })
 
-  let handleMove = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return
+  let handleMove = useEvent((event) => {
+    if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (active) return
     machine.send({
@@ -664,8 +692,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     })
   })
 
-  let handleLeave = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return
+  let handleLeave = useEvent((event) => {
+    if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (!active) return
     machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
