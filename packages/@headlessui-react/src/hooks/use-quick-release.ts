@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import * as DOM from '../utils/dom'
 import { useDocumentEvent } from './use-document-event'
 
 enum ActionKind {
@@ -54,7 +55,7 @@ export function useQuickRelease(
   // trigger.
   let triggeredAtRef = useRef<Date | null>(null)
   useDocumentEvent(enabled && trigger !== null, 'pointerdown', (e) => {
-    if (!(e.target instanceof HTMLElement)) return
+    if (!DOM.isNode(e?.target)) return
     if (!trigger?.contains(e.target)) return
 
     triggeredAtRef.current = new Date()
@@ -65,7 +66,7 @@ export function useQuickRelease(
     'pointerup',
     (e) => {
       if (triggeredAtRef.current === null) return
-      if (!(e.target instanceof HTMLElement)) return
+      if (!DOM.isHTMLElement(e.target)) return
 
       let result = action(e as PointerEventWithTarget)
 
