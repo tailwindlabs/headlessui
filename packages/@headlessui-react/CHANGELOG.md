@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- Add a quick trigger action to the `Menu`, `Listbox` and `Combobox` components ([#3700](https://github.com/tailwindlabs/headlessui/pull/3700))
 
 ## [2.2.2] - 2025-04-17
 
