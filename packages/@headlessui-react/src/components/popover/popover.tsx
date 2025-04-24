@@ -359,7 +359,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     'focus',
     (event) => {
       if (event.target === window) return
-      if (!DOM.isHTMLElement(event.target)) return
+      if (!DOM.isHTMLorSVGElement(event.target)) return
       if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return

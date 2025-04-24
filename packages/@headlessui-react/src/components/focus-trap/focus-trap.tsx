@@ -29,18 +29,18 @@ import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '
 
 type Containers =
   // Lazy resolved containers
-  | (() => Iterable<HTMLElement>)
+  | (() => Iterable<Element>)
 
   // List of containers
-  | MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
+  | MutableRefObject<Set<MutableRefObject<Element | null>>>
 
-function resolveContainers(containers?: Containers): Set<HTMLElement> {
+function resolveContainers(containers?: Containers): Set<Element> {
   if (!containers) return new Set<HTMLElement>()
   if (typeof containers === 'function') return new Set(containers())
 
-  let all = new Set<HTMLElement>()
+  let all = new Set<Element>()
   for (let container of containers.current) {
-    if (DOM.isHTMLElement(container.current)) {
+    if (DOM.isElement(container.current)) {
       all.add(container.current)
     }
   }
@@ -167,7 +167,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       if (DOM.isHTMLElement(container.current)) allContainers.add(container.current)
 
       let relatedTarget = e.relatedTarget
-      if (!DOM.isHTMLElement(relatedTarget)) return
+      if (!DOM.isHTMLorSVGElement(relatedTarget)) return
 
       // Known guards, leave them alone!
       if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
@@ -191,7 +191,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
         // It was invoked via something else (e.g.: click, programmatically, ...). Redirect to the
         // previous active item in the FocusTrap
-        else if (DOM.isHTMLElement(e.target)) {
+        else if (DOM.isHTMLorSVGElement(e.target)) {
           focusElement(e.target)
         }
       }
@@ -248,7 +248,7 @@ export let FocusTrap = Object.assign(FocusTrapRoot, {
 // ---
 
 function useRestoreElement(enabled: boolean = true) {
-  let localHistory = useRef<HTMLElement[]>(history.slice())
+  let localHistory = useRef(history.slice())
 
   useWatch(
     ([newEnabled], [oldEnabled]) => {
@@ -419,7 +419,7 @@ function useFocusLock(
     ownerDocument: Document | null
     container: MutableRefObject<HTMLElement | null>
     containers?: Containers
-    previousActiveElement: MutableRefObject<HTMLElement | null>
+    previousActiveElement: MutableRefObject<HTMLOrSVGElement | null>
   }
 ) {
   let mounted = useIsMounted()
@@ -458,7 +458,7 @@ function useFocusLock(
   )
 }
 
-function contains(containers: Set<HTMLElement>, element: HTMLElement) {
+function contains(containers: Set<Element>, element: Element) {
   for (let container of containers) {
     if (container.contains(element)) return true
   }

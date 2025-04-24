@@ -110,7 +110,7 @@ export enum FocusableMode {
 }
 
 export function isFocusableElement(
-  element: HTMLElement,
+  element: HTMLOrSVGElement & Element,
   mode: FocusableMode = FocusableMode.Strict
 ) {
   if (element === getOwnerDocument(element)?.body) return false
@@ -120,7 +120,7 @@ export function isFocusableElement(
       return element.matches(focusableSelector)
     },
     [FocusableMode.Loose]() {
-      let next: HTMLElement | null = element
+      let next: Element | null = element
 
       while (next !== null) {
         if (next.matches(focusableSelector)) return true
@@ -137,7 +137,7 @@ export function restoreFocusIfNecessary(element: HTMLElement | null) {
   disposables().nextFrame(() => {
     if (
       ownerDocument &&
-      DOM.isHTMLElement(ownerDocument.activeElement) &&
+      DOM.isHTMLorSVGElement(ownerDocument.activeElement) &&
       !isFocusableElement(ownerDocument.activeElement, FocusableMode.Strict)
     ) {
       focusElement(element)
@@ -186,7 +186,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   )
 }
 
-export function focusElement(element: HTMLElement | null) {
+export function focusElement(element: HTMLOrSVGElement | null) {
   element?.focus({ preventScroll: true })
 }
 

@@ -203,22 +203,26 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   } as StateDefinition)
   let [{ disclosureState, buttonId }, dispatch] = reducerBag
 
-  let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
-    dispatch({ type: ActionTypes.CloseDisclosure })
-    let ownerDocument = getOwnerDocument(internalDisclosureRef)
-    if (!ownerDocument) return
-    if (!buttonId) return
+  let close = useEvent(
+    (focusableElement?: HTMLOrSVGElement | MutableRefObject<HTMLOrSVGElement | null>) => {
+      dispatch({ type: ActionTypes.CloseDisclosure })
+      let ownerDocument = getOwnerDocument(internalDisclosureRef)
+      if (!ownerDocument) return
+      if (!buttonId) return
 
-    let restoreElement = (() => {
-      if (!focusableElement) return ownerDocument.getElementById(buttonId)
-      if (DOM.isHTMLElement(focusableElement)) return focusableElement
-      if (DOM.isHTMLElement(focusableElement.current)) return focusableElement.current
+      let restoreElement = (() => {
+        if (!focusableElement) return ownerDocument.getElementById(buttonId)
+        if (DOM.isHTMLorSVGElement(focusableElement)) return focusableElement
+        if ('current' in focusableElement && DOM.isHTMLorSVGElement(focusableElement.current)) {
+          return focusableElement.current
+        }
 
-      return ownerDocument.getElementById(buttonId)
-    })()
+        return ownerDocument.getElementById(buttonId)
+      })()
 
-    restoreElement?.focus()
-  })
+      restoreElement?.focus()
+    }
+  )
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 

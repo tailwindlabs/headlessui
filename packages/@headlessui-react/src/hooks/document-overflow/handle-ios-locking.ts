@@ -14,7 +14,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
   return {
     before({ doc, d, meta }) {
-      function inAllowedContainer(el: HTMLElement) {
+      function inAllowedContainer(el: Element) {
         return meta.containers
           .flatMap((resolve) => resolve())
           .some((container) => container.contains(el))
@@ -47,12 +47,12 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         //
         // Let's try and capture that element and store it, so that we can later scroll to it once the
         // Dialog closes.
-        let scrollToElement: HTMLElement | null = null
+        let scrollToElement: Element | null = null
         d.addEventListener(
           doc,
           'click',
           (e) => {
-            if (!DOM.isHTMLElement(e.target)) {
+            if (!DOM.isHTMLorSVGElement(e.target)) {
               return
             }
 
@@ -61,7 +61,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
               if (!anchor) return
               let { hash } = new URL(anchor.href)
               let el = doc.querySelector(hash)
-              if (DOM.isHTMLElement(el) && !inAllowedContainer(el)) {
+              if (DOM.isHTMLorSVGElement(el) && !inAllowedContainer(el)) {
                 scrollToElement = el
               }
             } catch (err) {}
@@ -71,7 +71,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
         // Rely on overscrollBehavior to prevent scrolling outside of the Dialog.
         d.addEventListener(doc, 'touchstart', (e) => {
-          if (DOM.isHTMLElement(e.target)) {
+          if (DOM.isHTMLorSVGElement(e.target) && DOM.hasInlineStyle(e.target)) {
             if (inAllowedContainer(e.target)) {
               // Find the root of the allowed containers
               let rootContainer = e.target
@@ -94,7 +94,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           'touchmove',
           (e) => {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
-            if (DOM.isHTMLElement(e.target)) {
+            if (DOM.isHTMLorSVGElement(e.target)) {
               // Some inputs like `<input type=range>` use touch events to
               // allow interaction. We should not prevent this event.
               if (DOM.isHTMLInputElement(e.target)) {
