@@ -51,6 +51,7 @@ import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
+import * as DOM from '../../utils/dom'
 import {
   Focus as FocusManagementFocus,
   FocusableMode,
@@ -241,8 +242,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         }
 
         let item = e.target.closest('[role="menuitem"]:not([data-disabled])')
-        if (item !== null) {
-          return QuickReleaseAction.Select(item as HTMLElement)
+        if (DOM.isHTMLElement(item)) {
+          return QuickReleaseAction.Select(item)
         }
 
         if (itemsElement?.contains(e.target)) {

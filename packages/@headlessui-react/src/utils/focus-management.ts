@@ -1,5 +1,6 @@
 import type { MutableRefObject } from 'react'
 import { disposables } from './disposables'
+import * as DOM from './dom'
 import { match } from './match'
 import { getOwnerDocument } from './owner'
 
@@ -136,7 +137,8 @@ export function restoreFocusIfNecessary(element: HTMLElement | null) {
   disposables().nextFrame(() => {
     if (
       ownerDocument &&
-      !isFocusableElement(ownerDocument.activeElement as HTMLElement, FocusableMode.Strict)
+      DOM.isHTMLElement(ownerDocument.activeElement) &&
+      !isFocusableElement(ownerDocument.activeElement, FocusableMode.Strict)
     ) {
       focusElement(element)
     }

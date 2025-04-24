@@ -680,8 +680,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let direction = useTabDirection()
   let handleFocus = useEvent(() => {
-    let el = state.panel as HTMLElement
-    if (!el) return
+    if (!DOM.isHTMLElement(state.panel)) return
+    let el = state.panel
 
     function run() {
       let result = match(direction.current, {

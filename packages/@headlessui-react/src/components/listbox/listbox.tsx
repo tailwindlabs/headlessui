@@ -60,6 +60,7 @@ import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
+import * as DOM from '../../utils/dom'
 import {
   Focus as FocusManagementFocus,
   FocusableMode,
@@ -376,8 +377,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         }
 
         let option = e.target.closest('[role="option"]:not([data-disabled])')
-        if (option !== null) {
-          return QuickReleaseAction.Select(option as HTMLElement)
+        if (DOM.isHTMLElement(option)) {
+          return QuickReleaseAction.Select(option)
         }
 
         if (optionsElement?.contains(e.target)) {

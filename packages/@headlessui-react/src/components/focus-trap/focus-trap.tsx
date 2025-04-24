@@ -122,8 +122,8 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   let direction = useTabDirection()
   let handleFocus = useEvent((e: ReactFocusEvent) => {
-    let el = container.current as HTMLElement
-    if (!el) return
+    if (!DOM.isHTMLElement(container.current)) return
+    let el = container.current
 
     // TODO: Cleanup once we are using real browser tests
     let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()

@@ -186,7 +186,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     ref,
     optionalRef(
       (ref) => {
-        internalDisclosureRef.current = ref as HTMLElement | null
+        internalDisclosureRef.current = ref
       },
       props.as === undefined ||
         // @ts-expect-error The `as` prop _can_ be a Fragment

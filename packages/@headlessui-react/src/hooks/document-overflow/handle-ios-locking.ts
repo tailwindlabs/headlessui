@@ -61,8 +61,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
               if (!anchor) return
               let { hash } = new URL(anchor.href)
               let el = doc.querySelector(hash)
-              if (el && !inAllowedContainer(el as HTMLElement)) {
-                scrollToElement = el as HTMLElement
+              if (DOM.isHTMLElement(el) && !inAllowedContainer(el)) {
+                scrollToElement = el
               }
             } catch (err) {}
           },

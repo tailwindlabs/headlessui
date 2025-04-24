@@ -9,7 +9,7 @@ onDocumentReady(() => {
     if (e.target === document.body) return
     if (history[0] === e.target) return
 
-    let focusableElement = e.target as HTMLElement
+    let focusableElement = e.target
 
     // Figure out the closest focusable element, this is needed in a situation
     // where you click on a non-focusable element inside a focusable element.
