@@ -11,13 +11,15 @@
 export function isNode(element: unknown): element is Node {
   if (typeof element !== 'object') return false
   if (element === null) return false
-  return 'nodeType' in element && 'nodeName' in element
+  return 'nodeType' in element
+}
+
+export function isElement(element: unknown): element is Element {
+  return isNode(element) && 'tagName' in element
 }
 
 export function isHTMLElement(element: unknown): element is HTMLElement {
-  if (typeof element !== 'object') return false
-  if (element === null) return false
-  return 'nodeName' in element
+  return isElement(element) && 'accessKey' in element
 }
 
 export function isHTMLIframeElement(element: unknown): element is HTMLIFrameElement {
