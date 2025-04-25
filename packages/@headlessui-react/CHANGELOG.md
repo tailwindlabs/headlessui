@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add a quick trigger action to the `Menu`, `Listbox` and `Combobox` components ([#3700](https://github.com/tailwindlabs/headlessui/pull/3700))
 
+### Fixed
+
+- Fix clicking `Label` component should open `<Input type="file">` ([#3707](https://github.com/tailwindlabs/headlessui/pull/3707))
+
 ## [2.2.2] - 2025-04-17
 
 ### Fixed

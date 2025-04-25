@@ -166,7 +166,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
         // unchecked).
         if (
           (target instanceof HTMLInputElement &&
-            (target.type === 'radio' || target.type === 'checkbox')) ||
+            (target.type === 'file' || target.type === 'radio' || target.type === 'checkbox')) ||
           target.role === 'radio' ||
           target.role === 'checkbox' ||
           target.role === 'switch'

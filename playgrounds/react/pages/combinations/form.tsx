@@ -1,4 +1,4 @@
-import { Combobox, Listbox, RadioGroup, Switch } from '@headlessui/react'
+import { Combobox, Field, Input, Label, Listbox, RadioGroup, Switch } from '@headlessui/react'
 import { useState } from 'react'
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
@@ -331,6 +331,24 @@ export default function App() {
                 }}
               </Combobox>
             </div>
+          </Section>
+          <Section title="Default form controls">
+            <Field className="flex flex-col p-1">
+              <Label>Label for {'<Input type="text">'}</Label>
+              <Input type="text" />
+            </Field>
+            <Field className="flex flex-col p-1">
+              <Label>Label for {'<Input type="checkbox">'}</Label>
+              <Input type="checkbox" />
+            </Field>
+            <Field className="flex flex-col p-1">
+              <Label>Label for {'<Input type="radio">'}</Label>
+              <Input type="radio" />
+            </Field>
+            <Field className="flex flex-col p-1">
+              <Label>Label for {'<Input type="file">'}</Label>
+              <Input type="file" />
+            </Field>
           </Section>
         </div>
 
