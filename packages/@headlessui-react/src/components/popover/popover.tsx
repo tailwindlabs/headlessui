@@ -59,6 +59,7 @@ import {
 } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import * as DOM from '../../utils/dom'
 import {
   Focus,
   FocusResult,
@@ -358,7 +359,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     'focus',
     (event) => {
       if (event.target === window) return
-      if (!(event.target instanceof HTMLElement)) return
+      if (!DOM.isHTMLorSVGElement(event.target)) return
       if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
@@ -395,8 +396,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
       let restoreElement = (() => {
         if (!focusableElement) return button
-        if (focusableElement instanceof HTMLElement) return focusableElement
-        if ('current' in focusableElement && focusableElement.current instanceof HTMLElement)
+        if (DOM.isHTMLElement(focusableElement)) return focusableElement
+        if ('current' in focusableElement && DOM.isHTMLElement(focusableElement.current))
           return focusableElement.current
 
         return button
@@ -679,8 +680,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let direction = useTabDirection()
   let handleFocus = useEvent(() => {
-    let el = state.panel as HTMLElement
-    if (!el) return
+    if (!DOM.isHTMLElement(state.panel)) return
+    let el = state.panel
 
     function run() {
       let result = match(direction.current, {

@@ -1,4 +1,5 @@
 import { disposables } from '../../utils/disposables'
+import * as DOM from '../../utils/dom'
 import { isIOS } from '../../utils/platform'
 import type { ScrollLockStep } from './overflow-store'
 
@@ -13,7 +14,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
   return {
     before({ doc, d, meta }) {
-      function inAllowedContainer(el: HTMLElement) {
+      function inAllowedContainer(el: Element) {
         return meta.containers
           .flatMap((resolve) => resolve())
           .some((container) => container.contains(el))
@@ -46,12 +47,12 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         //
         // Let's try and capture that element and store it, so that we can later scroll to it once the
         // Dialog closes.
-        let scrollToElement: HTMLElement | null = null
+        let scrollToElement: Element | null = null
         d.addEventListener(
           doc,
           'click',
           (e) => {
-            if (!(e.target instanceof HTMLElement)) {
+            if (!DOM.isHTMLorSVGElement(e.target)) {
               return
             }
 
@@ -60,8 +61,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
               if (!anchor) return
               let { hash } = new URL(anchor.href)
               let el = doc.querySelector(hash)
-              if (el && !inAllowedContainer(el as HTMLElement)) {
-                scrollToElement = el as HTMLElement
+              if (DOM.isHTMLorSVGElement(el) && !inAllowedContainer(el)) {
+                scrollToElement = el
               }
             } catch (err) {}
           },
@@ -70,8 +71,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
         // Rely on overscrollBehavior to prevent scrolling outside of the Dialog.
         d.addEventListener(doc, 'touchstart', (e) => {
-          if (e.target instanceof HTMLElement) {
-            if (inAllowedContainer(e.target as HTMLElement)) {
+          if (DOM.isHTMLorSVGElement(e.target) && DOM.hasInlineStyle(e.target)) {
+            if (inAllowedContainer(e.target)) {
               // Find the root of the allowed containers
               let rootContainer = e.target
               while (
@@ -93,14 +94,14 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           'touchmove',
           (e) => {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
-            if (e.target instanceof HTMLElement) {
+            if (DOM.isHTMLorSVGElement(e.target)) {
               // Some inputs like `<input type=range>` use touch events to
               // allow interaction. We should not prevent this event.
-              if (e.target.tagName === 'INPUT') {
+              if (DOM.isHTMLInputElement(e.target)) {
                 return
               }
 
-              if (inAllowedContainer(e.target as HTMLElement)) {
+              if (inAllowedContainer(e.target)) {
                 // Even if we are in an allowed container, on iOS the main page can still scroll, we
                 // have to make sure that we `event.preventDefault()` this event to prevent that.
                 //

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import * as DOM from '../utils/dom'
 import { useEvent } from './use-event'
 import { useEventListener } from './use-event-listener'
 
@@ -18,7 +19,7 @@ export function useRefocusableInput(input: HTMLInputElement | null) {
 
   useEventListener(input, 'blur', (event) => {
     let target = event.target
-    if (!(target instanceof HTMLInputElement)) return
+    if (!DOM.isHTMLInputElement(target)) return
 
     info.current = {
       value: target.value,
@@ -31,7 +32,7 @@ export function useRefocusableInput(input: HTMLInputElement | null) {
     // If the input is already focused, we don't need to do anything
     if (document.activeElement === input) return
 
-    if (!(input instanceof HTMLInputElement)) return
+    if (!DOM.isHTMLInputElement(input)) return
     if (!input.isConnected) return
 
     // Focus the input

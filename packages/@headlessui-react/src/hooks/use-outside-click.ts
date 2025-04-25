@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react'
+import * as DOM from '../utils/dom'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
@@ -21,7 +22,10 @@ const MOVE_THRESHOLD_PX = 30
 export function useOutsideClick(
   enabled: boolean,
   containers: ContainerInput | (() => ContainerInput),
-  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void
+  cb: (
+    event: MouseEvent | PointerEvent | FocusEvent | TouchEvent,
+    target: HTMLOrSVGElement & Element
+  ) => void
 ) {
   let isTopLayer = useIsTopLayer(enabled, 'outside-click')
   let cbRef = useLatestValue(cb)
@@ -29,7 +33,7 @@ export function useOutsideClick(
   let handleOutsideClick = useCallback(
     function handleOutsideClick<E extends MouseEvent | PointerEvent | FocusEvent | TouchEvent>(
       event: E,
-      resolveTarget: (event: E) => HTMLElement | null
+      resolveTarget: (event: E) => (HTMLOrSVGElement & Element) | null
     ) {
       // Check whether the event got prevented already. This can happen if you
       // use the useOutsideClick hook in both a Dialog and a Menu and the inner
@@ -175,7 +179,7 @@ export function useOutsideClick(
       }
 
       return handleOutsideClick(event, () => {
-        if (event.target instanceof HTMLElement) {
+        if (DOM.isHTMLorSVGElement(event.target)) {
           return event.target
         }
         return null
@@ -201,7 +205,7 @@ export function useOutsideClick(
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {
-        return window.document.activeElement instanceof HTMLIFrameElement
+        return DOM.isHTMLIframeElement(window.document.activeElement)
           ? window.document.activeElement
           : null
       })

@@ -22,6 +22,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
+import * as DOM from '../../utils/dom'
 import { env } from '../../utils/env'
 import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
@@ -120,7 +121,7 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
   useOnUnmount(() => {
     if (!target || !element) return
 
-    if (element instanceof Node && target.contains(element)) {
+    if (DOM.isNode(element) && target.contains(element)) {
       target.removeChild(element)
     }
 

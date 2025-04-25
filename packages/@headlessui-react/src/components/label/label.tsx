@@ -155,7 +155,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     // Labels connected to 'real' controls will already click the element. But we don't know that
     // ahead of time. This will prevent the default click, such that only a single click happens
     // instead of two. Otherwise this results in a visual no-op.
-    if (current instanceof HTMLLabelElement) {
+    if (DOM.isHTMLLabelElement(current)) {
       e.preventDefault()
     }
 
@@ -168,7 +168,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
       context.props.onClick(e)
     }
 
-    if (current instanceof HTMLLabelElement) {
+    if (DOM.isHTMLLabelElement(current)) {
       let target = document.getElementById(current.htmlFor)
       if (target) {
         // Bail if the target element is disabled
@@ -186,7 +186,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
         // immediately require state changes, e.g.: Radio & Checkbox inputs need to be checked (or
         // unchecked).
         if (
-          (target instanceof HTMLInputElement &&
+          (DOM.isHTMLInputElement(target) &&
             (target.type === 'file' || target.type === 'radio' || target.type === 'checkbox')) ||
           target.role === 'radio' ||
           target.role === 'checkbox' ||

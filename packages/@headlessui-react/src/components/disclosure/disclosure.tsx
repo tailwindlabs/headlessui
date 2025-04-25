@@ -35,6 +35,7 @@ import {
 } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import * as DOM from '../../utils/dom'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
@@ -185,7 +186,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     ref,
     optionalRef(
       (ref) => {
-        internalDisclosureRef.current = ref as HTMLElement | null
+        internalDisclosureRef.current = ref
       },
       props.as === undefined ||
         // @ts-expect-error The `as` prop _can_ be a Fragment
@@ -202,22 +203,26 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   } as StateDefinition)
   let [{ disclosureState, buttonId }, dispatch] = reducerBag
 
-  let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
-    dispatch({ type: ActionTypes.CloseDisclosure })
-    let ownerDocument = getOwnerDocument(internalDisclosureRef)
-    if (!ownerDocument) return
-    if (!buttonId) return
+  let close = useEvent(
+    (focusableElement?: HTMLOrSVGElement | MutableRefObject<HTMLOrSVGElement | null>) => {
+      dispatch({ type: ActionTypes.CloseDisclosure })
+      let ownerDocument = getOwnerDocument(internalDisclosureRef)
+      if (!ownerDocument) return
+      if (!buttonId) return
 
-    let restoreElement = (() => {
-      if (!focusableElement) return ownerDocument.getElementById(buttonId)
-      if (focusableElement instanceof HTMLElement) return focusableElement
-      if (focusableElement.current instanceof HTMLElement) return focusableElement.current
+      let restoreElement = (() => {
+        if (!focusableElement) return ownerDocument.getElementById(buttonId)
+        if (DOM.isHTMLorSVGElement(focusableElement)) return focusableElement
+        if ('current' in focusableElement && DOM.isHTMLorSVGElement(focusableElement.current)) {
+          return focusableElement.current
+        }
 
-      return ownerDocument.getElementById(buttonId)
-    })()
+        return ownerDocument.getElementById(buttonId)
+      })()
 
-    restoreElement?.focus()
-  })
+      restoreElement?.focus()
+    }
+  )
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 

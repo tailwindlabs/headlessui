@@ -28,6 +28,7 @@ import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import * as DOM from '../../utils/dom'
 import { attemptSubmit } from '../../utils/form'
 import {
   forwardRefWithAs,
@@ -85,7 +86,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
           htmlFor: context.switch?.id,
           onClick(event: React.MouseEvent<HTMLLabelElement>) {
             if (!switchElement) return
-            if (event.currentTarget instanceof HTMLLabelElement) {
+            if (DOM.isHTMLLabelElement(event.currentTarget)) {
               event.preventDefault()
             }
             switchElement.click()

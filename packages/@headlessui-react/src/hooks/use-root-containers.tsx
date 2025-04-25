@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, type MutableRefObject } from 'react'
 import { Hidden, HiddenFeatures } from '../internal/hidden'
+import * as DOM from '../utils/dom'
 import { getOwnerDocument } from '../utils/owner'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
@@ -11,21 +12,21 @@ export function useRootContainers({
   // Reference to a node in the "main" tree, not in the portalled Dialog tree.
   mainTreeNode,
 }: {
-  defaultContainers?: (HTMLElement | null | MutableRefObject<HTMLElement | null>)[]
-  portals?: MutableRefObject<HTMLElement[]>
-  mainTreeNode?: HTMLElement | null
+  defaultContainers?: (Element | null | MutableRefObject<Element | null>)[]
+  portals?: MutableRefObject<Element[]>
+  mainTreeNode?: Element | null
 } = {}) {
   let ownerDocument = useOwnerDocument(mainTreeNode)
 
   let resolveContainers = useEvent(() => {
-    let containers: HTMLElement[] = []
+    let containers: Element[] = []
 
     // Resolve default containers
     for (let container of defaultContainers) {
       if (container === null) continue
-      if (container instanceof HTMLElement) {
+      if (DOM.isElement(container)) {
         containers.push(container)
-      } else if ('current' in container && container.current instanceof HTMLElement) {
+      } else if ('current' in container && DOM.isElement(container.current)) {
         containers.push(container.current)
       }
     }
@@ -41,7 +42,7 @@ export function useRootContainers({
     for (let container of ownerDocument?.querySelectorAll('html > *, body > *') ?? []) {
       if (container === document.body) continue // Skip `<body>`
       if (container === document.head) continue // Skip `<head>`
-      if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+      if (!DOM.isElement(container)) continue // Skip non-HTMLElements
       if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
       if (mainTreeNode) {
         if (container.contains(mainTreeNode)) continue // Skip if it is the main app
@@ -57,13 +58,13 @@ export function useRootContainers({
 
   return {
     resolveContainers,
-    contains: useEvent((element: HTMLElement) =>
+    contains: useEvent((element: Element) =>
       resolveContainers().some((container) => container.contains(element))
     ),
   }
 }
 
-let MainTreeContext = createContext<HTMLElement | null>(null)
+let MainTreeContext = createContext<Element | null>(null)
 
 /**
  * A provider for the main tree node.
@@ -93,9 +94,9 @@ export function MainTreeProvider({
   node,
 }: {
   children: React.ReactNode
-  node?: HTMLElement | null
+  node?: Element | null
 }) {
-  let [mainTreeNode, setMainTreeNode] = useState<HTMLElement | null>(null)
+  let [mainTreeNode, setMainTreeNode] = useState<Element | null>(null)
 
   // 1. Prefer the main tree node from context
   // 2. Prefer the provided node
@@ -126,7 +127,7 @@ export function MainTreeProvider({
               []) {
               if (container === document.body) continue // Skip `<body>`
               if (container === document.head) continue // Skip `<head>`
-              if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+              if (!DOM.isElement(container)) continue // Skip non-HTMLElements
               if (container?.contains(el)) {
                 setMainTreeNode(container)
                 break
@@ -142,7 +143,7 @@ export function MainTreeProvider({
 /**
  * Get the main tree node from context or fallback to the optionally provided node.
  */
-export function useMainTreeNode(fallbackMainTreeNode: HTMLElement | null = null) {
+export function useMainTreeNode(fallbackMainTreeNode: Element | null = null) {
   // Prefer the main tree node from context, but fallback to the provided node.
   return useContext(MainTreeContext) ?? fallbackMainTreeNode
 }

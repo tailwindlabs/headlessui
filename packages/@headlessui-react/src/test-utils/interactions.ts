@@ -1,5 +1,6 @@
 import { fireEvent } from '@testing-library/react'
 import { act } from 'react'
+import * as DOM from '../utils/dom'
 import { pointer } from './fake-pointer'
 
 function nextFrame(cb: Function): void {
@@ -41,7 +42,7 @@ export function word(input: string): Partial<KeyboardEvent>[] {
 
   let element = document.activeElement
 
-  if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+  if (DOM.isHTMLInputElement(element) || DOM.isHTMLTextAreaElement(element)) {
     fireEvent.change(element, {
       target: Object.assign({}, element, { value: input }),
     })

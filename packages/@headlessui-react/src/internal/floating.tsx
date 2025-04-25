@@ -16,9 +16,12 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 import { useDisposables } from '../hooks/use-disposables'
 import { useEvent } from '../hooks/use-event'
 import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
+import * as DOM from '../utils/dom'
 
 type Align = 'start' | 'end'
 type Placement = 'top' | 'right' | 'bottom' | 'left'
+type AnchorTo = `${Placement}` | `${Placement} ${Align}`
+type AnchorToWithSelection = `${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`
 
 type BaseAnchorProps = {
   /**
@@ -39,27 +42,27 @@ type BaseAnchorProps = {
 
 export type AnchorProps =
   | false // Disable entirely
-  | (`${Placement}` | `${Placement} ${Align}`) // String value to define the placement
+  | AnchorTo // String value to define the placement
   | Partial<
       BaseAnchorProps & {
         /**
          * The `to` value defines which side of the trigger the panel should be placed on and its
          * alignment.
          */
-        to: `${Placement}` | `${Placement} ${Align}`
+        to: AnchorTo
       }
     >
 
 export type AnchorPropsWithSelection =
   | false // Disable entirely
-  | (`${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`)
+  | AnchorToWithSelection
   | Partial<
       BaseAnchorProps & {
         /**
          * The `to` value defines which side of the trigger the panel should be placed on and its
          * alignment.
          */
-        to: `${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`
+        to: AnchorToWithSelection
       }
     >
 
@@ -77,7 +80,7 @@ let FloatingContext = createContext<{
   getReferenceProps: ReturnType<typeof useInteractions>['getReferenceProps']
   getFloatingProps: ReturnType<typeof useInteractions>['getFloatingProps']
   slot: Partial<{
-    anchor: `${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`
+    anchor: AnchorToWithSelection
   }>
 }>({
   styles: undefined,
@@ -258,7 +261,7 @@ export function FloatingProvider({
               let elementAmountVisible = 0
 
               for (let child of context.elements.floating?.childNodes ?? []) {
-                if (child instanceof HTMLElement) {
+                if (DOM.isHTMLElement(child)) {
                   let childTop = child.offsetTop
                   // It can be that the child is fully visible, but we also want to keep the scroll
                   // padding into account to ensure the UI looks good. Therefore we fake that the
