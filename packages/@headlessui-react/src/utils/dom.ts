@@ -73,7 +73,7 @@ export function isHTMLLegendElement(element: unknown): element is HTMLLegendElem
 // - textarea
 // - video (if the controls attribute is present)
 export function isInteractiveElement(element: unknown): element is Element {
-  if (!isHTMLElement(element)) return false
+  if (!isElement(element)) return false
 
   return element.matches(
     'a[href],audio[controls],button,details,embed,iframe,img[usemap],input:not([type="hidden"]),label,select,textarea,video[controls]'
