@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix clicking `Label` component should open `<Input type="file">` ([#3707](https://github.com/tailwindlabs/headlessui/pull/3707))
+- Ensure clicking on interactive elements inside `Label` component works ([#3709](https://github.com/tailwindlabs/headlessui/pull/3709))
 
 ## [2.2.2] - 2025-04-17
 
