@@ -17,6 +17,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
+import * as DOM from '../../utils/dom'
 import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---
@@ -130,6 +131,26 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
   let handleClick = useEvent((e: ReactMouseEvent) => {
     let current = e.currentTarget
+
+    // If a click happens on an interactive element inside of the label, then we
+    // don't want to trigger the label behavior and let the browser handle the
+    // click event.
+    //
+    // In a situation like:
+    //
+    // ```html
+    // <label>
+    //   I accept the
+    //   <a href="#">terms and agreement</a>
+    //   <input type="checkbox" />
+    // </label>
+    // ```
+    //
+    // Clicking on the link, should not check the checkbox, but open the link
+    // instead.
+    if (e.target !== e.currentTarget && DOM.isInteractiveElement(e.target)) {
+      return
+    }
 
     // Labels connected to 'real' controls will already click the element. But we don't know that
     // ahead of time. This will prevent the default click, such that only a single click happens
