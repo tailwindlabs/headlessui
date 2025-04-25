@@ -167,169 +167,175 @@ export default function App() {
           </Section>
           <Section title="Listbox">
             <div className="w-full space-y-1">
-              <Listbox name="person" defaultValue={people[1]}>
-                {({ value }) => (
-                  <>
-                    <div className="relative">
-                      <Listbox.Button as={Button} className="w-full">
-                        <span className="block truncate">{value?.name?.first}</span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <svg
-                            className="h-5 w-5 text-gray-400"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </span>
-                      </Listbox.Button>
-
-                      <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                        <Listbox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
-                          {people.map((person) => (
-                            <Listbox.Option
-                              key={person.id}
-                              value={person}
-                              className={({ active }) => {
-                                return classNames(
-                                  'relative cursor-default select-none py-2 pl-3 pr-9',
-                                  active ? 'bg-blue-600 text-white' : 'text-gray-900'
-                                )
-                              }}
+              <Field>
+                <Label>Assigned to:</Label>
+                <Listbox name="person" defaultValue={people[1]}>
+                  {({ value }) => (
+                    <>
+                      <div className="relative">
+                        <Listbox.Button as={Button} className="w-full">
+                          <span className="block truncate">{value?.name?.first}</span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <svg
+                              className="h-5 w-5 text-gray-400"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              stroke="currentColor"
                             >
-                              {({ active, selected }) => (
-                                <>
-                                  <span
-                                    className={classNames(
-                                      'block truncate',
-                                      selected ? 'font-semibold' : 'font-normal'
-                                    )}
-                                  >
-                                    {person.name.first}
-                                  </span>
-                                  {selected && (
+                              <path
+                                d="M7 7l3-3 3 3m0 6l-3 3-3-3"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </Listbox.Button>
+
+                        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                          <Listbox.Options className="shadow-2xs focus:outline-hidden max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                            {people.map((person) => (
+                              <Listbox.Option
+                                key={person.id}
+                                value={person}
+                                className={({ active }) => {
+                                  return classNames(
+                                    'relative cursor-default select-none py-2 pl-3 pr-9',
+                                    active ? 'bg-blue-600 text-white' : 'text-gray-900'
+                                  )
+                                }}
+                              >
+                                {({ active, selected }) => (
+                                  <>
                                     <span
                                       className={classNames(
-                                        'absolute inset-y-0 right-0 flex items-center pr-4',
-                                        active ? 'text-white' : 'text-blue-600'
+                                        'block truncate',
+                                        selected ? 'font-semibold' : 'font-normal'
                                       )}
                                     >
-                                      <svg
-                                        className="h-5 w-5"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
+                                      {person.name.first}
                                     </span>
-                                  )}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
+                                    {selected && (
+                                      <span
+                                        className={classNames(
+                                          'absolute inset-y-0 right-0 flex items-center pr-4',
+                                          active ? 'text-white' : 'text-blue-600'
+                                        )}
+                                      >
+                                        <svg
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                          />
+                                        </svg>
+                                      </span>
+                                    )}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </Listbox>
+                    </>
+                  )}
+                </Listbox>
+              </Field>
             </div>
           </Section>
           <Section title="Combobox">
             <div className="w-full space-y-1">
-              <Combobox
-                name="location"
-                defaultValue={'New York'}
-                onChange={(location) => {
-                  setQuery('')
-                }}
-              >
-                {({ open, value }) => {
-                  return (
-                    <div className="relative">
-                      <div className="flex w-full flex-col">
-                        <Combobox.Input
-                          onChange={(e) => setQuery(e.target.value)}
-                          className="shadow-xs focus:outline-hidden w-full rounded-md rounded-sm border-gray-300 bg-clip-padding px-3 py-1 focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                          placeholder="Search users..."
-                        />
-                        <div
-                          className={classNames(
-                            'flex border-t',
-                            value && !open ? 'border-transparent' : 'border-gray-200'
-                          )}
-                        >
-                          <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                            <Combobox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
-                              {locations
-                                .filter((location) =>
-                                  location.toLowerCase().includes(query.toLowerCase())
-                                )
-                                .map((location) => (
-                                  <Combobox.Option
-                                    key={location}
-                                    value={location}
-                                    className={({ active }) => {
-                                      return classNames(
-                                        'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9',
-                                        active ? 'bg-blue-600 text-white' : 'text-gray-900'
-                                      )
-                                    }}
-                                  >
-                                    {({ active, selected }) => (
-                                      <>
-                                        <span
-                                          className={classNames(
-                                            'block truncate',
-                                            selected ? 'font-semibold' : 'font-normal'
-                                          )}
-                                        >
-                                          {location}
-                                        </span>
-                                        {active && (
+              <Field>
+                <Label>Location:</Label>
+                <Combobox
+                  name="location"
+                  defaultValue={'New York'}
+                  onChange={(location) => {
+                    setQuery('')
+                  }}
+                >
+                  {({ open, value }) => {
+                    return (
+                      <div className="relative">
+                        <div className="flex w-full flex-col">
+                          <Combobox.Input
+                            onChange={(e) => setQuery(e.target.value)}
+                            className="shadow-xs focus:outline-hidden w-full rounded-md rounded-sm border-gray-300 bg-clip-padding px-3 py-1 focus:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            placeholder="Search users..."
+                          />
+                          <div
+                            className={classNames(
+                              'flex border-t',
+                              value && !open ? 'border-transparent' : 'border-gray-200'
+                            )}
+                          >
+                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                              <Combobox.Options className="shadow-2xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                                {locations
+                                  .filter((location) =>
+                                    location.toLowerCase().includes(query.toLowerCase())
+                                  )
+                                  .map((location) => (
+                                    <Combobox.Option
+                                      key={location}
+                                      value={location}
+                                      className={({ active }) => {
+                                        return classNames(
+                                          'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9',
+                                          active ? 'bg-blue-600 text-white' : 'text-gray-900'
+                                        )
+                                      }}
+                                    >
+                                      {({ active, selected }) => (
+                                        <>
                                           <span
                                             className={classNames(
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active ? 'text-white' : 'text-blue-600'
+                                              'block truncate',
+                                              selected ? 'font-semibold' : 'font-normal'
                                             )}
                                           >
-                                            <svg
-                                              className="h-5 w-5"
-                                              viewBox="0 0 25 24"
-                                              fill="none"
-                                            >
-                                              <path
-                                                d="M11.25 8.75L14.75 12L11.25 15.25"
-                                                stroke="currentColor"
-                                                strokeWidth="1.5"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                              />
-                                            </svg>
+                                            {location}
                                           </span>
-                                        )}
-                                      </>
-                                    )}
-                                  </Combobox.Option>
-                                ))}
-                            </Combobox.Options>
+                                          {active && (
+                                            <span
+                                              className={classNames(
+                                                'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                active ? 'text-white' : 'text-blue-600'
+                                              )}
+                                            >
+                                              <svg
+                                                className="h-5 w-5"
+                                                viewBox="0 0 25 24"
+                                                fill="none"
+                                              >
+                                                <path
+                                                  d="M11.25 8.75L14.75 12L11.25 15.25"
+                                                  stroke="currentColor"
+                                                  strokeWidth="1.5"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                />
+                                              </svg>
+                                            </span>
+                                          )}
+                                        </>
+                                      )}
+                                    </Combobox.Option>
+                                  ))}
+                              </Combobox.Options>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                }}
-              </Combobox>
+                    )
+                  }}
+                </Combobox>
+              </Field>
             </div>
           </Section>
           <Section title="Default form controls">
@@ -338,7 +344,12 @@ export default function App() {
               <Input type="text" />
             </Field>
             <Field className="flex flex-col p-1">
-              <Label>Label for {'<Input type="checkbox">'}</Label>
+              <Label>
+                I agree to the{' '}
+                <a href="https://google.com" target="_blank" className="underline">
+                  terms and conditions
+                </a>
+              </Label>
               <Input type="checkbox" />
             </Field>
             <Field className="flex flex-col p-1">
