@@ -120,15 +120,6 @@ export function useOutsideClick(
 
   useDocumentEvent(
     isTopLayer,
-    'mousedown',
-    (event) => {
-      initialClickTarget.current = event.composedPath?.()?.[0] || event.target
-    },
-    true
-  )
-
-  useDocumentEvent(
-    isTopLayer,
     'click',
     (event) => {
       if (isMobile()) {
