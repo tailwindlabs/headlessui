@@ -48,7 +48,10 @@ export abstract class Machine<State, Event extends { type: number | string }> {
   }
 
   send(event: Event) {
-    this.#state = this.reduce(this.#state, event)
+    let newState = this.reduce(this.#state, event)
+    if (newState === this.#state) return // No change
+
+    this.#state = newState
 
     for (let subscriber of this.#subscribers) {
       let slice = subscriber.selector(this.#state)
