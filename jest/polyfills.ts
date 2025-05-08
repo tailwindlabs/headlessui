@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { mockAnimationsApi, mockResizeObserver } from 'jsdom-testing-mocks'
 
 mockAnimationsApi() // `Element.prototype.getAnimations` and `CSSTransition` polyfill
@@ -33,3 +34,7 @@ class PointerEvent extends Event {
 }
 // @ts-expect-error JSDOM doesn't support `PointerEvent` yet...
 window.PointerEvent = PointerEvent
+
+// @ts-expect-error JSDOM doesn't support `globalThis.crypto` yet...
+globalThis.crypto ??= {}
+globalThis.crypto.randomUUID ??= randomUUID
