@@ -1,5 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import React, { forwardRef } from 'react'
+import { ExampleMenu } from '../menu/menu'
 
 let Button = forwardRef(
   (props: React.ComponentProps<'button'>, ref: React.MutableRefObject<HTMLButtonElement>) => {
@@ -42,6 +43,9 @@ export default function Home() {
                 Normal - {item}
               </Button>
             ))}
+            <div className="p-2">
+              <ExampleMenu />
+            </div>
           </Popover.Panel>
         </Popover>
 
@@ -66,6 +70,9 @@ export default function Home() {
             {items.map((item) => (
               <Button key={item}>Portal - {item}</Button>
             ))}
+            <div className="p-2">
+              <ExampleMenu />
+            </div>
           </Popover.Panel>
         </Popover>
 
