@@ -8,8 +8,14 @@ export abstract class Machine<State, Event extends { type: number | string }> {
   )
   #subscribers: Set<Subscriber<State, any>> = new Set()
 
+  disposables = disposables()
+
   constructor(initialState: State) {
     this.#state = initialState
+  }
+
+  dispose() {
+    this.disposables.dispose()
   }
 
   get state(): Readonly<State> {
@@ -29,16 +35,16 @@ export abstract class Machine<State, Event extends { type: number | string }> {
     }
     this.#subscribers.add(subscriber)
 
-    return () => {
+    return this.disposables.add(() => {
       this.#subscribers.delete(subscriber)
-    }
+    })
   }
 
   on(type: Event['type'], callback: (state: State, event: Event) => void) {
     this.#eventSubscribers.get(type).add(callback)
-    return () => {
+    return this.disposables.add(() => {
       this.#eventSubscribers.get(type).delete(callback)
-    }
+    })
   }
 
   send(event: Event) {
