@@ -404,14 +404,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.Space:
       case Keys.ArrowDown:
         event.preventDefault()
-        flushSync(() => machine.actions.openListbox())
-        if (!data.value) machine.actions.goToOption({ focus: Focus.First })
+        machine.actions.openListbox({ focus: data.value ? Focus.Nothing : Focus.First })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
-        flushSync(() => machine.actions.openListbox())
-        if (!data.value) machine.actions.goToOption({ focus: Focus.Last })
+        machine.actions.openListbox({ focus: data.value ? Focus.Nothing : Focus.Last })
         break
     }
   })
@@ -435,7 +433,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       machine.state.buttonElement?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
-      machine.actions.openListbox()
+      machine.actions.openListbox({ focus: Focus.Nothing })
     }
   })
 
