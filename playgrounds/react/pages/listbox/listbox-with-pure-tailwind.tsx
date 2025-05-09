@@ -54,7 +54,7 @@ export default function Home() {
               <ListboxOptions
                 anchor="bottom"
                 transition
-                className="focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 w-[var(--button-width)] overflow-auto rounded-md border border-gray-300 bg-white py-1 text-base leading-6 shadow-lg transition duration-200 ease-out [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
+                className="focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 w-(--button-width) overflow-auto rounded-md border border-gray-300 bg-white py-1 text-base leading-6 shadow-lg transition duration-200 ease-out [--anchor-gap:--spacing(1)] [--anchor-max-height:--spacing(60)] sm:text-sm sm:leading-5"
               >
                 {people.map((name) => (
                   <ListboxOption
