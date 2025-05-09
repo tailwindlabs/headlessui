@@ -114,10 +114,7 @@ describe('safeguards', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
@@ -146,18 +143,12 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.Visible })
         assertComboboxList({ state: ComboboxState.Visible })
       })
     )
@@ -177,32 +168,23 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await press(Keys.Enter, getComboboxButton())
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         // The input should also be disabled
         assertComboboxInput({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-input-1', disabled: '' },
+          attributes: { disabled: '' },
         })
 
         // And even if we try to focus it, it should not open the combobox
@@ -950,22 +932,13 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-3' },
-        })
-        assertComboboxLabel({
-          attributes: { id: 'headlessui-label-1' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+        assertComboboxLabel({ textContent: JSON.stringify({ open: false, disabled: false }) })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxLabel({
-          attributes: { id: 'headlessui-label-1' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
-        })
+        assertComboboxLabel({ textContent: JSON.stringify({ open: true, disabled: false }) })
         assertComboboxList({ state: ComboboxState.Visible })
         assertComboboxLabelLinkedWithCombobox()
         assertComboboxButtonLinkedWithComboboxLabel()
@@ -1005,7 +978,6 @@ describe('Rendering', () => {
         )
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -1013,7 +985,6 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
         assertComboboxLabel({
-          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
@@ -1040,7 +1011,6 @@ describe('Rendering', () => {
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -1057,7 +1027,6 @@ describe('Rendering', () => {
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -1091,7 +1060,6 @@ describe('Rendering', () => {
 
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -1108,7 +1076,6 @@ describe('Rendering', () => {
 
         assertComboboxButton({
           state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -1142,10 +1109,7 @@ describe('Rendering', () => {
         // TODO: Needed to make it similar to vue test implementation?
         // await new Promise(requestAnimationFrame)
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-3' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxButtonLinkedWithComboboxLabel()
       })
@@ -1260,18 +1224,12 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.Visible })
         assertComboboxList({
           state: ComboboxState.Visible,
           textContent: JSON.stringify({ open: true }),
@@ -1333,18 +1291,12 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
+        assertComboboxButton({ state: ComboboxState.Visible })
         assertComboboxList({
           state: ComboboxState.Visible,
           textContent: JSON.stringify({
@@ -1932,10 +1884,7 @@ describe('Rendering composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open Combobox
@@ -2013,10 +1962,7 @@ describe('Rendering composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open Combobox
@@ -2110,18 +2056,12 @@ describe('Composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       await rawClick(getComboboxButton())
 
-      assertComboboxButton({
-        state: ComboboxState.Visible,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.Visible })
       assertComboboxList({
         state: ComboboxState.Visible,
         textContent: JSON.stringify({
@@ -2228,10 +2168,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2245,10 +2182,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2267,10 +2201,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Try to focus the button
@@ -2280,10 +2211,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Enter)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -2293,10 +2221,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2310,10 +2235,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2344,10 +2266,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               </Combobox>
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleHidden,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleHidden })
             assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
             // Focus the button
@@ -2361,10 +2280,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2399,10 +2315,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2416,10 +2329,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2463,10 +2373,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2480,10 +2387,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2500,10 +2404,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: undefined, disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2513,10 +2414,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Space)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -2526,13 +2424,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
-            assertComboboxList({
-              state: ComboboxState.InvisibleUnmounted,
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             await focus(getComboboxButton())
@@ -2542,10 +2435,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2593,13 +2483,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
               />
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
-            assertComboboxList({
-              state: ComboboxState.InvisibleUnmounted,
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
             await focus(getComboboxButton())
@@ -2623,10 +2508,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2695,10 +2577,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2709,10 +2588,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2731,10 +2607,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2744,10 +2617,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.ArrowDown)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -2757,10 +2627,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2771,10 +2638,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2814,10 +2678,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: undefined }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2828,10 +2689,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2850,10 +2708,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2863,10 +2718,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.ArrowUp)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -2876,10 +2728,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the button
@@ -2890,10 +2739,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -2941,7 +2787,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
             })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -2988,10 +2833,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             render(<Example />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3128,10 +2970,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             render(<Example />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3172,10 +3011,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             render(<Example />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3211,10 +3047,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -3354,10 +3187,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3368,10 +3198,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -3390,10 +3217,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: undefined, disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3403,10 +3227,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.ArrowDown)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -3416,10 +3237,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3430,10 +3248,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -3471,10 +3286,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3514,10 +3326,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               />
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3548,10 +3357,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               />
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3574,10 +3380,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: null }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3603,10 +3406,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: undefined }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3617,10 +3417,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -3639,10 +3436,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ disabled: true }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3652,10 +3446,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.ArrowUp)
 
             // Verify it is still closed
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
           })
         )
@@ -3665,10 +3456,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: 'Option B' }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3679,10 +3467,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -3728,10 +3513,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               />
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3762,10 +3544,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               />
             )
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Open combobox
@@ -3795,10 +3574,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             render(<MyCombobox comboboxProps={{ value: undefined }} />)
 
-            assertComboboxButton({
-              state: ComboboxState.InvisibleUnmounted,
-              attributes: { id: 'headlessui-combobox-button-2' },
-            })
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // Focus the input
@@ -3809,10 +3585,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify it is visible
             assertComboboxButton({ state: ComboboxState.Visible })
-            assertComboboxList({
-              state: ComboboxState.Visible,
-              attributes: { id: 'headlessui-combobox-options-3' },
-            })
+            assertComboboxList({ state: ComboboxState.Visible })
             assertActiveElement(getComboboxInput())
             assertComboboxButtonLinkedWithCombobox()
 
@@ -4710,10 +4483,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox comboboxProps={{ immediate: true }} label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
@@ -4721,10 +4491,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
 
       // Verify it is visible
       assertComboboxButton({ state: ComboboxState.Visible })
-      assertComboboxList({
-        state: ComboboxState.Visible,
-        attributes: { id: 'headlessui-combobox-options-3' },
-      })
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
 
@@ -4740,20 +4507,14 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-3' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
       await focus(getComboboxInput())
 
       // Verify it is invisible
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-3' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
@@ -4763,20 +4524,14 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox comboboxProps={{ immediate: true, disabled: true }} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-3' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Focus the input
       await focus(getComboboxInput())
 
       // Verify it is invisible
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-3' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
@@ -4830,10 +4585,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
@@ -4841,10 +4593,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
 
       // Verify it is visible
       assertComboboxButton({ state: ComboboxState.Visible })
-      assertComboboxList({
-        state: ComboboxState.Visible,
-        attributes: { id: 'headlessui-combobox-options-3' },
-      })
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
 
@@ -4860,10 +4609,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
@@ -4879,20 +4625,14 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox comboboxProps={{ value: undefined, disabled: true }} label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
       await click(getComboboxButton())
 
       // Verify it is still closed
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
@@ -4902,10 +4642,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox comboboxProps={{ value: 'Option B' }} label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
@@ -4913,10 +4650,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
 
       // Verify it is visible
       assertComboboxButton({ state: ComboboxState.Visible })
-      assertComboboxList({
-        state: ComboboxState.Visible,
-        attributes: { id: 'headlessui-combobox-options-3' },
-      })
+      assertComboboxList({ state: ComboboxState.Visible })
       assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
 
@@ -5460,18 +5194,12 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       render(<MyCombobox optionsProps={{ hold: true }} label={false} />)
 
-      assertComboboxButton({
-        state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       await click(getComboboxButton())
 
-      assertComboboxButton({
-        state: ComboboxState.Visible,
-        attributes: { id: 'headlessui-combobox-button-2' },
-      })
+      assertComboboxButton({ state: ComboboxState.Visible })
       assertComboboxList({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
