@@ -11,8 +11,6 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Dialog } from '../dialog/dialog'
 import { Tab } from './tabs'
 
-jest.mock('../../hooks/use-id')
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)

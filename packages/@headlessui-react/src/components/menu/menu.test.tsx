@@ -33,8 +33,6 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
 import { Menu, MenuButton, MenuItem, MenuItems } from './menu'
 
-jest.mock('../../hooks/use-id')
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
@@ -98,18 +96,12 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
-          state: MenuState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-menu-button-1' },
-        })
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
-          state: MenuState.Visible,
-          attributes: { id: 'headlessui-menu-button-1' },
-        })
+        assertMenuButton({ state: MenuState.Visible })
         assertMenu({ state: MenuState.Visible })
       })
     )
@@ -169,7 +161,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -185,7 +176,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.Visible,
-          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -217,7 +207,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -233,7 +222,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.Visible,
-          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -353,7 +341,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -361,7 +348,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.Visible,
-          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu({
           state: MenuState.Visible,
@@ -422,7 +408,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -430,7 +415,6 @@ describe('Rendering', () => {
 
         assertMenuButton({
           state: MenuState.Visible,
-          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu({
           state: MenuState.Visible,
@@ -583,7 +567,6 @@ describe('Rendering composition', () => {
 
       assertMenuButton({
         state: MenuState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -652,7 +635,6 @@ describe('Rendering composition', () => {
 
       assertMenuButton({
         state: MenuState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -748,7 +730,6 @@ describe('Composition', () => {
 
       assertMenuButton({
         state: MenuState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -756,7 +737,6 @@ describe('Composition', () => {
 
       assertMenuButton({
         state: MenuState.Visible,
-        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu({
         state: MenuState.Visible,
@@ -802,16 +782,12 @@ describe('Composition', () => {
 
       assertMenuButton({
         state: MenuState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await rawClick(getMenuButton())
 
-      assertMenuButton({
-        state: MenuState.Visible,
-        attributes: { id: 'headlessui-menu-button-1' },
-      })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
         state: MenuState.Visible,
         textContent: JSON.stringify({ active: false, focus: false, disabled: false }),

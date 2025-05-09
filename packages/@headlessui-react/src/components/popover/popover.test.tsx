@@ -18,8 +18,6 @@ import { Portal } from '../portal/portal'
 import { Transition } from '../transition/transition'
 import { Popover, PopoverButton, PopoverPanel } from './popover'
 
-jest.mock('../../hooks/use-id')
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
@@ -57,10 +55,7 @@ describe('Safe guards', () => {
         </Popover>
       )
 
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
@@ -124,18 +119,12 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({ state: PopoverState.Visible, textContent: 'Panel is: open' })
       })
     )
@@ -349,18 +338,12 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
@@ -376,7 +359,6 @@ describe('Rendering', () => {
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -392,7 +374,6 @@ describe('Rendering', () => {
 
         assertPopoverButton({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -420,7 +401,6 @@ describe('Rendering', () => {
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({
             open: false,
             active: false,
@@ -436,7 +416,6 @@ describe('Rendering', () => {
 
         assertPopoverButton({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({
             open: true,
             active: true,
@@ -522,18 +501,12 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({
           state: PopoverState.Visible,
           textContent: JSON.stringify({ open: true }),
@@ -1032,10 +1005,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -1046,10 +1016,7 @@ describe('Keyboard interactions', () => {
 
         // Verify it is open
         assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-3' },
-        })
+        assertPopoverPanel({ state: PopoverState.Visible })
 
         // Close popover
         await press(Keys.Enter)
@@ -1067,10 +1034,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -1080,10 +1044,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is still closed
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
@@ -1098,10 +1059,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -1112,10 +1070,7 @@ describe('Keyboard interactions', () => {
 
         // Verify it is open
         assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-3' },
-        })
+        assertPopoverPanel({ state: PopoverState.Visible })
 
         // Close popover
         await press(Keys.Enter)
@@ -2081,10 +2036,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -2095,10 +2047,7 @@ describe('Keyboard interactions', () => {
 
         // Verify it is open
         assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-3' },
-        })
+        assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
 
@@ -2112,10 +2061,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -2125,10 +2071,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is still closed
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
@@ -2143,10 +2086,7 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
-          state: PopoverState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-popover-button-1' },
-        })
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
@@ -2157,10 +2097,7 @@ describe('Keyboard interactions', () => {
 
         // Verify it is open
         assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
-          state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-3' },
-        })
+        assertPopoverPanel({ state: PopoverState.Visible })
 
         // Close popover
         await press(Keys.Space)
@@ -2292,10 +2229,7 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Open popover
@@ -2303,10 +2237,7 @@ describe('Mouse interactions', () => {
 
       // Verify it is open
       assertPopoverButton({ state: PopoverState.Visible })
-      assertPopoverPanel({
-        state: PopoverState.Visible,
-        attributes: { id: 'headlessui-popover-panel-3' },
-      })
+      assertPopoverPanel({ state: PopoverState.Visible })
     })
   )
 
@@ -2320,20 +2251,14 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Open popover
       await click(getPopoverButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
@@ -2348,20 +2273,14 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Try to open the popover
       await click(getPopoverButton())
 
       // Verify it is still closed
-      assertPopoverButton({
-        state: PopoverState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-popover-button-1' },
-      })
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
