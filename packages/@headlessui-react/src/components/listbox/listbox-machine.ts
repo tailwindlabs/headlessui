@@ -61,6 +61,7 @@ interface State<T> {
   optionsElement: HTMLElement | null
 
   pendingShouldSort: boolean
+  pendingFocus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
 }
 
 export enum ActionTypes {
@@ -111,7 +112,10 @@ function adjustOrderedState<T>(
 
 type Actions<T> =
   | { type: ActionTypes.CloseListbox }
-  | { type: ActionTypes.OpenListbox }
+  | {
+      type: ActionTypes.OpenListbox
+      focus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
+    }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
   | {
       type: ActionTypes.GoToOption
@@ -138,11 +142,12 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: null,
+      pendingFocus: { focus: Focus.Nothing },
       listboxState: ListboxStates.Closed,
       __demoMode: false,
     }
   },
-  [ActionTypes.OpenListbox](state) {
+  [ActionTypes.OpenListbox](state, action) {
     if (state.dataRef.current.disabled) return state
     if (state.listboxState === ListboxStates.Open) return state
 
@@ -155,7 +160,13 @@ let reducers: {
       activeOptionIndex = optionIdx
     }
 
-    return { ...state, listboxState: ListboxStates.Open, activeOptionIndex, __demoMode: false }
+    return {
+      ...state,
+      pendingFocus: action.focus,
+      listboxState: ListboxStates.Open,
+      activeOptionIndex,
+      __demoMode: false,
+    }
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current.disabled) return state
@@ -311,6 +322,14 @@ let reducers: {
     let options = state.options.concat(action.options)
 
     let activeOptionIndex = state.activeOptionIndex
+    if (state.pendingFocus.focus !== Focus.Nothing) {
+      activeOptionIndex = calculateActiveIndex(state.pendingFocus, {
+        resolveItems: () => options,
+        resolveActiveIndex: () => state.activeOptionIndex,
+        resolveId: (item) => item.id,
+        resolveDisabled: (item) => item.dataRef.current.disabled,
+      })
+    }
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
@@ -325,6 +344,7 @@ let reducers: {
       ...state,
       options,
       activeOptionIndex,
+      pendingFocus: { focus: Focus.Nothing },
       pendingShouldSort: true,
     }
   },
@@ -385,6 +405,8 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       activationTrigger: ActivationTrigger.Other,
       buttonElement: null,
       optionsElement: null,
+      pendingShouldSort: false,
+      pendingFocus: { focus: Focus.Nothing },
       __demoMode,
     })
   }
@@ -464,8 +486,10 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
     closeListbox: () => {
       this.send({ type: ActionTypes.CloseListbox })
     },
-    openListbox: () => {
-      this.send({ type: ActionTypes.OpenListbox })
+    openListbox: (
+      focus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
+    ) => {
+      this.send({ type: ActionTypes.OpenListbox, focus })
     },
     selectActiveOption: () => {
       if (this.state.activeOptionIndex !== null) {
