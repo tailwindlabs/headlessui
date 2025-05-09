@@ -37,8 +37,6 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from './listbox'
 
-jest.mock('../../hooks/use-id')
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)

@@ -52,8 +52,6 @@ import {
 
 let NOOP = () => {}
 
-jest.mock('../../hooks/use-id')
-
 // Mocking the `getBoundingClientRect` method for the virtual tests otherwise
 // the `Virtualizer` from `@tanstack/react-virtual` will not work as expected
 // because it couldn't measure the elements correctly.

@@ -14,8 +14,6 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 
-jest.mock('../../hooks/use-id')
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {

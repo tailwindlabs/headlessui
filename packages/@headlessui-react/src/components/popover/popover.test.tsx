@@ -18,8 +18,6 @@ import { Portal } from '../portal/portal'
 import { Transition } from '../transition/transition'
 import { Popover, PopoverButton, PopoverPanel } from './popover'
 
-jest.mock('../../hooks/use-id')
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {

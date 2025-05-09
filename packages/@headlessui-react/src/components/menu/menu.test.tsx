@@ -33,8 +33,6 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
 import { Menu, MenuButton, MenuItem, MenuItems } from './menu'
 
-jest.mock('../../hooks/use-id')
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)

@@ -11,8 +11,6 @@ import {
 import { click, focus, Keys, mouseEnter, press } from '../../test-utils/interactions'
 import { Switch } from './switch'
 
-jest.mock('../../hooks/use-id')
-
 describe('Safe guards', () => {
   it('should be possible to render a Switch without crashing', () => {
     render(<Switch checked={false} onChange={console.log} />)

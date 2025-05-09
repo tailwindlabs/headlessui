@@ -21,8 +21,6 @@ import { Popover } from '../popover/popover'
 import { Transition } from '../transition/transition'
 import { Dialog } from './dialog'
 
-jest.mock('../../hooks/use-id')
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
