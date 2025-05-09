@@ -2283,6 +2283,18 @@ describe('Keyboard interactions', () => {
         )
 
         assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        await focus(getListboxButton())
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        // Verify it is visible
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
+
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
