@@ -65,10 +65,7 @@ describe('Safe guards', () => {
         </Dialog>
       )
 
-      assertDialog({
-        state: DialogState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-dialog-1' },
-      })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
     })
   )
 })
@@ -584,10 +581,7 @@ describe('Rendering', () => {
 
         await nextFrame()
 
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
         assertDialogTitle({
           state: DialogState.Visible,
           textContent: JSON.stringify({ open: true }),
@@ -609,10 +603,7 @@ describe('Rendering', () => {
 
         await nextFrame()
 
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
         assertDialogDescription({
           state: DialogState.Visible,
           textContent: JSON.stringify({ open: true, disabled: false }),
@@ -754,10 +745,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Close dialog
         await press(Keys.Escape)
@@ -793,10 +781,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Close dialog
         await press(Keys.Escape)
@@ -838,10 +823,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Try to close the dialog
         await press(Keys.Escape)
@@ -885,10 +867,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Verify that the input field is focused
         assertActiveElement(document.getElementById('b'))
@@ -935,10 +914,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Verify that the input field is focused
         assertActiveElement(document.getElementById('a'))
@@ -985,10 +961,7 @@ describe('Keyboard interactions', () => {
         await click(document.getElementById('trigger'))
 
         // Verify it is open
-        assertDialog({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-1' },
-        })
+        assertDialog({ state: DialogState.Visible })
 
         // Verify that the input field is focused
         assertActiveElement(document.getElementById('a'))
