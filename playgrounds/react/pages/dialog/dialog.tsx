@@ -95,6 +95,7 @@ export default function Home() {
 
               <Transition.Child
                 as="div"
+                className="relative"
                 enter="ease-out transform duration-300"
                 enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 enterTo="opacity-100 translate-y-0 sm:scale-100"
