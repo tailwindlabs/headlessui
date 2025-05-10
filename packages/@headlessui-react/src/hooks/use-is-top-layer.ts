@@ -1,27 +1,7 @@
-import { useId } from 'react'
-import { DefaultMap } from '../utils/default-map'
-import { createStore } from '../utils/store'
+import { useCallback, useId } from 'react'
+import { stackMachines } from '../machines/stack-machine'
+import { useSlice } from '../react-glue'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
-import { useStore } from './use-store'
-
-/**
- * Map of stable hierarchy stores based on a given scope.
- */
-let hierarchyStores = new DefaultMap(() =>
-  createStore(() => [] as string[], {
-    ADD(id: string) {
-      if (this.includes(id)) return this
-      return [...this, id]
-    },
-    REMOVE(id: string) {
-      let idx = this.indexOf(id)
-      if (idx === -1) return this
-      let copy = this.slice()
-      copy.splice(idx, 1)
-      return copy
-    },
-  })
-)
 
 /**
  * A hook that returns whether the current node is on the top of the hierarchy,
@@ -46,32 +26,41 @@ let hierarchyStores = new DefaultMap(() =>
  * </Dialog>
  * ```
  */
-export function useIsTopLayer(enabled: boolean, scope: string) {
-  let hierarchyStore = hierarchyStores.get(scope)
+export function useIsTopLayer(enabled: boolean, scope: string | null) {
   let id = useId()
-  let hierarchy = useStore(hierarchyStore)
+  let stackMachine = stackMachines.get(scope)
 
+  let [isTop, onStack] = useSlice(
+    stackMachine,
+    useCallback(
+      (state) => [
+        stackMachine.selectors.isTop(state, id),
+        stackMachine.selectors.inStack(state, id),
+      ],
+      [stackMachine, id, enabled]
+    )
+  )
+
+  // Depending on the enable state, push/pop the current `id` to/from the
+  // hierarchy.
   useIsoMorphicEffect(() => {
     if (!enabled) return
+    stackMachine.actions.push(id)
+    return () => stackMachine.actions.pop(id)
+  }, [stackMachine, enabled, id])
 
-    hierarchyStore.dispatch('ADD', id)
-    return () => hierarchyStore.dispatch('REMOVE', id)
-  }, [hierarchyStore, enabled])
-
+  // If the hook is not enabled, we know for sure it is not going to tbe the
+  // top-most item.
   if (!enabled) return false
 
-  let idx = hierarchy.indexOf(id)
-  let hierarchyLength = hierarchy.length
+  // If the hook is enabled, and it's on the stack, we can rely on the `isTop`
+  // derived state to determine if it's the top-most item.
+  if (onStack) return isTop
 
-  // Not in the hierarchy yet
-  if (idx === -1) {
-    // Assume that it will be inserted at the end, then it means that the `idx`
-    // will be the length of the current hierarchy.
-    idx = hierarchyLength
-
-    // Increase the hierarchy length as-if the node is already in the hierarchy.
-    hierarchyLength += 1
-  }
-
-  return idx === hierarchyLength - 1
+  // In this scenario, the hook is enabled, but we are not on the stack yet. In
+  // this case we assume that we will be the top-most item, so we return
+  // `true`. However, if that's not the case, and once we are on the stack (or
+  // other items are pushed) this hook will be re-evaluated and the `isTop`
+  // derived state will be used instead.
+  return true
 }
