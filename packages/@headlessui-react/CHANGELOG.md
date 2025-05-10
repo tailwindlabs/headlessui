@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure clicking on interactive elements inside `Label` component works ([#3709](https://github.com/tailwindlabs/headlessui/pull/3709))
 - Fix focus not returned to SVG Element ([#3704](https://github.com/tailwindlabs/headlessui/pull/3704))
 - Fix `Listbox` not focusing first or last option on ArrowUp / ArrowDown ([#3721](https://github.com/tailwindlabs/headlessui/pull/3721))
+- Performance improvement: only re-render top-level component when nesting components e.g.: `Menu` inside a `Dialog` ([#3722](https://github.com/tailwindlabs/headlessui/pull/3722))
 
 ## [2.2.2] - 2025-04-17
 
