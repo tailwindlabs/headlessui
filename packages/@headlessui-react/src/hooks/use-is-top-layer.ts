@@ -37,7 +37,7 @@ export function useIsTopLayer(enabled: boolean, scope: string | null) {
         stackMachine.selectors.isTop(state, id),
         stackMachine.selectors.inStack(state, id),
       ],
-      [stackMachine, id, enabled]
+      [stackMachine, id]
     )
   )
 
@@ -49,7 +49,7 @@ export function useIsTopLayer(enabled: boolean, scope: string | null) {
     return () => stackMachine.actions.pop(id)
   }, [stackMachine, enabled, id])
 
-  // If the hook is not enabled, we know for sure it is not going to tbe the
+  // If the hook is not enabled, we know for sure it is not going to be the
   // top-most item.
   if (!enabled) return false
 
