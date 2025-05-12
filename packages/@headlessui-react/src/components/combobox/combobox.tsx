@@ -288,6 +288,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   props: ComboboxProps<TValue, boolean | undefined, TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let id = useId()
+
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
@@ -315,7 +317,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     defaultValue
   )
 
-  let machine = useComboboxMachine({ virtual, __demoMode })
+  let machine = useComboboxMachine({ virtual, __demoMode, id })
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 

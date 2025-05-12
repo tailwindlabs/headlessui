@@ -5,6 +5,7 @@ import React, {
   Fragment,
   createContext,
   createRef,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -22,6 +23,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
@@ -36,6 +38,8 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
 import { ResetOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
+import { stackMachines } from '../../machines/stack-machine'
+import { useSlice } from '../../react-glue'
 import type { Props } from '../../types'
 import { match } from '../../utils/match'
 import {
@@ -212,6 +216,18 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     ]),
   })
 
+  // Ensure that the Dialog is the top layer when it is opened.
+  //
+  // In a perfect world this is pushed / popped when we open / close the Dialog
+  // for within an event listener. But since the state is controlled by the
+  // user, this is the next best thing to do.
+  let stackMachine = stackMachines.get(null)
+  useIsoMorphicEffect(() => {
+    if (!enabled) return
+
+    stackMachine.actions.push(id)
+    return () => stackMachine.actions.pop(id)
+  }, [stackMachine, id, enabled])
   // Close Dialog on outside click
   useOutsideClick(enabled, resolveRootContainers, (event) => {
     event.preventDefault()

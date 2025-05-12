@@ -1,4 +1,5 @@
 import { Machine } from '../../machine'
+import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import type { EnsureArray } from '../../types'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { sortByDomNode } from '../../utils/focus-management'
@@ -32,6 +33,8 @@ export type ComboboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 export interface State<T> {
+  id: string
+
   dataRef: MutableRefObject<{
     value: unknown
     defaultValue: unknown
@@ -407,6 +410,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
   static new<T, TMultiple extends boolean | undefined>({
     virtual = null,
     __demoMode = false,
+    id = globalThis.crypto.randomUUID() as string,
   }: {
     virtual?: {
       options: TMultiple extends true ? EnsureArray<NoInfer<T>> : NoInfer<T>[]
@@ -415,8 +419,10 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       ) => boolean
     } | null
     __demoMode?: boolean
+    id?: string
   } = {}) {
     return new ComboboxMachine({
+      id,
       // @ts-expect-error TODO: Re-structure such that we don't need to ignore this
       dataRef: { current: {} },
       comboboxState: __demoMode ? ComboboxState.Open : ComboboxState.Closed,
@@ -433,6 +439,31 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       optionsElement: null,
       __demoMode,
     })
+  }
+
+  constructor(initialState: State<T>) {
+    super(initialState)
+
+    // When the combobox is open, and it's not on the top of the hierarchy, we
+    // should close it again.
+    {
+      let id = this.state.id
+      let stackMachine = stackMachines.get(null)
+
+      this.disposables.add(
+        stackMachine.on(StackActionTypes.Push, (state) => {
+          if (
+            !stackMachine.selectors.isTop(state, id) &&
+            this.state.comboboxState === ComboboxState.Open
+          ) {
+            this.actions.closeCombobox()
+          }
+        })
+      )
+
+      this.on(ActionTypes.OpenCombobox, () => stackMachine.actions.push(id))
+      this.on(ActionTypes.CloseCombobox, () => stackMachine.actions.pop(id))
+    }
   }
 
   actions = {

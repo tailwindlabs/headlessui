@@ -95,8 +95,10 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let id = useId()
+
   let { __demoMode = false, ...theirProps } = props
-  let machine = useMenuMachine({ __demoMode })
+  let machine = useMenuMachine({ __demoMode, id })
 
   let [menuState, itemsElement, buttonElement] = useSlice(machine, (state) => [
     state.menuState,

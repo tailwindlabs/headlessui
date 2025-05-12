@@ -135,8 +135,10 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   props: PopoverProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let id = useId()
+
   let { __demoMode = false, ...theirProps } = props
-  let machine = usePopoverMachine({ __demoMode })
+  let machine = usePopoverMachine({ __demoMode, id })
 
   let internalPopoverRef = useRef<HTMLElement | null>(null)
   let popoverRef = useSyncRefs(

@@ -16,8 +16,9 @@ export function useComboboxMachineContext<T>(component: string) {
 export function useComboboxMachine({
   virtual = null,
   __demoMode = false,
+  id = globalThis.crypto.randomUUID() as string,
 }: Parameters<typeof ComboboxMachine.new>[0] = {}) {
-  let machine = useMemo(() => ComboboxMachine.new({ virtual, __demoMode }), [])
+  let machine = useMemo(() => ComboboxMachine.new({ virtual, __demoMode, id }), [])
   useOnUnmount(() => machine.dispose())
   return machine
 }

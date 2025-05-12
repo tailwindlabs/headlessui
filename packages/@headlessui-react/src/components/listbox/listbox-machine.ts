@@ -1,4 +1,5 @@
 import { Machine, batch } from '../../machine'
+import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
@@ -30,6 +31,8 @@ type ListboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 interface State<T> {
+  id: string
+
   __demoMode: boolean
 
   dataRef: MutableRefObject<{
@@ -394,8 +397,9 @@ let reducers: {
 }
 
 export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
-  static new({ __demoMode = false } = {}) {
+  static new({ __demoMode = false, id = globalThis.crypto.randomUUID() as string } = {}) {
     return new ListboxMachine({
+      id,
       // @ts-expect-error TODO: Re-structure such that we don't need to ignore this
       dataRef: { current: {} },
       listboxState: __demoMode ? ListboxStates.Open : ListboxStates.Closed,
@@ -422,6 +426,27 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
         this.send({ type: ActionTypes.SortOptions })
       })
     })
+
+    // When the listbox is open, and it's not on the top of the hierarchy, we
+    // should close it again.
+    {
+      let id = this.state.id
+      let stackMachine = stackMachines.get(null)
+
+      this.disposables.add(
+        stackMachine.on(StackActionTypes.Push, (state) => {
+          if (
+            !stackMachine.selectors.isTop(state, id) &&
+            this.state.listboxState === ListboxStates.Open
+          ) {
+            this.actions.closeListbox()
+          }
+        })
+      )
+
+      this.on(ActionTypes.OpenListbox, () => stackMachine.actions.push(id))
+      this.on(ActionTypes.CloseListbox, () => stackMachine.actions.pop(id))
+    }
   }
 
   actions = {

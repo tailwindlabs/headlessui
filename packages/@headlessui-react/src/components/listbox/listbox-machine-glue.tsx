@@ -13,8 +13,11 @@ export function useListboxMachineContext<T>(component: string) {
   return context as ListboxMachine<T>
 }
 
-export function useListboxMachine({ __demoMode = false } = {}) {
-  let machine = useMemo(() => ListboxMachine.new({ __demoMode }), [])
+export function useListboxMachine({
+  __demoMode = false,
+  id = globalThis.crypto.randomUUID() as string,
+} = {}) {
+  let machine = useMemo(() => ListboxMachine.new({ __demoMode, id }), [])
   useOnUnmount(() => machine.dispose())
   return machine
 }

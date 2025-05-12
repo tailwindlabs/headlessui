@@ -162,6 +162,8 @@ function ListboxFn<
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType,
 >(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<HTMLElement>) {
+  let id = useId()
+
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
@@ -188,7 +190,7 @@ function ListboxFn<
     defaultValue
   )
 
-  let machine = useListboxMachine({ __demoMode })
+  let machine = useListboxMachine({ __demoMode, id })
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
   let listRef = useRef<_Data['listRef']['current']>(new Map())
