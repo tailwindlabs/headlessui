@@ -411,8 +411,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   )
 
   // Handle outside click
-  let outsideClickEnabled = isTopLayer
-  useOutsideClick(outsideClickEnabled, [buttonElement, inputElement, optionsElement], () =>
+  useOutsideClick(isTopLayer, [buttonElement, inputElement, optionsElement], () =>
     machine.actions.closeCombobox()
   )
 

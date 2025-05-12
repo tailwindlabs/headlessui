@@ -114,8 +114,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
   )
 
-  let outsideClickEnabled = isTopLayer
-  useOutsideClick(outsideClickEnabled, [buttonElement, itemsElement], (event, target) => {
+  useOutsideClick(isTopLayer, [buttonElement, itemsElement], (event, target) => {
     machine.send({ type: ActionTypes.CloseMenu })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {

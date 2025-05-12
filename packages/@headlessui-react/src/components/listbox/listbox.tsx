@@ -256,8 +256,7 @@ function ListboxFn<
   ])
 
   // Handle outside click
-  let outsideClickEnabled = isTopLayer
-  useOutsideClick(outsideClickEnabled, [buttonElement, optionsElement], (event, target) => {
+  useOutsideClick(isTopLayer, [buttonElement, optionsElement], (event, target) => {
     machine.send({ type: ActionTypes.CloseListbox })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {
