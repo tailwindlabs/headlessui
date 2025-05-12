@@ -30,7 +30,7 @@ export default function Home() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Overlay className="fixed inset-0 z-20 bg-gray-500 bg-opacity-75"></Popover.Overlay>
+            <Popover.Overlay className="fixed inset-0 z-20 bg-gray-500/75"></Popover.Overlay>
           </Transition>
 
           <Popover.Button className="focus:outline-hidden relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900">
