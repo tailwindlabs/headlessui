@@ -801,7 +801,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (popoverState === PopoverStates.Closed && (props.unmount ?? true)) {
       machine.actions.setPanel(null)
     }
-  }, [popoverState, props.unmount, props.static])
+  }, [popoverState, props.unmount, props.static, machine])
 
   // Move focus within panel
   useEffect(() => {
