@@ -7,7 +7,7 @@ import { useIsTopLayer } from './use-is-top-layer'
 import { useLatestValue } from './use-latest-value'
 import { useWindowEvent } from './use-window-event'
 
-type Container = HTMLElement | null
+type Container = Element | null
 type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
