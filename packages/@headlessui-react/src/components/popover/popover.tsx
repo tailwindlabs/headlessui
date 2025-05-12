@@ -4,15 +4,13 @@ import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import React, {
   createContext,
-  createRef,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState,
   type ContextType,
-  type Dispatch,
   type ElementType,
   type MouseEventHandler,
   type MutableRefObject,
@@ -57,6 +55,7 @@ import {
   State,
   useOpenClosed,
 } from '../../internal/open-closed'
+import { useSlice } from '../../react-glue'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import * as DOM from '../../utils/dom'
@@ -82,117 +81,10 @@ import {
 } from '../../utils/render'
 import { Keys } from '../keyboard'
 import { Portal, useNestedPortals } from '../portal/portal'
+import { PopoverStates } from './popover-machine'
+import { PopoverContext, usePopoverMachine, usePopoverMachineContext } from './popover-machine-glue'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
-
-enum PopoverStates {
-  Open,
-  Closed,
-}
-
-interface StateDefinition {
-  popoverState: PopoverStates
-
-  buttons: MutableRefObject<Symbol[]>
-
-  button: HTMLElement | null
-  buttonId: string | null
-  panel: HTMLElement | null
-  panelId: string | null
-
-  beforePanelSentinel: MutableRefObject<HTMLButtonElement | null>
-  afterPanelSentinel: MutableRefObject<HTMLButtonElement | null>
-  afterButtonSentinel: MutableRefObject<HTMLButtonElement | null>
-
-  __demoMode: boolean
-}
-
-enum ActionTypes {
-  TogglePopover,
-  ClosePopover,
-
-  SetButton,
-  SetButtonId,
-  SetPanel,
-  SetPanelId,
-}
-
-type Actions =
-  | { type: ActionTypes.TogglePopover }
-  | { type: ActionTypes.ClosePopover }
-  | { type: ActionTypes.SetButton; button: HTMLElement | null }
-  | { type: ActionTypes.SetButtonId; buttonId: string | null }
-  | { type: ActionTypes.SetPanel; panel: HTMLElement | null }
-  | { type: ActionTypes.SetPanelId; panelId: string | null }
-
-let reducers: {
-  [P in ActionTypes]: (
-    state: StateDefinition,
-    action: Extract<Actions, { type: P }>
-  ) => StateDefinition
-} = {
-  [ActionTypes.TogglePopover]: (state) => {
-    return {
-      ...state,
-      popoverState: match(state.popoverState, {
-        [PopoverStates.Open]: PopoverStates.Closed,
-        [PopoverStates.Closed]: PopoverStates.Open,
-      }),
-      __demoMode: false,
-    }
-  },
-  [ActionTypes.ClosePopover](state) {
-    if (state.popoverState === PopoverStates.Closed) return state
-    return { ...state, popoverState: PopoverStates.Closed, __demoMode: false }
-  },
-  [ActionTypes.SetButton](state, action) {
-    if (state.button === action.button) return state
-    return { ...state, button: action.button }
-  },
-  [ActionTypes.SetButtonId](state, action) {
-    if (state.buttonId === action.buttonId) return state
-    return { ...state, buttonId: action.buttonId }
-  },
-  [ActionTypes.SetPanel](state, action) {
-    if (state.panel === action.panel) return state
-    return { ...state, panel: action.panel }
-  },
-  [ActionTypes.SetPanelId](state, action) {
-    if (state.panelId === action.panelId) return state
-    return { ...state, panelId: action.panelId }
-  },
-}
-
-let PopoverContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
-PopoverContext.displayName = 'PopoverContext'
-
-function usePopoverContext(component: string) {
-  let context = useContext(PopoverContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverContext)
-    throw err
-  }
-  return context
-}
-
-let PopoverAPIContext = createContext<{
-  close: (
-    focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
-  ) => void
-  isPortalled: boolean
-} | null>(null)
-PopoverAPIContext.displayName = 'PopoverAPIContext'
-
-function usePopoverAPIContext(component: string) {
-  let context = useContext(PopoverAPIContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverAPIContext)
-    throw err
-  }
-  return context
-}
 
 let PopoverGroupContext = createContext<{
   registerPopover: (registerBag: PopoverRegisterBag) => void
@@ -217,9 +109,6 @@ interface PopoverRegisterBag {
   buttonId: MutableRefObject<string | null>
   panelId: MutableRefObject<string | null>
   close: () => void
-}
-function stateReducer(state: StateDefinition, action: Actions) {
-  return match(action.type, reducers, state, action)
 }
 
 // ---
@@ -247,6 +136,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let { __demoMode = false, ...theirProps } = props
+  let machine = usePopoverMachine({ __demoMode })
+
   let internalPopoverRef = useRef<HTMLElement | null>(null)
   let popoverRef = useSyncRefs(
     ref,
@@ -255,70 +146,14 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     })
   )
 
-  let buttons = useRef([])
-  let reducerBag = useReducer(stateReducer, {
-    __demoMode,
-    popoverState: __demoMode ? PopoverStates.Open : PopoverStates.Closed,
-    buttons,
-    button: null,
-    buttonId: null,
-    panel: null,
-    panelId: null,
-    beforePanelSentinel: createRef(),
-    afterPanelSentinel: createRef(),
-    afterButtonSentinel: createRef(),
-  } as StateDefinition)
-  let [
-    {
-      popoverState,
-      button,
-      buttonId,
-      panel,
-      panelId,
-      beforePanelSentinel,
-      afterPanelSentinel,
-      afterButtonSentinel,
-    },
-    dispatch,
-  ] = reducerBag
+  let [popoverState, button, panel, buttonId, panelId] = useSlice(
+    machine,
+    useCallback((state) => {
+      return [state.popoverState, state.button, state.panel, state.buttonId, state.panelId] as const
+    }, [])
+  )
 
   let ownerDocument = useOwnerDocument(internalPopoverRef.current ?? button)
-
-  let isPortalled = useMemo(() => {
-    if (!button) return false
-    if (!panel) return false
-
-    // We are part of a different "root" tree, so therefore we can consider it portalled. This is a
-    // heuristic because 3rd party tools could use some form of portal, typically rendered at the
-    // end of the body but we don't have an actual reference to that.
-    for (let root of document.querySelectorAll('body > *')) {
-      if (Number(root?.contains(button)) ^ Number(root?.contains(panel))) {
-        return true
-      }
-    }
-
-    // Use another heuristic to try and calculate whether or not the focusable
-    // elements are near each other (aka, following the default focus/tab order
-    // from the browser). If they are then it doesn't really matter if they are
-    // portalled or not because we can follow the default tab order. But if they
-    // are not, then we can consider it being portalled so that we can ensure
-    // that tab and shift+tab (hopefully) go to the correct spot.
-    let elements = getFocusableElements()
-    let buttonIdx = elements.indexOf(button)
-
-    let beforeIdx = (buttonIdx + elements.length - 1) % elements.length
-    let afterIdx = (buttonIdx + 1) % elements.length
-
-    let beforeElement = elements[beforeIdx]
-    let afterElement = elements[afterIdx]
-
-    if (!panel.contains(beforeElement) && !panel.contains(afterElement)) {
-      return true
-    }
-
-    // It may or may not be portalled, but we don't really know.
-    return false
-  }, [button, panel])
 
   let buttonIdRef = useLatestValue(buttonId)
   let panelIdRef = useLatestValue(panelId)
@@ -327,9 +162,9 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     () => ({
       buttonId: buttonIdRef,
       panelId: panelIdRef,
-      close: () => dispatch({ type: ActionTypes.ClosePopover }),
+      close: machine.actions.close,
     }),
-    [buttonIdRef, panelIdRef, dispatch]
+    [buttonIdRef, panelIdRef, machine]
   )
 
   let groupContext = usePopoverGroupContext()
@@ -350,7 +185,18 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   let root = useRootContainers({
     mainTreeNode,
     portals,
-    defaultContainers: [button, panel],
+    defaultContainers: [
+      {
+        get current() {
+          return machine.state.button
+        },
+      },
+      {
+        get current() {
+          return machine.state.panel
+        },
+      },
+    ],
   })
 
   // Handle focus out
@@ -360,16 +206,16 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     (event) => {
       if (event.target === window) return
       if (!DOM.isHTMLorSVGElement(event.target)) return
-      if (popoverState !== PopoverStates.Open) return
+      if (machine.state.popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
-      if (!button) return
-      if (!panel) return
+      if (!machine.state.button) return
+      if (!machine.state.panel) return
       if (root.contains(event.target)) return
-      if (beforePanelSentinel.current?.contains?.(event.target)) return
-      if (afterPanelSentinel.current?.contains?.(event.target)) return
-      if (afterButtonSentinel.current?.contains?.(event.target)) return
+      if (machine.state.beforePanelSentinel.current?.contains?.(event.target)) return
+      if (machine.state.afterPanelSentinel.current?.contains?.(event.target)) return
+      if (machine.state.afterButtonSentinel.current?.contains?.(event.target)) return
 
-      dispatch({ type: ActionTypes.ClosePopover })
+      machine.actions.close()
     },
     true
   )
@@ -377,7 +223,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   // Handle outside click
   let outsideClickEnabled = popoverState === PopoverStates.Open
   useOutsideClick(outsideClickEnabled, root.resolveContainers, (event, target) => {
-    dispatch({ type: ActionTypes.ClosePopover })
+    machine.actions.close()
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {
       event.preventDefault()
@@ -385,36 +231,21 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     }
   })
 
-  let close = useEvent(
-    (
-      focusableElement?:
-        | HTMLElement
-        | MutableRefObject<HTMLElement | null>
-        | MouseEvent<HTMLElement>
-    ) => {
-      dispatch({ type: ActionTypes.ClosePopover })
+  let slot = useMemo(() => {
+    return {
+      open: popoverState === PopoverStates.Open,
+      close: machine.actions.refocusableClose,
+    } satisfies PopoverRenderPropArg
+  }, [popoverState, machine])
 
-      let restoreElement = (() => {
-        if (!focusableElement) return button
-        if (DOM.isHTMLElement(focusableElement)) return focusableElement
-        if ('current' in focusableElement && DOM.isHTMLElement(focusableElement.current))
-          return focusableElement.current
-
-        return button
-      })()
-
-      restoreElement?.focus()
-    }
-  )
-
-  let api = useMemo<ContextType<typeof PopoverAPIContext>>(
-    () => ({ close, isPortalled }),
-    [close, isPortalled]
-  )
-
-  let slot = useMemo(
-    () => ({ open: popoverState === PopoverStates.Open, close }) satisfies PopoverRenderPropArg,
-    [popoverState, close]
+  let openClosedState = useSlice(
+    machine,
+    useCallback((state) => {
+      return match(state.popoverState, {
+        [PopoverStates.Open]: State.Open,
+        [PopoverStates.Closed]: State.Closed,
+      })
+    }, [])
   )
 
   let ourProps = { ref: popoverRef }
@@ -425,27 +256,20 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     <MainTreeProvider node={mainTreeNode}>
       <FloatingProvider>
         <PopoverPanelContext.Provider value={null}>
-          <PopoverContext.Provider value={reducerBag}>
-            <PopoverAPIContext.Provider value={api}>
-              <CloseProvider value={close}>
-                <OpenClosedProvider
-                  value={match(popoverState, {
-                    [PopoverStates.Open]: State.Open,
-                    [PopoverStates.Closed]: State.Closed,
+          <PopoverContext.Provider value={machine}>
+            <CloseProvider value={machine.actions.refocusableClose}>
+              <OpenClosedProvider value={openClosedState}>
+                <PortalWrapper>
+                  {render({
+                    ourProps,
+                    theirProps,
+                    slot,
+                    defaultTag: DEFAULT_POPOVER_TAG,
+                    name: 'Popover',
                   })}
-                >
-                  <PortalWrapper>
-                    {render({
-                      ourProps,
-                      theirProps,
-                      slot,
-                      defaultTag: DEFAULT_POPOVER_TAG,
-                      name: 'Popover',
-                    })}
-                  </PortalWrapper>
-                </OpenClosedProvider>
-              </CloseProvider>
-            </PopoverAPIContext.Provider>
+                </PortalWrapper>
+              </OpenClosedProvider>
+            </CloseProvider>
           </PopoverContext.Provider>
         </PopoverPanelContext.Provider>
       </FloatingProvider>
@@ -487,8 +311,21 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
-  let [state, dispatch] = usePopoverContext('Popover.Button')
-  let { isPortalled } = usePopoverAPIContext('Popover.Button')
+  let machine = usePopoverMachineContext('Popover.Button')
+  let [popoverState, isPortalled, button, buttonId, panel, panelId, afterButtonSentinel] = useSlice(
+    machine,
+    useCallback((state) => {
+      return [
+        state.popoverState,
+        machine.selectors.isPortalled(state),
+        state.button,
+        state.buttonId,
+        state.panel,
+        state.panelId,
+        state.afterButtonSentinel,
+      ] as const
+    }, [])
+  )
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
 
   let sentinelId = `headlessui-focus-sentinel-${useId()}`
@@ -511,11 +348,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   useEffect(() => {
     if (isWithinPanel) return
-    dispatch({ type: ActionTypes.SetButtonId, buttonId: id })
-    return () => {
-      dispatch({ type: ActionTypes.SetButtonId, buttonId: null })
-    }
-  }, [isWithinPanel, id, dispatch])
+    machine.actions.setButtonId(id)
+    return () => machine.actions.setButtonId(null)
+  }, [isWithinPanel, id, machine])
 
   // This is a little bit different compared to the `id` we already have. The goal is to have a very
   // unique identifier for this specific component. This can be achieved with the `id` from above.
@@ -540,19 +375,19 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     useEvent((button) => {
       if (isWithinPanel) return
       if (button) {
-        state.buttons.current.push(uniqueIdentifier)
+        machine.state.buttons.current.push(uniqueIdentifier)
       } else {
-        let idx = state.buttons.current.indexOf(uniqueIdentifier)
-        if (idx !== -1) state.buttons.current.splice(idx, 1)
+        let idx = machine.state.buttons.current.indexOf(uniqueIdentifier)
+        if (idx !== -1) machine.state.buttons.current.splice(idx, 1)
       }
 
-      if (state.buttons.current.length > 1) {
+      if (machine.state.buttons.current.length > 1) {
         console.warn(
           'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
         )
       }
 
-      button && dispatch({ type: ActionTypes.SetButton, button })
+      button && machine.actions.setButton(button)
     })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
@@ -560,15 +395,15 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (isWithinPanel) {
-      if (state.popoverState === PopoverStates.Closed) return
+      if (machine.state.popoverState === PopoverStates.Closed) return
       switch (event.key) {
         case Keys.Space:
         case Keys.Enter:
           event.preventDefault() // Prevent triggering a *click* event
           // @ts-expect-error
           event.target.click?.()
-          dispatch({ type: ActionTypes.ClosePopover })
-          state.button?.focus() // Re-focus the original opening Button
+          machine.actions.close()
+          machine.state.button?.focus() // Re-focus the original opening Button
           break
       }
     } else {
@@ -577,12 +412,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         case Keys.Enter:
           event.preventDefault() // Prevent triggering a *click* event
           event.stopPropagation()
-          if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId!)
-          dispatch({ type: ActionTypes.TogglePopover })
+          if (machine.state.popoverState === PopoverStates.Closed) {
+            closeOthers?.(machine.state.buttonId!)
+            machine.actions.open()
+          } else {
+            machine.actions.close()
+          }
           break
 
         case Keys.Escape:
-          if (state.popoverState !== PopoverStates.Open) return closeOthers?.(state.buttonId!)
+          if (machine.state.popoverState !== PopoverStates.Open) {
+            return closeOthers?.(machine.state.buttonId!)
+          }
           if (!internalButtonRef.current) return
           if (
             ownerDocument?.activeElement &&
@@ -592,7 +433,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           }
           event.preventDefault()
           event.stopPropagation()
-          dispatch({ type: ActionTypes.ClosePopover })
+          machine.actions.close()
           break
       }
     }
@@ -612,14 +453,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (isDisabledReactIssue7711(event.currentTarget)) return
     if (disabled) return
     if (isWithinPanel) {
-      dispatch({ type: ActionTypes.ClosePopover })
-      state.button?.focus() // Re-focus the original opening Button
+      machine.actions.close()
+      machine.state.button?.focus() // Re-focus the original opening Button
     } else {
       event.preventDefault()
       event.stopPropagation()
-      if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId!)
-      dispatch({ type: ActionTypes.TogglePopover })
-      state.button?.focus()
+      if (machine.state.popoverState === PopoverStates.Closed) {
+        closeOthers?.(machine.state.buttonId!)
+        machine.actions.open()
+      } else {
+        machine.actions.close()
+      }
+      machine.state.button?.focus()
     }
   })
 
@@ -632,7 +477,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let visible = state.popoverState === PopoverStates.Open
+  let visible = popoverState === PopoverStates.Open
   let slot = useMemo(() => {
     return {
       open: visible,
@@ -644,7 +489,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     } satisfies ButtonRenderPropArg
   }, [visible, hover, focus, active, disabled, autoFocus])
 
-  let type = useResolveButtonType(props, state.button)
+  let type = useResolveButtonType(props, button)
   let ourProps = isWithinPanel
     ? mergeProps(
         {
@@ -662,10 +507,10 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     : mergeProps(
         {
           ref: buttonRef,
-          id: state.buttonId,
+          id: buttonId,
           type,
-          'aria-expanded': state.popoverState === PopoverStates.Open,
-          'aria-controls': state.panel ? state.panelId : undefined,
+          'aria-expanded': popoverState === PopoverStates.Open,
+          'aria-controls': panel ? panelId : undefined,
           disabled: disabled || undefined,
           autoFocus,
           onKeyDown: handleKeyDown,
@@ -680,8 +525,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let direction = useTabDirection()
   let handleFocus = useEvent(() => {
-    if (!DOM.isHTMLElement(state.panel)) return
-    let el = state.panel
+    if (!DOM.isHTMLElement(machine.state.panel)) return
+    let el = machine.state.panel
 
     function run() {
       let result = match(direction.current, {
@@ -696,7 +541,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
             [TabDirection.Forwards]: Focus.Next,
             [TabDirection.Backwards]: Focus.Previous,
           }),
-          { relativeTo: state.button }
+          { relativeTo: machine.state.button }
         )
       }
     }
@@ -723,7 +568,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       {visible && !isWithinPanel && isPortalled && (
         <Hidden
           id={sentinelId}
-          ref={state.afterButtonSentinel}
+          ref={afterButtonSentinel}
           features={HiddenFeatures.Focusable}
           data-headlessui-focus-guard
           as="button"
@@ -765,7 +610,11 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     transition = false,
     ...theirProps
   } = props
-  let [{ popoverState }, dispatch] = usePopoverContext('Popover.Backdrop')
+  let machine = usePopoverMachineContext('Popover.Backdrop')
+  let popoverState = useSlice(
+    machine,
+    useCallback((state) => state.popoverState, [])
+  )
 
   // To improve the correctness of transitions (timing related race conditions),
   // we track the element locally to this component, instead of relying on the
@@ -786,7 +635,7 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    dispatch({ type: ActionTypes.ClosePopover })
+    machine.actions.close()
   })
 
   let slot = useMemo(() => {
@@ -860,8 +709,21 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     ...theirProps
   } = props
 
-  let [state, dispatch] = usePopoverContext('Popover.Panel')
-  let { close, isPortalled } = usePopoverAPIContext('Popover.Panel')
+  let machine = usePopoverMachineContext('Popover.Panel')
+  let isPortalled = useSlice(machine, machine.selectors.isPortalled)
+
+  let [popoverState, button, __demoMode, beforePanelSentinel, afterPanelSentinel] = useSlice(
+    machine,
+    useCallback((state) => {
+      return [
+        state.popoverState,
+        state.button,
+        state.__demoMode,
+        state.beforePanelSentinel,
+        state.afterPanelSentinel,
+      ] as const
+    }, [])
+  )
 
   let beforePanelSentinelId = `headlessui-focus-sentinel-before-${internalId}`
   let afterPanelSentinelId = `headlessui-focus-sentinel-after-${internalId}`
@@ -886,18 +748,16 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     internalPanelRef,
     ref,
     anchor ? floatingRef : null,
-    useEvent((panel) => dispatch({ type: ActionTypes.SetPanel, panel })),
+    machine.actions.setPanel,
     setLocalPanelElement
   )
-  let portalOwnerDocument = useOwnerDocument(state.button)
+  let portalOwnerDocument = useOwnerDocument(button)
   let ownerDocument = useOwnerDocument(internalPanelRef)
 
   useIsoMorphicEffect(() => {
-    dispatch({ type: ActionTypes.SetPanelId, panelId: id })
-    return () => {
-      dispatch({ type: ActionTypes.SetPanelId, panelId: null })
-    }
-  }, [id, dispatch])
+    machine.actions.setPanelId(id)
+    return () => machine.actions.setPanelId(null)
+  }, [id, machine])
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
@@ -905,22 +765,20 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     localPanelElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
-      : state.popoverState === PopoverStates.Open
+      : popoverState === PopoverStates.Open
   )
 
   // Ensure we close the popover as soon as the button becomes hidden
-  useOnDisappear(visible, state.button, () => {
-    dispatch({ type: ActionTypes.ClosePopover })
-  })
+  useOnDisappear(visible, button, machine.actions.close)
 
   // Enable scroll locking when the popover is visible, and `modal` is enabled
-  let scrollLockEnabled = state.__demoMode ? false : modal && visible
+  let scrollLockEnabled = __demoMode ? false : modal && visible
   useScrollLock(scrollLockEnabled, ownerDocument)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       case Keys.Escape:
-        if (state.popoverState !== PopoverStates.Open) return
+        if (machine.state.popoverState !== PopoverStates.Open) return
         if (!internalPanelRef.current) return
         if (
           ownerDocument?.activeElement &&
@@ -930,8 +788,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         }
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.ClosePopover })
-        state.button?.focus()
+        machine.actions.close()
+        machine.state.button?.focus()
         break
     }
   })
@@ -940,48 +798,48 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   useEffect(() => {
     if (props.static) return
 
-    if (state.popoverState === PopoverStates.Closed && (props.unmount ?? true)) {
-      dispatch({ type: ActionTypes.SetPanel, panel: null })
+    if (popoverState === PopoverStates.Closed && (props.unmount ?? true)) {
+      machine.actions.setPanel(null)
     }
-  }, [state.popoverState, props.unmount, props.static, dispatch])
+  }, [popoverState, props.unmount, props.static, machine])
 
   // Move focus within panel
   useEffect(() => {
-    if (state.__demoMode) return
+    if (__demoMode) return
     if (!focus) return
-    if (state.popoverState !== PopoverStates.Open) return
+    if (popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
 
     let activeElement = ownerDocument?.activeElement as HTMLElement
     if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
 
     focusIn(internalPanelRef.current, Focus.First)
-  }, [state.__demoMode, focus, internalPanelRef.current, state.popoverState])
+  }, [__demoMode, focus, internalPanelRef.current, popoverState])
 
   let slot = useMemo(() => {
     return {
-      open: state.popoverState === PopoverStates.Open,
-      close,
+      open: popoverState === PopoverStates.Open,
+      close: machine.actions.refocusableClose,
     } satisfies PanelRenderPropArg
-  }, [state.popoverState, close])
+  }, [popoverState, machine])
 
   let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,
     id,
     onKeyDown: handleKeyDown,
     onBlur:
-      focus && state.popoverState === PopoverStates.Open
+      focus && popoverState === PopoverStates.Open
         ? (event: ReactFocusEvent) => {
             let el = event.relatedTarget as HTMLElement
             if (!el) return
             if (!internalPanelRef.current) return
             if (internalPanelRef.current?.contains(el)) return
 
-            dispatch({ type: ActionTypes.ClosePopover })
+            machine.actions.close()
 
             if (
-              state.beforePanelSentinel.current?.contains?.(el) ||
-              state.afterPanelSentinel.current?.contains?.(el)
+              beforePanelSentinel.current?.contains?.(el) ||
+              afterPanelSentinel.current?.contains?.(el)
             ) {
               el.focus({ preventScroll: true })
             }
@@ -991,7 +849,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(state.button, true).width,
+      '--button-width': useElementSize(button, true).width,
     } as React.CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
@@ -1008,13 +866,13 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
           // focusable elements, then we can move outside of the panel)
           let result = focusIn(el, Focus.First)
           if (result === FocusResult.Error) {
-            state.afterPanelSentinel.current?.focus()
+            machine.state.afterPanelSentinel.current?.focus()
           }
         },
         [TabDirection.Backwards]: () => {
           // Coming from the Popover.Panel (which is portalled to somewhere else). Let's redirect
           // the focus to the Popover.Button again.
-          state.button?.focus({ preventScroll: true })
+          machine.state.button?.focus({ preventScroll: true })
         },
       })
     }
@@ -1034,11 +892,11 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     function run() {
       match(direction.current, {
         [TabDirection.Forwards]: () => {
-          if (!state.button) return
+          if (!machine.state.button) return
 
           let elements = getFocusableElements()
 
-          let idx = elements.indexOf(state.button)
+          let idx = elements.indexOf(machine.state.button)
           let before = elements.slice(0, idx + 1)
           let after = elements.slice(idx + 1)
 
@@ -1062,7 +920,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
           // focusable elements, then we can move outside of the panel)
           let result = focusIn(el, Focus.Previous)
           if (result === FocusResult.Error) {
-            state.button?.focus()
+            machine.state.button?.focus()
           }
         },
       })
@@ -1081,7 +939,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   return (
     <ResetOpenClosedProvider>
       <PopoverPanelContext.Provider value={id}>
-        <PopoverAPIContext.Provider value={{ close, isPortalled }}>
+        <CloseProvider value={machine.actions.refocusableClose}>
           <Portal
             enabled={portal ? props.static || visible : false}
             ownerDocument={portalOwnerDocument}
@@ -1089,7 +947,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
             {visible && isPortalled && (
               <Hidden
                 id={beforePanelSentinelId}
-                ref={state.beforePanelSentinel}
+                ref={beforePanelSentinel}
                 features={HiddenFeatures.Focusable}
                 data-headlessui-focus-guard
                 as="button"
@@ -1109,7 +967,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
             {visible && isPortalled && (
               <Hidden
                 id={afterPanelSentinelId}
-                ref={state.afterPanelSentinel}
+                ref={afterPanelSentinel}
                 features={HiddenFeatures.Focusable}
                 data-headlessui-focus-guard
                 as="button"
@@ -1118,7 +976,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
               />
             )}
           </Portal>
-        </PopoverAPIContext.Provider>
+        </CloseProvider>
       </PopoverPanelContext.Provider>
     </ResetOpenClosedProvider>
   )
