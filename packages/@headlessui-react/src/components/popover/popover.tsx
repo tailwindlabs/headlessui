@@ -108,7 +108,7 @@ interface StateDefinition {
 }
 
 enum ActionTypes {
-  TogglePopover,
+  OpenPopover,
   ClosePopover,
 
   SetButton,
@@ -118,7 +118,7 @@ enum ActionTypes {
 }
 
 type Actions =
-  | { type: ActionTypes.TogglePopover }
+  | { type: ActionTypes.OpenPopover }
   | { type: ActionTypes.ClosePopover }
   | { type: ActionTypes.SetButton; button: HTMLElement | null }
   | { type: ActionTypes.SetButtonId; buttonId: string | null }
@@ -131,15 +131,9 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.TogglePopover]: (state) => {
-    return {
-      ...state,
-      popoverState: match(state.popoverState, {
-        [PopoverStates.Open]: PopoverStates.Closed,
-        [PopoverStates.Closed]: PopoverStates.Open,
-      }),
-      __demoMode: false,
-    }
+  [ActionTypes.OpenPopover]: (state) => {
+    if (state.popoverState === PopoverStates.Open) return state
+    return { ...state, popoverState: PopoverStates.Open, __demoMode: false }
   },
   [ActionTypes.ClosePopover](state) {
     if (state.popoverState === PopoverStates.Closed) return state
@@ -577,8 +571,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         case Keys.Enter:
           event.preventDefault() // Prevent triggering a *click* event
           event.stopPropagation()
-          if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId!)
-          dispatch({ type: ActionTypes.TogglePopover })
+          if (state.popoverState === PopoverStates.Closed) {
+            closeOthers?.(state.buttonId!)
+            dispatch({ type: ActionTypes.OpenPopover })
+          } else {
+            dispatch({ type: ActionTypes.ClosePopover })
+          }
           break
 
         case Keys.Escape:
@@ -617,8 +615,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     } else {
       event.preventDefault()
       event.stopPropagation()
-      if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId!)
-      dispatch({ type: ActionTypes.TogglePopover })
+      if (state.popoverState === PopoverStates.Closed) {
+        closeOthers?.(state.buttonId!)
+        dispatch({ type: ActionTypes.OpenPopover })
+      } else {
+        dispatch({ type: ActionTypes.ClosePopover })
+      }
       state.button?.focus()
     }
   })
