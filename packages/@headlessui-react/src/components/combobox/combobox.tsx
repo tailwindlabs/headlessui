@@ -1082,7 +1082,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   })
 
   let handlePointerDown = useEvent((event: ReactPointerEvent<HTMLButtonElement>) => {
-    // We use the `poitnerdown` event here since it fires before the focus
+    // We use the `pointerdown` event here since it fires before the focus
     // event, allowing us to cancel the event before focus is moved from the
     // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
     // preserving the cursor position and any text selection.
