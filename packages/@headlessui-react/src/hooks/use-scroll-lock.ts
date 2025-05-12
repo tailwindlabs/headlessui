@@ -4,7 +4,7 @@ import { useIsTopLayer } from './use-is-top-layer'
 export function useScrollLock(
   enabled: boolean,
   ownerDocument: Document | null,
-  resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
+  resolveAllowedContainers: () => Element[] = () => [document.body]
 ) {
   let isTopLayer = useIsTopLayer(enabled, 'scroll-lock')
 

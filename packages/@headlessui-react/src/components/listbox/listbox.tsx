@@ -55,6 +55,7 @@ import { FormFields } from '../../internal/form-fields'
 import { useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -162,6 +163,8 @@ function ListboxFn<
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType,
 >(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<HTMLElement>) {
+  let id = useId()
+
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
@@ -188,7 +191,7 @@ function ListboxFn<
     defaultValue
   )
 
-  let machine = useListboxMachine({ __demoMode })
+  let machine = useListboxMachine({ id, __demoMode })
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
   let listRef = useRef<_Data['listRef']['current']>(new Map())
@@ -241,13 +244,19 @@ function ListboxFn<
 
   let listboxState = useSlice(machine, (state) => state.listboxState)
 
-  // Handle outside click
-  let outsideClickEnabled = listboxState === ListboxStates.Open
+  let stackMachine = stackMachines.get(null)
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
   let [buttonElement, optionsElement] = useSlice(machine, (state) => [
     state.buttonElement,
     state.optionsElement,
   ])
-  useOutsideClick(outsideClickEnabled, [buttonElement, optionsElement], (event, target) => {
+
+  // Handle outside click
+  useOutsideClick(isTopLayer, [buttonElement, optionsElement], (event, target) => {
     machine.send({ type: ActionTypes.CloseListbox })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {

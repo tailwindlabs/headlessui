@@ -1,4 +1,5 @@
 import { Machine, batch } from '../../machine'
+import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
@@ -22,6 +23,8 @@ export type MenuItemDataRef = {
 }
 
 export interface State {
+  id: string
+
   __demoMode: boolean
   menuState: MenuState
 
@@ -114,6 +117,7 @@ let reducers: {
   },
   [ActionTypes.OpenMenu](state, action) {
     if (state.menuState === MenuState.Open) return state
+
     return {
       ...state,
       /* We can turn off demo mode once we re-open the `Menu` */
@@ -330,8 +334,9 @@ let reducers: {
 }
 
 export class MenuMachine extends Machine<State, Actions> {
-  static new({ __demoMode = false } = {}) {
+  static new({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
     return new MenuMachine({
+      id,
       __demoMode,
       menuState: __demoMode ? MenuState.Open : MenuState.Closed,
       buttonElement: null,
@@ -352,10 +357,28 @@ export class MenuMachine extends Machine<State, Actions> {
       // Schedule a sort of the items when the DOM is ready. This doesn't
       // change anything rendering wise, but the sorted items are used when
       // using arrow keys so we can jump to previous / next items.
-      requestAnimationFrame(() => {
+      this.disposables.requestAnimationFrame(() => {
         this.send({ type: ActionTypes.SortItems })
       })
     })
+
+    // When the menu is open, and it's not on the top of the hierarchy, we
+    // should close it again.
+    {
+      let id = this.state.id
+      let stackMachine = stackMachines.get(null)
+
+      this.disposables.add(
+        stackMachine.on(StackActionTypes.Push, (state) => {
+          if (!stackMachine.selectors.isTop(state, id) && this.state.menuState === MenuState.Open) {
+            this.send({ type: ActionTypes.CloseMenu })
+          }
+        })
+      )
+
+      this.on(ActionTypes.OpenMenu, () => stackMachine.actions.push(id))
+      this.on(ActionTypes.CloseMenu, () => stackMachine.actions.pop(id))
+    }
   }
 
   reduce(state: Readonly<State>, action: Actions): State {

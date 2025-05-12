@@ -46,6 +46,7 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -95,8 +96,10 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let id = useId()
+
   let { __demoMode = false, ...theirProps } = props
-  let machine = useMenuMachine({ __demoMode })
+  let machine = useMenuMachine({ id, __demoMode })
 
   let [menuState, itemsElement, buttonElement] = useSlice(machine, (state) => [
     state.menuState,
@@ -105,9 +108,13 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   ])
   let menuRef = useSyncRefs(ref)
 
-  // Handle outside click
-  let outsideClickEnabled = menuState === MenuState.Open
-  useOutsideClick(outsideClickEnabled, [buttonElement, itemsElement], (event, target) => {
+  let stackMachine = stackMachines.get(null)
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
+  useOutsideClick(isTopLayer, [buttonElement, itemsElement], (event, target) => {
     machine.send({ type: ActionTypes.CloseMenu })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {

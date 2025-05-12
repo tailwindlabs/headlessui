@@ -57,6 +57,7 @@ import { FormFields } from '../../internal/form-fields'
 import { Frozen, useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
@@ -288,6 +289,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   props: ComboboxProps<TValue, boolean | undefined, TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let id = useId()
+
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
@@ -315,7 +318,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     defaultValue
   )
 
-  let machine = useComboboxMachine({ virtual, __demoMode })
+  let machine = useComboboxMachine({ id, virtual, __demoMode })
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
@@ -401,9 +404,14 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     state.optionsElement,
   ])
 
+  let stackMachine = stackMachines.get(null)
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
   // Handle outside click
-  let outsideClickEnabled = comboboxState === ComboboxState.Open
-  useOutsideClick(outsideClickEnabled, [buttonElement, inputElement, optionsElement], () =>
+  useOutsideClick(isTopLayer, [buttonElement, inputElement, optionsElement], () =>
     machine.actions.closeCombobox()
   )
 
@@ -1082,7 +1090,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   })
 
   let handlePointerDown = useEvent((event: ReactPointerEvent<HTMLButtonElement>) => {
-    // We use the `poitnerdown` event here since it fires before the focus
+    // We use the `pointerdown` event here since it fires before the focus
     // event, allowing us to cancel the event before focus is moved from the
     // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
     // preserving the cursor position and any text selection.

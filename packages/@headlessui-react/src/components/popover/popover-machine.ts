@@ -1,5 +1,6 @@
 import { type MouseEventHandler } from 'react'
 import { Machine } from '../../machine'
+import { stackMachines } from '../../machines/stack-machine'
 import * as DOM from '../../utils/dom'
 import { getFocusableElements } from '../../utils/focus-management'
 import { match } from '../../utils/match'
@@ -12,6 +13,8 @@ export enum PopoverStates {
 }
 
 interface State {
+  id: string
+
   popoverState: PopoverStates
 
   buttons: { current: Symbol[] }
@@ -76,8 +79,9 @@ let reducers: {
 }
 
 export class PopoverMachine extends Machine<State, Actions> {
-  static new({ __demoMode = false } = {}) {
+  static new({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
     return new PopoverMachine({
+      id,
       __demoMode,
       popoverState: __demoMode ? PopoverStates.Open : PopoverStates.Closed,
       buttons: { current: [] },
@@ -89,6 +93,18 @@ export class PopoverMachine extends Machine<State, Actions> {
       afterPanelSentinel: { current: null },
       afterButtonSentinel: { current: null },
     })
+  }
+
+  constructor(initialState: State) {
+    super(initialState)
+
+    {
+      let id = this.state.id
+      let stackMachine = stackMachines.get(null)
+
+      this.on(ActionTypes.OpenPopover, () => stackMachine.actions.push(id))
+      this.on(ActionTypes.ClosePopover, () => stackMachine.actions.pop(id))
+    }
   }
 
   reduce(state: Readonly<State>, action: Actions): State {

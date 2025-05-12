@@ -3,7 +3,6 @@ import * as DOM from '../utils/dom'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
-import { useIsTopLayer } from './use-is-top-layer'
 import { useLatestValue } from './use-latest-value'
 import { useWindowEvent } from './use-window-event'
 
@@ -27,7 +26,6 @@ export function useOutsideClick(
     target: HTMLOrSVGElement & Element
   ) => void
 ) {
-  let isTopLayer = useIsTopLayer(enabled, 'outside-click')
   let cbRef = useLatestValue(cb)
 
   let handleOutsideClick = useCallback(
@@ -41,11 +39,9 @@ export function useOutsideClick(
       // not the Dialog (yet)
       if (event.defaultPrevented) return
 
+      // Resolve the new target
       let target = resolveTarget(event)
-
-      if (target === null) {
-        return
-      }
+      if (target === null) return
 
       // Ignore if the target doesn't exist in the DOM anymore
       if (!target.getRootNode().contains(target)) return
@@ -107,43 +103,30 @@ export function useOutsideClick(
     [cbRef, containers]
   )
 
-  let initialClickTarget = useRef<EventTarget | null>(null)
+  let initialClickTarget = useRef<HTMLElement | null>(null)
 
   useDocumentEvent(
-    isTopLayer,
+    enabled,
     'pointerdown',
     (event) => {
-      initialClickTarget.current = event.composedPath?.()?.[0] || event.target
+      if (isMobile()) return
+
+      initialClickTarget.current = (event.composedPath?.()?.[0] || event.target) as HTMLElement
     },
     true
   )
 
   useDocumentEvent(
-    isTopLayer,
-    'mousedown',
+    enabled,
+    'pointerup',
     (event) => {
-      initialClickTarget.current = event.composedPath?.()?.[0] || event.target
-    },
-    true
-  )
+      if (isMobile()) return
+      if (!initialClickTarget.current) return
 
-  useDocumentEvent(
-    isTopLayer,
-    'click',
-    (event) => {
-      if (isMobile()) {
-        return
-      }
-
-      if (!initialClickTarget.current) {
-        return
-      }
-
-      handleOutsideClick(event, () => {
-        return initialClickTarget.current as HTMLElement
-      })
-
+      let target = initialClickTarget.current
       initialClickTarget.current = null
+
+      return handleOutsideClick(event, () => target)
     },
 
     // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
@@ -155,7 +138,7 @@ export function useOutsideClick(
 
   let startPosition = useRef({ x: 0, y: 0 })
   useDocumentEvent(
-    isTopLayer,
+    enabled,
     'touchstart',
     (event) => {
       startPosition.current.x = event.touches[0].clientX
@@ -165,7 +148,7 @@ export function useOutsideClick(
   )
 
   useDocumentEvent(
-    isTopLayer,
+    enabled,
     'touchend',
     (event) => {
       // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
@@ -201,7 +184,7 @@ export function useOutsideClick(
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
   useWindowEvent(
-    isTopLayer,
+    enabled,
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {
