@@ -318,7 +318,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     defaultValue
   )
 
-  let machine = useComboboxMachine({ virtual, __demoMode, id })
+  let machine = useComboboxMachine({ id, virtual, __demoMode })
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 

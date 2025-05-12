@@ -191,7 +191,7 @@ function ListboxFn<
     defaultValue
   )
 
-  let machine = useListboxMachine({ __demoMode, id })
+  let machine = useListboxMachine({ id, __demoMode })
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
   let listRef = useRef<_Data['listRef']['current']>(new Map())

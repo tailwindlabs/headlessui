@@ -334,7 +334,7 @@ let reducers: {
 }
 
 export class MenuMachine extends Machine<State, Actions> {
-  static new({ __demoMode = false, id = globalThis.crypto.randomUUID() as string } = {}) {
+  static new({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
     return new MenuMachine({
       id,
       __demoMode,

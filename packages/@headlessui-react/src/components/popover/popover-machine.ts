@@ -79,7 +79,7 @@ let reducers: {
 }
 
 export class PopoverMachine extends Machine<State, Actions> {
-  static new({ __demoMode = false, id = globalThis.crypto.randomUUID() as string } = {}) {
+  static new({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
     return new PopoverMachine({
       id,
       __demoMode,

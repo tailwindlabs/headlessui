@@ -408,10 +408,11 @@ let reducers: {
 
 export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
   static new<T, TMultiple extends boolean | undefined>({
+    id,
     virtual = null,
     __demoMode = false,
-    id = globalThis.crypto.randomUUID() as string,
   }: {
+    id: string
     virtual?: {
       options: TMultiple extends true ? EnsureArray<NoInfer<T>> : NoInfer<T>[]
       disabled?: (
@@ -419,8 +420,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       ) => boolean
     } | null
     __demoMode?: boolean
-    id?: string
-  } = {}) {
+  }) {
     return new ComboboxMachine({
       id,
       // @ts-expect-error TODO: Re-structure such that we don't need to ignore this

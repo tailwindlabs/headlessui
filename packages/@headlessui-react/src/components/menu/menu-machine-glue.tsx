@@ -13,11 +13,8 @@ export function useMenuMachineContext(component: string) {
   return context
 }
 
-export function useMenuMachine({
-  __demoMode = false,
-  id = globalThis.crypto.randomUUID() as string,
-} = {}) {
-  let machine = useMemo(() => MenuMachine.new({ __demoMode, id }), [])
+export function useMenuMachine({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
+  let machine = useMemo(() => MenuMachine.new({ id, __demoMode }), [])
   useOnUnmount(() => machine.dispose())
   return machine
 }

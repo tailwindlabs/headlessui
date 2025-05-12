@@ -397,7 +397,7 @@ let reducers: {
 }
 
 export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
-  static new({ __demoMode = false, id = globalThis.crypto.randomUUID() as string } = {}) {
+  static new({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
     return new ListboxMachine({
       id,
       // @ts-expect-error TODO: Re-structure such that we don't need to ignore this

@@ -14,10 +14,13 @@ export function usePopoverMachineContext(component: string) {
 }
 
 export function usePopoverMachine({
+  id,
   __demoMode = false,
-  id = globalThis.crypto.randomUUID() as string,
-} = {}) {
-  let machine = useMemo(() => PopoverMachine.new({ __demoMode, id }), [])
+}: {
+  id: string
+  __demoMode?: boolean
+}) {
+  let machine = useMemo(() => PopoverMachine.new({ id, __demoMode }), [])
   useOnUnmount(() => machine.dispose())
   return machine
 }
