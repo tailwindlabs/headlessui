@@ -158,11 +158,16 @@ export function useOutsideClick(
   // In this case we care only about the first case so we check to see if the active element is the iframe
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
-  useWindowEvent(enabled, 'blur', (event) => {
-    return handleOutsideClick(event, () => {
-      return DOM.isHTMLIframeElement(window.document.activeElement)
-        ? window.document.activeElement
-        : null
-    })
-  })
+  useWindowEvent(
+    enabled,
+    'blur',
+    (event) => {
+      return handleOutsideClick(event, () => {
+        return DOM.isHTMLIframeElement(window.document.activeElement)
+          ? window.document.activeElement
+          : null
+      })
+    },
+    true
+  )
 }
