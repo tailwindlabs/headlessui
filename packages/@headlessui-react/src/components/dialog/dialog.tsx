@@ -228,14 +228,21 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     stackMachine.actions.push(id)
     return () => stackMachine.actions.pop(id)
   }, [stackMachine, id, enabled])
+
+  // Check if the dialog is the current top layer
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
   // Close Dialog on outside click
-  useOutsideClick(enabled, resolveRootContainers, (event) => {
+  useOutsideClick(isTopLayer, resolveRootContainers, (event) => {
     event.preventDefault()
     close()
   })
 
   // Handle `Escape` to close
-  useEscape(enabled, ownerDocument?.defaultView, (event) => {
+  useEscape(isTopLayer, ownerDocument?.defaultView, (event) => {
     event.preventDefault()
     event.stopPropagation()
 

@@ -57,6 +57,7 @@ import { FormFields } from '../../internal/form-fields'
 import { Frozen, useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
@@ -403,8 +404,14 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     state.optionsElement,
   ])
 
+  let stackMachine = stackMachines.get(null)
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
   // Handle outside click
-  let outsideClickEnabled = comboboxState === ComboboxState.Open
+  let outsideClickEnabled = isTopLayer
   useOutsideClick(outsideClickEnabled, [buttonElement, inputElement, optionsElement], () =>
     machine.actions.closeCombobox()
   )

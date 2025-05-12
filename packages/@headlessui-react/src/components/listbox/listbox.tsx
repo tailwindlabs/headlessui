@@ -55,6 +55,7 @@ import { FormFields } from '../../internal/form-fields'
 import { useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -243,12 +244,19 @@ function ListboxFn<
 
   let listboxState = useSlice(machine, (state) => state.listboxState)
 
-  // Handle outside click
-  let outsideClickEnabled = listboxState === ListboxStates.Open
+  let stackMachine = stackMachines.get(null)
+  let isTopLayer = useSlice(
+    stackMachine,
+    useCallback((state) => stackMachine.selectors.isTop(state, id), [stackMachine, id])
+  )
+
   let [buttonElement, optionsElement] = useSlice(machine, (state) => [
     state.buttonElement,
     state.optionsElement,
   ])
+
+  // Handle outside click
+  let outsideClickEnabled = isTopLayer
   useOutsideClick(outsideClickEnabled, [buttonElement, optionsElement], (event, target) => {
     machine.send({ type: ActionTypes.CloseListbox })
 
