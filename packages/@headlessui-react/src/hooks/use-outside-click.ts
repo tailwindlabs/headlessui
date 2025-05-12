@@ -105,21 +105,36 @@ export function useOutsideClick(
 
   let initialClickTarget = useRef<HTMLElement | null>(null)
 
-  useDocumentEvent(enabled, 'pointerdown', (event) => {
-    if (isMobile()) return
+  useDocumentEvent(
+    enabled,
+    'pointerdown',
+    (event) => {
+      if (isMobile()) return
 
-    initialClickTarget.current = (event.composedPath?.()?.[0] || event.target) as HTMLElement
-  })
+      initialClickTarget.current = (event.composedPath?.()?.[0] || event.target) as HTMLElement
+    },
+    true
+  )
 
-  useDocumentEvent(enabled, 'pointerup', (event) => {
-    if (isMobile()) return
-    if (!initialClickTarget.current) return
+  useDocumentEvent(
+    enabled,
+    'pointerup',
+    (event) => {
+      if (isMobile()) return
+      if (!initialClickTarget.current) return
 
-    let target = initialClickTarget.current
-    initialClickTarget.current = null
+      let target = initialClickTarget.current
+      initialClickTarget.current = null
 
-    return handleOutsideClick(event, () => target)
-  })
+      return handleOutsideClick(event, () => target)
+    },
+
+    // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
+    // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`
+    // is open, and you click outside of it in the `DialogPanel` the `Menu` should close. However,
+    // the `DialogPanel` has a `onClick(e) { e.stopPropagation() }` which would cancel this.
+    true
+  )
 
   let startPosition = useRef({ x: 0, y: 0 })
   useDocumentEvent(
@@ -132,24 +147,34 @@ export function useOutsideClick(
     true
   )
 
-  useDocumentEvent(enabled, 'touchend', (event) => {
-    // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
-    // we'll assume that they are scrolling and not clicking.
-    let endPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY }
-    if (
-      Math.abs(endPosition.x - startPosition.current.x) >= MOVE_THRESHOLD_PX ||
-      Math.abs(endPosition.y - startPosition.current.y) >= MOVE_THRESHOLD_PX
-    ) {
-      return
-    }
-
-    return handleOutsideClick(event, () => {
-      if (DOM.isHTMLorSVGElement(event.target)) {
-        return event.target
+  useDocumentEvent(
+    enabled,
+    'touchend',
+    (event) => {
+      // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
+      // we'll assume that they are scrolling and not clicking.
+      let endPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY }
+      if (
+        Math.abs(endPosition.x - startPosition.current.x) >= MOVE_THRESHOLD_PX ||
+        Math.abs(endPosition.y - startPosition.current.y) >= MOVE_THRESHOLD_PX
+      ) {
+        return
       }
-      return null
-    })
-  })
+
+      return handleOutsideClick(event, () => {
+        if (DOM.isHTMLorSVGElement(event.target)) {
+          return event.target
+        }
+        return null
+      })
+    },
+
+    // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
+    // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`
+    // is open, and you click outside of it in the `DialogPanel` the `Menu` should close. However,
+    // the `DialogPanel` has a `onClick(e) { e.stopPropagation() }` which would cancel this.
+    true
+  )
 
   // When content inside an iframe is clicked `window` will receive a blur event
   // This can happen when an iframe _inside_ a window is clicked
