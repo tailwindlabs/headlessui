@@ -1229,23 +1229,15 @@ export let ComboboxInput = defineComponent({
       if (api.comboboxState.value !== ComboboxStates.Open) return
       event.preventDefault()
 
-      if (api.mode.value === ValueMode.Single) {
-        // We want to clear the value when the user presses escape if and only if the current
-        // value is not set (aka, they didn't select anything yet, or they cleared the input which
-        // caused the value to be set to `null`). If the current value is set, then we want to
-        // fallback to that value when we press escape (this part is handled in the watcher that
-        // syncs the value with the input field again).
-        if (api.nullable.value && api.value.value === null) {
-          clear()
-        }
-
-        // We do have a value, so let's select the active option, unless we were just going through
-        // the form and we opened it due to the focus event.
-        else if (api.activationTrigger.value !== ActivationTrigger.Focus) {
-          api.selectActiveOption()
-        }
+      // We want to clear the value when the user presses escape if and only if the current
+      // value is not set (aka, they didn't select anything yet, or they cleared the input which
+      // caused the value to be set to `null`). If the current value is set, then we want to
+      // fallback to that value when we press escape (this part is handled in the watcher that
+      // syncs the value with the input field again).
+      if (api.nullable.value && api.value.value === null) {
+        clear()
       }
-
+      
       return api.closeCombobox()
     }
 
