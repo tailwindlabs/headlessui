@@ -8,7 +8,7 @@ Completely unstyled, fully accessible UI components for Astro.
 npm install @headlessui/astro
 ```
 
-No additional integrations are required. HeadlessUI Astro is a standalone package that works directly with Astro's partial hydration system.
+No additional integrations are required. HeadlessUI Astro is a standalone package designed specifically for Astro's partial hydration system.
 
 ## Usage
 
@@ -159,6 +159,15 @@ Example:
 </MenuLoad>
 ```
 
+## Component Architecture
+
+HeadlessUI Astro components are built with a focus on performance and accessibility:
+
+- **Native Implementation**: Components are implemented in pure TypeScript with no framework dependencies
+- **Partial Hydration**: Designed to work optimally with Astro's partial hydration system
+- **Accessibility**: Following WAI-ARIA patterns and keyboard navigation standards
+- **Performance**: Minimal client-side JavaScript, hydrated only when needed
+
 ## Component API
 
 HeadlessUI Astro provides components with a consistent API that's designed specifically for Astro:
@@ -203,6 +212,16 @@ You can also access active states in your templates:
   - DialogTitle
   - DialogDescription
 - More components coming soon...
+
+## Technical Details
+
+HeadlessUI Astro is built as a standalone package with these features:
+
+- Custom state management system
+- Focus management utilities
+- Keyboard navigation handlers
+- Accessible HTML structure with proper ARIA attributes
+- Client-side hydration through Astro's partial hydration system
 
 ## License
 

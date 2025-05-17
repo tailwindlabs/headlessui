@@ -1,24 +1,25 @@
 ---
-// DialogDescription.astro
-import { DialogDescription as VueDialogDescription } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
-import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface
-interface Props extends BaseProps, HydrationProps {}
+// DialogDescription.astro - Independent implementation
+import type { DialogDescriptionProps } from '../../types/dialog';
 
 // Destructure props with defaults
 const { 
   as = 'p',
-  client = DEFAULT_HYDRATION,
+  id,
   ...rest 
-} = Astro.props;
+} = Astro.props as DialogDescriptionProps;
+
+// Generate ID if not provided
+const descriptionId = id || `headlessui-dialog-description-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueDialogDescription
-  as={as}
+<Element
+  id={descriptionId}
+  data-headlessui-dialog-description
   {...rest}
-  client:visible
 >
   <slot />
-</VueDialogDescription>
+</Element>

@@ -1,24 +1,25 @@
 ---
-// DialogTitle.astro
-import { DialogTitle as VueDialogTitle } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
-import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface
-interface Props extends BaseProps, HydrationProps {}
+// DialogTitle.astro - Independent implementation
+import type { DialogTitleProps } from '../../types/dialog';
 
 // Destructure props with defaults
 const { 
   as = 'h2',
-  client = DEFAULT_HYDRATION,
+  id,
   ...rest 
-} = Astro.props;
+} = Astro.props as DialogTitleProps;
+
+// Generate ID if not provided
+const titleId = id || `headlessui-dialog-title-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueDialogTitle
-  as={as}
+<Element
+  id={titleId}
+  data-headlessui-dialog-title
   {...rest}
-  client:visible
 >
   <slot />
-</VueDialogTitle>
+</Element>

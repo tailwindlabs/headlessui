@@ -1,24 +1,21 @@
 ---
-// DialogPanel.astro
-import { DialogPanel as VueDialogPanel } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
-import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface
-interface Props extends BaseProps, HydrationProps {}
+// DialogPanel.astro - Independent implementation
+import type { DialogPanelProps } from '../../types/dialog';
 
 // Destructure props with defaults
 const { 
   as = 'div',
-  client = DEFAULT_HYDRATION,
+  focus = false,
   ...rest 
-} = Astro.props;
+} = Astro.props as DialogPanelProps;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueDialogPanel
-  as={as}
+<Element
+  data-headlessui-dialog-panel
   {...rest}
-  client:visible
 >
   <slot />
-</VueDialogPanel>
+</Element>

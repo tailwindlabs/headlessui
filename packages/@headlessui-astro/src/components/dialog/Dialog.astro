@@ -1,33 +1,45 @@
 ---
-// Dialog.astro - Base component with client:visible hydration
-import { Dialog as VueDialog } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
+// Dialog.astro - Independent implementation with client:visible hydration
+import type { DialogProps } from '../../types/dialog';
 import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface to match Vue component props + Astro HTML attributes
-interface Props extends BaseProps, HydrationProps {
-  open?: boolean;
-  onClose?: (value: boolean) => void;
-  initialFocus?: HTMLElement;
-  static?: boolean;
-}
 
 // Destructure props with defaults
 const { 
   as = 'div', 
+  client = DEFAULT_HYDRATION,
   open = false,
   static: isStatic = false,
-  client = DEFAULT_HYDRATION,
   ...rest 
-} = Astro.props;
+} = Astro.props as DialogProps;
+
+// Generate unique ID for accessibility
+const dialogId = `headlessui-dialog-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueDialog 
-  as={as} 
-  open={open}
-  static={isStatic}
-  {...rest} 
+<Element 
+  id={dialogId}
+  data-headlessui-dialog
+  data-headlessui-state={open ? 'open' : ''}
+  {...rest}
   client:visible
 >
   <slot />
-</VueDialog>
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createDialogContext } from './dialog-client';
+    
+    // Initialize all dialog components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-dialog]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createDialogContext(element);
+        }
+      });
+    });
+  </script>
+</Element>
