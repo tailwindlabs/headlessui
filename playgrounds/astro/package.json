@@ -1,22 +1,30 @@
 {
-  "name": "headlessui-astro-playground",
+  "name": "playground-astro",
   "type": "module",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
+    "prebuild": "npm run build --workspace=@headlessui/tailwindcss",
+    "predev": "npm run build --workspace=@headlessui/tailwindcss",
+    "dev:tailwindcss": "npm run watch --workspace=@headlessui/tailwindcss",
+    "dev:astro": "astro dev",
+    "dev": "npm-run-all -p dev:*",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "lint-types": "echo",
+    "clean": "rimraf ./dist"
   },
   "dependencies": {
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.4.0",
     "tailwindcss": "^3.4.1",
-    "@headlessui/tailwindcss": "^0.2.0"
+    "@headlessui/tailwindcss": "*"
   },
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
     "typescript": "^5.3.3"
   }
 }

@@ -5,7 +5,7 @@ Completely unstyled, fully accessible UI components for Astro.
 ## Installation
 
 ```bash
-npm install @headlessui/astro
+npm install @headlessui-astro
 ```
 
 No additional integrations are required. HeadlessUI Astro is a standalone package designed specifically for Astro's partial hydration system.
@@ -16,7 +16,7 @@ No additional integrations are required. HeadlessUI Astro is a standalone packag
 
 ```astro
 ---
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui-astro';
 ---
 
 <Menu as="div" class="relative">
@@ -69,7 +69,7 @@ module.exports = {
 
 ```astro
 ---
-import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui-astro';
 ---
 
 <script>
@@ -120,7 +120,7 @@ For a more integrated solution, you can use Astro's client directives to manage 
 
 ```astro
 ---
-import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui-astro';
 ---
 
 <button id="openDialog" class="px-4 py-2 bg-blue-500 text-white rounded" client:load>
@@ -144,7 +144,7 @@ import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui
 
 ```astro
 ---
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/astro';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui-astro';
 ---
 
 <Disclosure as="div" class="w-full max-w-md mx-auto">
@@ -180,7 +180,7 @@ You can use Tailwind's plugin for headlessUI for active states:
 
 ```astro
 ---
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption, ListboxLabel } from '@headlessui/astro';
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption, ListboxLabel } from '@headlessui-astro';
 
 const people = [
   { id: 1, name: 'Durward Reynolds', unavailable: false },

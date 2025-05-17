@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with the `@headlessui/astro` package in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with the `@headlessui-astro` package in this repository.
 
 ## Project Overview
 
-`@headlessui/astro` is a package that brings the completely unstyled, fully accessible UI components of HeadlessUI to Astro projects. It is based on and leverages `@headlessui/vue`, adapting its components for the Astro environment.
+`@headlessui-astro` is a package that brings the completely unstyled, fully accessible UI components of HeadlessUI to Astro projects. It is based on and leverages `@headlessui/vue`, adapting its components for the Astro environment.
 
 The primary goal is to provide Astro developers with the same powerful UI primitives (menus, dialogs, etc.) that handle complex accessibility and interaction patterns, while allowing complete styling freedom, typically with Tailwind CSS.
 
@@ -14,12 +14,12 @@ Key reference documents for this package are:
 
 ## Development Commands
 
-The following standard npm scripts are available in the monorepo. When working on `@headlessui/astro`, ensure you are in the correct package directory or use Lerna/Nx commands if applicable to scope tasks.
+The following standard npm scripts are available in the monorepo. When working on `@headlessui-astro`, ensure you are in the correct package directory or use Lerna/Nx commands if applicable to scope tasks.
 
 ### Build and Watch
 
 ```bash
-# Build the @headlessui/astro package (or all packages)
+# Build the @headlessui-astro package (or all packages)
 npm run build
 
 # Watch for changes during development
@@ -35,10 +35,10 @@ npm run playground
 ### Testing
 
 ```bash
-# Run all tests (ensure tests for @headlessui/astro are included)
+# Run all tests (ensure tests for @headlessui-astro are included)
 npm run test
 
-# Run a specific test file within @headlessui/astro
+# Run a specific test file within @headlessui-astro
 # Example: npm run test -- packages/@headlessui-astro/src/components/menu/menu.test.ts
 npm run test -- <path_to_astro_test_file>
 
@@ -59,11 +59,11 @@ npm run lint
 npm run lint-types
 ```
 
-## Architecture and Code Structure (@headlessui/astro)
+## Architecture and Code Structure (@headlessui-astro)
 
 ### Component Architecture
 
-`@headlessui/astro` components are Astro components (`.astro` files) that typically wrap or adapt the corresponding `@headlessui/vue` components.
+`@headlessui-astro` components are Astro components (`.astro` files) that typically wrap or adapt the corresponding `@headlessui/vue` components.
 
 1.  **Astro Component Definition**: Components are defined as `.astro` files (e.g., `Menu.astro`, `Dialog.astro`).
 2.  **Vue Interoperability**: They rely on `@astrojs/vue` integration and use `@headlessui/vue` components internally.
@@ -103,7 +103,7 @@ Components follow the compound component model established by HeadlessUI:
 - **Focus Management & Keyboard Handling**: While largely inherited from `@headlessui/vue`, ensure these work seamlessly post-hydration in Astro.
 - **Rendering Utilities**: Adapters or wrappers to ensure Vue's render functions or templates integrate correctly with Astro's templating and slot mechanisms.
 
-## Development Guidelines for @headlessui/astro
+## Development Guidelines for @headlessui-astro
 
 1.  **Maintain Accessibility**: Ensure all components are fully accessible and adhere to WAI-ARIA standards within the Astro context.
 2.  **API Consistency (with Adaptation)**: Strive for API consistency with `@headlessui/vue`, adapting syntax where necessary for Astro (e.g., `class:list`, slot props). Clearly document any differences.

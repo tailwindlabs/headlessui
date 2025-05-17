@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui-astro';
+
+const tabs = [
+  { name: 'My Account', content: 'Tab content for my account' },
+  { name: 'Company', content: 'Tab content for company', disabled: true },
+  { name: 'Team Members', content: 'Tab content for team members' },
+  { name: 'Billing', content: 'Tab content for billing' },
+];
+---
+
+<Layout title="Tabs with Manual Keyboard Activation">
+  <div class="flex flex-col gap-4">
+    <p class="mb-4 text-gray-700">
+      This example demonstrates tabs with manual keyboard activation, meaning you need to press Enter or Space to activate a tab after focusing it with the Tab key.
+    </p>
+    
+    <ExampleWrapper label="Tabs with Manual Keyboard Activation">
+      <TabGroup class="flex w-full max-w-3xl flex-col" manual={true} defaultIndex={2}>
+        <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow-sm">
+          {tabs.map((tab, tabIdx) => (
+            <Tab
+              disabled={tab.disabled}
+              class:list={[
+                'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10',
+                tabIdx === 0 ? 'rounded-l-lg' : '',
+                tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
+                tab.disabled && 'opacity-50',
+              ]}
+            >
+              {({selected}) => (
+                <>
+                  <span>{tab.name}</span>
+                  {tab.disabled && <small class="inline-block px-4 text-xs">(disabled)</small>}
+                  <span
+                    aria-hidden="true"
+                    class:list={[
+                      'absolute inset-x-0 bottom-0 h-0.5',
+                      selected ? 'bg-indigo-500' : 'bg-transparent'
+                    ]}
+                  ></span>
+                </>
+              )}
+            </Tab>
+          ))}
+        </TabList>
+
+        <TabPanels class="mt-4">
+          {tabs.map((tab) => (
+            <TabPanel class="rounded-lg bg-white p-4 shadow-sm">
+              {tab.content}
+            </TabPanel>
+          ))}
+        </TabPanels>
+      </TabGroup>
+    </ExampleWrapper>
+  </div>
+</Layout>

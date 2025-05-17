@@ -8,6 +8,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
+    "packages/@headlessui/*",
     "playgrounds/*"
   ],
   "scripts": {
@@ -17,8 +18,11 @@
     "vue": "npm run --workspace=@headlessui/vue",
     "playground-vue": "npm run --workspace=playground-vue dev",
     "vue-playground": "npm run --workspace=playground-vue dev",
+    "astro": "npm run --workspace=@headlessui-astro",
+    "playground-astro": "npm run --workspace=playground-astro dev",
+    "astro-playground": "npm run --workspace=playground-astro dev",
     "clean": "npm run clean --workspaces --if-present",
-    "build": "npm-run-all -p 'react build' 'vue build'",
+    "build": "npm-run-all -p 'react build' 'vue build' 'astro build'",
     "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh",
     "lint-check": "CI=true ./scripts/lint.sh",
@@ -84,6 +88,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
+    "tsup": "^7.0.0",
     "typescript": "^5.4.3"
   }
 }

@@ -6,7 +6,7 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
 
 ### Project Structure
 
-- Created a proper package structure for `@headlessui/astro`
+- Created a proper package structure for `@headlessui-astro`
 - Set up TypeScript configuration
 - Added core state management utilities
 - Implemented keyboard handling system

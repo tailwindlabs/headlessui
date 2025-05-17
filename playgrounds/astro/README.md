@@ -9,7 +9,7 @@ This is a playground for testing and developing HeadlessUI Astro components in a
 - [ ] Setup basic Astro project with required dependencies
 - [ ] Configure Tailwind CSS and other styling
 - [ ] Create a basic layout and navigation system
-- [ ] Link the local `@headlessui/astro` package
+- [ ] Link the local `@headlessui-astro` package
 
 ### Phase 2: Core Component Examples
 - [ ] Implement Menu (Dropdown) component examples
@@ -54,9 +54,9 @@ This is a playground for testing and developing HeadlessUI Astro components in a
 | Dialog      | Implemented | Ready for playground implementation       |
 | Disclosure  | Implemented | Ready for playground implementation       |
 | Listbox     | Implemented | Ready for playground implementation       |
-| Combobox    | Planned     | Will be implemented after playground setup|
-| Tabs        | Planned     | Future implementation                     |
-| Switch      | Planned     | Future implementation                     |
+| Combobox    | Planned     | Ready for playground implementation|
+| Tabs        | Planned     | Ready for playground implementation                     |
+| Switch      | Planned     | Will be implemented after playground setup                     |
 | RadioGroup  | Planned     | Future implementation                     |
 | Popover     | Planned     | Future implementation                     |
 

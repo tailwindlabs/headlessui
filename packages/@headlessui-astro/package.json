@@ -1,5 +1,5 @@
 {
-  "name": "@headlessui/astro",
+  "name": "@headlessui-astro",
   "version": "0.1.0",
   "description": "Completely unstyled, fully accessible UI components for Astro",
   "main": "dist/index.js",
@@ -16,8 +16,9 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external astro",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --external astro --watch",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external astro --loader='.astro=text'",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --external astro --watch --loader='.astro=text'",
+    "watch": "tsup src/index.ts --format esm,cjs --dts --external astro --watch --loader='.astro=text'",
     "lint": "eslint . --ext .ts,.astro",
     "clean": "rimraf ./dist"
   },
