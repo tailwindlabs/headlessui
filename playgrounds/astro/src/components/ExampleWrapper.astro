@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  source?: string;
+}
+
+const { title, description, source } = Astro.props;
+---
+
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden mb-8 shadow-sm">
+  <div class="p-4 border-b border-gray-200 bg-gray-50">
+    <h2 class="text-lg font-semibold text-gray-800">{title}</h2>
+    {description && <p class="mt-1 text-sm text-gray-600">{description}</p>}
+  </div>
+  
+  <div class="p-6 flex justify-center items-center min-h-[200px] bg-gray-50">
+    <div class="w-full max-w-md">
+      <slot />
+    </div>
+  </div>
+  
+  {source && (
+    <div class="border-t border-gray-200">
+      <div class="bg-gray-800 p-4 rounded-b-lg overflow-x-auto">
+        <pre class="text-sm text-gray-200">{source}</pre>
+      </div>
+    </div>
+  )}
+</div>

@@ -1,0 +1,137 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="HeadlessUI Astro Playground" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="min-h-screen flex">
+			<!-- Sidebar Navigation -->
+			<div class="w-64 bg-gray-100 shadow-lg">
+				<div class="p-4">
+					<h1 class="text-xl font-bold text-gray-800">HeadlessUI Astro</h1>
+					<p class="text-sm text-gray-600">Component Playground</p>
+				</div>
+				<nav class="mt-4">
+					<div class="px-4 py-2 text-sm font-medium text-gray-600 uppercase">Components</div>
+					<ul>
+						<li>
+							<a href="/" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
+								Home
+							</a>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Menu</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/menu/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/menu/styled" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Styled
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Dialog</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/dialog/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/dialog/scrollable" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Scrollable
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Disclosure</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/disclosure/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/disclosure/group" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Group
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Listbox</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/listbox/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/listbox/multi" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Multi-select
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Main Content -->
+			<div class="flex-1 p-8 bg-white">
+				<slot />
+			</div>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	html {
+		font-family: system-ui, sans-serif;
+	}
+	
+	/* Default focus ring style */
+	:focus-visible {
+		outline: 2px solid #4f46e5;
+		outline-offset: 2px;
+	}
+</style>

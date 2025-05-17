@@ -1,0 +1,99 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
+
+const sourceCode = `
+<Menu as="div" class="relative inline-block text-left">
+  <MenuButton class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+    Options
+    <svg class="w-5 h-5 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+  </MenuButton>
+  
+  <MenuItems class="absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+    <div class="px-1 py-1">
+      <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+        Edit
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+        Duplicate
+      </MenuItem>
+    </div>
+    <div class="px-1 py-1">
+      <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+        Archive
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+        Move
+      </MenuItem>
+    </div>
+    <div class="px-1 py-1">
+      <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm text-red-600 ui-active:bg-red-500 ui-active:text-white rounded">
+        Delete
+      </MenuItem>
+    </div>
+  </MenuItems>
+</Menu>
+`;
+---
+
+<Layout title="Basic Menu - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Menu Component</h1>
+    <p class="mb-8 text-gray-700">
+      The Menu component is a dropdown menu that allows users to select an option from a list.
+      It follows the WAI-ARIA dropdown menu pattern with proper keyboard navigation and accessibility.
+    </p>
+
+    <ExampleWrapper 
+      title="Basic Menu Example" 
+      description="A simple dropdown menu with different option groups."
+      source={sourceCode}
+    >
+      <Menu as="div" class="relative inline-block text-left">
+        <MenuButton class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+          Options
+          <svg class="w-5 h-5 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </MenuButton>
+        
+        <MenuItems class="absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div class="px-1 py-1">
+            <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+              Edit
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+              Duplicate
+            </MenuItem>
+          </div>
+          <div class="px-1 py-1">
+            <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+              Archive
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white rounded">
+              Move
+            </MenuItem>
+          </div>
+          <div class="px-1 py-1">
+            <MenuItem as="button" class="w-full text-left px-2 py-2 text-sm text-red-600 ui-active:bg-red-500 ui-active:text-white rounded">
+              Delete
+            </MenuItem>
+          </div>
+        </MenuItems>
+      </Menu>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Usage Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• Press <kbd class="px-2 py-1 bg-blue-100 rounded">Space</kbd> or <kbd class="px-2 py-1 bg-blue-100 rounded">Enter</kbd> to open the menu</li>
+        <li>• Use <kbd class="px-2 py-1 bg-blue-100 rounded">↑</kbd> and <kbd class="px-2 py-1 bg-blue-100 rounded">↓</kbd> to navigate items</li>
+        <li>• Press <kbd class="px-2 py-1 bg-blue-100 rounded">Space</kbd> or <kbd class="px-2 py-1 bg-blue-100 rounded">Enter</kbd> to select an item</li>
+        <li>• Press <kbd class="px-2 py-1 bg-blue-100 rounded">Escape</kbd> to close the menu</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

@@ -82,7 +82,23 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [ ] PopoverPanel.astro
   - [ ] PopoverGroup.astro
 
-### Phase 3: Testing and Documentation
+### Phase 3: Playground and Documentation
+
+- [x] Create an Astro playground - In Progress
+  - [x] Set up playground directory structure
+  - [x] Configure playground with Tailwind CSS
+  - [ ] Create basic layout and navigation
+  - [ ] Implement examples for all components
+  - [ ] Create complex pattern examples
+
+- [ ] Enhance documentation
+  - [ ] API reference for each component
+  - [ ] Migration guide from Vue/React to Astro
+  - [ ] Performance considerations
+  - [ ] Advanced usage examples
+  - [ ] Update documentation to reflect independent implementation
+
+### Phase 4: Testing
 
 - [ ] Setup testing infrastructure
   - [ ] Configure Jest or Vitest for Astro components
@@ -94,20 +110,6 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [ ] Component tests
   - [ ] Keyboard navigation tests
   - [ ] Accessibility tests
-
-- [ ] Create comprehensive documentation
-  - [ ] API reference
-  - [ ] Migration guide from Vue/React to Astro
-  - [ ] Performance considerations
-  - [ ] Advanced usage examples
-  - [ ] Update documentation to reflect independent implementation
-
-### Phase 4: Integration and Examples
-
-- [ ] Create an example Astro project showcasing all components
-- [ ] Develop more complex usage patterns and examples
-- [ ] Document integration with other Astro features
-- [ ] Create advanced UI patterns combining multiple components
 
 ### Phase 5: Performance Optimization
 

@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="HeadlessUI Astro Playground">
+	<main>
+		<h1 class="text-3xl font-bold">HeadlessUI for Astro</h1>
+		<p class="mt-4 text-lg text-gray-700">
+			Completely unstyled, fully accessible UI components for Astro.
+		</p>
+
+		<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div class="bg-blue-50 p-6 rounded-lg shadow">
+				<h2 class="text-xl font-semibold text-blue-800">Getting Started</h2>
+				<p class="mt-2 text-blue-700">
+					HeadlessUI Astro provides unstyled, accessible UI components that work seamlessly with Astro's partial hydration model.
+				</p>
+				<div class="mt-4">
+					<pre class="bg-blue-900 text-blue-100 p-3 rounded text-sm overflow-auto">
+npm install @headlessui/astro</pre>
+				</div>
+			</div>
+
+			<div class="bg-purple-50 p-6 rounded-lg shadow">
+				<h2 class="text-xl font-semibold text-purple-800">Components</h2>
+				<p class="mt-2 text-purple-700">
+					Explore the components by using the navigation on the left. Currently implemented:
+				</p>
+				<ul class="mt-3 space-y-2 text-purple-700">
+					<li class="flex items-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						Menu (Dropdown)
+					</li>
+					<li class="flex items-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						Dialog (Modal)
+					</li>
+					<li class="flex items-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						Disclosure (Accordion)
+					</li>
+					<li class="flex items-center">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						Listbox (Select)
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="mt-8 bg-green-50 p-6 rounded-lg shadow">
+			<h2 class="text-xl font-semibold text-green-800">Key Features</h2>
+			<ul class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4">
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					Fully accessible (WAI-ARIA compliant)
+				</li>
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					Works with Astro's partial hydration
+				</li>
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					Completely unstyled for maximum flexibility
+				</li>
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					Interactive without full-page JavaScript
+				</li>
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					Keyboard navigation support
+				</li>
+				<li class="flex items-center text-green-700">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+					</svg>
+					TypeScript support
+				</li>
+			</ul>
+		</div>
+	</main>
+</Layout>

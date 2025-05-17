@@ -108,10 +108,12 @@ Following those, we'll move on to:
 
 ## Next Steps
 
-1. Implement Listbox component independently
-2. Set up a testing infrastructure
-3. Create a comprehensive example repository
-4. Implement remaining components (Tabs, Switch, etc.)
+1. ✅ Implement Listbox component independently - Completed
+2. 🔄 Set up an Astro playground - In Progress
+   - A playground is being created in `/playgrounds/astro/` to demonstrate and test components
+   - This will provide real-world usage examples and testing
+3. Set up a testing infrastructure
+4. Implement remaining components (Combobox, Tabs, Switch, etc.)
 
 ## Beta Release Timeline
 
