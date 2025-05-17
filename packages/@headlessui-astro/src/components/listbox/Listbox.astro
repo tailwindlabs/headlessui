@@ -1,0 +1,52 @@
+---
+// Listbox.astro - Independent implementation with client:visible hydration
+import type { ListboxProps } from '../../types/listbox';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  client = DEFAULT_HYDRATION,
+  value,
+  multiple = false,
+  disabled = false,
+  ...rest 
+} = Astro.props as ListboxProps;
+
+// Generate unique ID for accessibility
+const listboxId = `headlessui-listbox-${Math.random().toString(36).substring(2, 9)}`;
+
+// Serialize value for client-side initialization
+const valueString = value !== undefined ? JSON.stringify(value) : undefined;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={listboxId}
+  data-headlessui-listbox
+  data-headlessui-state=""
+  data-multiple={multiple ? 'true' : undefined}
+  data-disabled={disabled ? 'true' : undefined}
+  data-value={valueString}
+  {...rest}
+  client:visible
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createListboxContext } from './listbox-client';
+    
+    // Initialize all listbox components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-listbox]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createListboxContext(element);
+        }
+      });
+    });
+  </script>
+</Element>

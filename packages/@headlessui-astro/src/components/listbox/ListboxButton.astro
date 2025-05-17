@@ -1,0 +1,33 @@
+---
+// ListboxButton.astro - Independent implementation
+import type { ListboxButtonProps } from '../../types/listbox';
+
+// Destructure props with defaults
+const { 
+  as = 'button',
+  id,
+  ...rest 
+} = Astro.props as ListboxButtonProps;
+
+// Generate ID if not provided
+const buttonId = id || `headlessui-listbox-button-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+
+// Default attribute setup for button
+const defaultAttrs = as === 'button' 
+  ? { type: 'button' } 
+  : {};
+---
+
+<Element
+  id={buttonId}
+  data-headlessui-listbox-button
+  aria-haspopup="listbox"
+  aria-expanded="false"
+  {...defaultAttrs}
+  {...rest}
+>
+  <slot />
+</Element>

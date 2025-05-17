@@ -45,6 +45,14 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
    - DisclosurePanel.astro
    - Backed by disclosure-client.ts for client-side functionality
 
+4. **Listbox Component (Independent Implementation)**
+   - Listbox.astro and Listbox.load.astro
+   - ListboxButton.astro
+   - ListboxOptions.astro
+   - ListboxOption.astro
+   - ListboxLabel.astro
+   - Backed by listbox-client.ts for client-side functionality
+
 ### Documentation
 
 - Created README with usage examples
@@ -57,12 +65,13 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
 
 According to our roadmap, we should focus on implementing these components next with native implementations (no Vue dependencies):
 
-1. **Listbox Component**
-   - Listbox.astro (independent implementation)
-   - ListboxButton.astro
-   - ListboxOptions.astro
-   - ListboxOption.astro
-   - ListboxLabel.astro
+1. **Combobox Component**
+   - Combobox.astro (independent implementation)
+   - ComboboxInput.astro
+   - ComboboxButton.astro
+   - ComboboxOptions.astro
+   - ComboboxOption.astro
+   - ComboboxLabel.astro
 
 Following those, we'll move on to:
 - Combobox
@@ -111,8 +120,8 @@ We are targeting a beta release once all main components have been implemented i
 - Menu (✅ Completed)
 - Dialog (✅ Completed)
 - Disclosure (✅ Completed)
-- Listbox (Next priority)
-- Tabs
-- Switch
+- Listbox (✅ Completed)
+- Tabs (Next priority)
+- Switch (Next priority)
 
 Each component will have comprehensive documentation, TypeScript type definitions, and proper accessibility support.

@@ -1,0 +1,25 @@
+---
+// ListboxLabel.astro - Independent implementation
+import type { ListboxLabelProps } from '../../types/listbox';
+
+// Destructure props with defaults
+const { 
+  as = 'label',
+  id,
+  ...rest 
+} = Astro.props as ListboxLabelProps;
+
+// Generate ID if not provided
+const labelId = id || `headlessui-listbox-label-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element
+  id={labelId}
+  data-headlessui-listbox-label
+  {...rest}
+>
+  <slot />
+</Element>

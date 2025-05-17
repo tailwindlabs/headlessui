@@ -1,0 +1,35 @@
+---
+// ListboxOption.astro - Independent implementation
+import type { ListboxOptionProps } from '../../types/listbox';
+
+// Destructure props with defaults
+const { 
+  as = 'li',
+  id,
+  value,
+  disabled = false,
+  ...rest 
+} = Astro.props as ListboxOptionProps;
+
+// Generate ID if not provided
+const optionId = id || `headlessui-listbox-option-${Math.random().toString(36).substring(2, 9)}`;
+
+// Serialize value for data attribute
+const valueString = value !== undefined ? JSON.stringify(value) : undefined;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element
+  id={optionId}
+  data-headlessui-listbox-option
+  data-value={valueString}
+  data-disabled={disabled ? 'true' : undefined}
+  role="option"
+  aria-disabled={disabled ? 'true' : undefined}
+  tabindex="-1"
+  {...rest}
+>
+  <slot />
+</Element>

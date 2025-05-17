@@ -38,13 +38,13 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [x] DisclosurePanel.astro
   - [x] Disclosure.load.astro (eager hydration variant)
 
-- [ ] Listbox component
-  - [ ] Listbox.astro (independent implementation)
-  - [ ] ListboxButton.astro
-  - [ ] ListboxOptions.astro
-  - [ ] ListboxOption.astro
-  - [ ] ListboxLabel.astro
-  - [ ] Listbox.load.astro (eager hydration variant)
+- [x] Listbox component
+  - [x] Listbox.astro (independent implementation)
+  - [x] ListboxButton.astro
+  - [x] ListboxOptions.astro
+  - [x] ListboxOption.astro
+  - [x] ListboxLabel.astro
+  - [x] Listbox.load.astro (eager hydration variant)
 
 ### Phase 2: Additional Components (Independent Implementation)
 

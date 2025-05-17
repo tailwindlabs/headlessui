@@ -18,6 +18,14 @@ export { default as DisclosureLoad } from './components/disclosure/Disclosure.lo
 export { default as DisclosureButton } from './components/disclosure/DisclosureButton.astro';
 export { default as DisclosurePanel } from './components/disclosure/DisclosurePanel.astro';
 
+// Export Listbox components
+export { default as Listbox } from './components/listbox/Listbox.astro';
+export { default as ListboxLoad } from './components/listbox/Listbox.load.astro';
+export { default as ListboxButton } from './components/listbox/ListboxButton.astro';
+export { default as ListboxOptions } from './components/listbox/ListboxOptions.astro';
+export { default as ListboxOption } from './components/listbox/ListboxOption.astro';
+export { default as ListboxLabel } from './components/listbox/ListboxLabel.astro';
+
 // Export types
 export type {
   // Base types
@@ -47,6 +55,15 @@ export type {
   DisclosureButtonProps,
   DisclosurePanelProps,
 } from './types/disclosure';
+
+// Listbox types
+export type {
+  ListboxProps,
+  ListboxButtonProps,
+  ListboxOptionsProps,
+  ListboxOptionProps,
+  ListboxLabelProps,
+} from './types/listbox';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented
