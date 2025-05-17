@@ -1,0 +1,33 @@
+---
+// Dialog.astro - Base component with client:visible hydration
+import { Dialog as VueDialog } from '@headlessui/vue';
+import type { BaseProps, HydrationProps } from '../../types/common';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Define props interface to match Vue component props + Astro HTML attributes
+interface Props extends BaseProps, HydrationProps {
+  open?: boolean;
+  onClose?: (value: boolean) => void;
+  initialFocus?: HTMLElement;
+  static?: boolean;
+}
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  open = false,
+  static: isStatic = false,
+  client = DEFAULT_HYDRATION,
+  ...rest 
+} = Astro.props;
+---
+
+<VueDialog 
+  as={as} 
+  open={open}
+  static={isStatic}
+  {...rest} 
+  client:visible
+>
+  <slot />
+</VueDialog>

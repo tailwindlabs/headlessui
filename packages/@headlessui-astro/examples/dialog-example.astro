@@ -1,0 +1,59 @@
+---
+// Example dialog usage in an Astro file
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+---
+
+<div>
+  <button id="openDialog" class="px-4 py-2 text-sm font-medium text-white bg-black rounded-md">
+    Open Dialog
+  </button>
+
+  <Dialog client:load>
+    <div class="fixed inset-0 flex items-center justify-center p-4 bg-black/30">
+      <DialogPanel class="w-full max-w-md p-6 overflow-hidden text-left bg-white rounded-lg shadow-xl">
+        <DialogTitle class="text-lg font-medium leading-6 text-gray-900">
+          Payment successful
+        </DialogTitle>
+        <DialogDescription class="mt-2 text-sm text-gray-500">
+          Your payment has been successfully processed. We've sent you an email with all of the details of your order.
+        </DialogDescription>
+
+        <div class="mt-4">
+          <button
+            type="button"
+            class="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            id="closeDialog"
+          >
+            Got it, thanks!
+          </button>
+        </div>
+      </DialogPanel>
+    </div>
+  </Dialog>
+</div>
+
+<script>
+  // In a real Astro implementation, this JavaScript would be part of the client:load hydration
+  // This is just for example purposes
+  let isOpen = false;
+  
+  document.getElementById('openDialog')?.addEventListener('click', () => {
+    isOpen = true;
+    // In a real implementation, this would update the open prop on the Dialog
+  });
+  
+  document.getElementById('closeDialog')?.addEventListener('click', () => {
+    isOpen = false;
+    // In a real implementation, this would update the open prop on the Dialog
+  });
+</script>
+
+<!-- 
+Note: In a real implementation, we would use a client-side framework like Vue 
+to manage the dialog state, since Astro itself is primarily focused on static 
+content generation. The client:load directive ensures the Vue component is 
+hydrated on the client side.
+
+For a fully functional implementation, you might want to use a store or
+state management solution that works with Astro's island architecture.
+-->

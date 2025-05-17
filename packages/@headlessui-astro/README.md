@@ -48,6 +48,35 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
 </Menu>
 ```
 
+### Dialog Component
+
+```astro
+---
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+---
+
+<Dialog client:load>
+  <div class="fixed inset-0 flex items-center justify-center p-4 bg-black/30">
+    <DialogPanel class="w-full max-w-md p-6 bg-white rounded-lg">
+      <DialogTitle class="text-lg font-medium text-gray-900">
+        Payment successful
+      </DialogTitle>
+      <DialogDescription class="mt-2 text-sm text-gray-500">
+        Your payment has been successfully processed.
+      </DialogDescription>
+
+      <div class="mt-4">
+        <button class="px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 rounded-md">
+          Got it, thanks!
+        </button>
+      </div>
+    </DialogPanel>
+  </div>
+</Dialog>
+```
+
+Note: For a fully functional dialog, you'll need to manage the open state using client-side JavaScript.
+
 ### Hydration Strategies
 
 HeadlessUI Astro provides different hydration strategies to optimize performance:
@@ -84,6 +113,11 @@ HeadlessUI Astro maintains the same API as HeadlessUI Vue with some Astro-specif
   - MenuButton
   - MenuItems
   - MenuItem
+- Dialog (Modal)
+  - Dialog
+  - DialogPanel
+  - DialogTitle
+  - DialogDescription
 - More components coming soon...
 
 ## License

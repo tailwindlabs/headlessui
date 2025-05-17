@@ -1,0 +1,24 @@
+---
+// DialogTitle.astro
+import { DialogTitle as VueDialogTitle } from '@headlessui/vue';
+import type { BaseProps, HydrationProps } from '../../types/common';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Define props interface
+interface Props extends BaseProps, HydrationProps {}
+
+// Destructure props with defaults
+const { 
+  as = 'h2',
+  client = DEFAULT_HYDRATION,
+  ...rest 
+} = Astro.props;
+---
+
+<VueDialogTitle
+  as={as}
+  {...rest}
+  client:visible
+>
+  <slot />
+</VueDialogTitle>

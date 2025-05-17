@@ -1,0 +1,31 @@
+---
+// Dialog.load.astro - Component with client:load hydration
+import { Dialog as VueDialog } from '@headlessui/vue';
+import type { BaseProps } from '../../types/common';
+
+// Define props interface
+interface Props extends BaseProps {
+  open?: boolean;
+  onClose?: (value: boolean) => void;
+  initialFocus?: HTMLElement;
+  static?: boolean;
+}
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  open = false,
+  static: isStatic = false,
+  ...rest 
+} = Astro.props;
+---
+
+<VueDialog 
+  as={as} 
+  open={open}
+  static={isStatic}
+  {...rest} 
+  client:load
+>
+  <slot />
+</VueDialog>
