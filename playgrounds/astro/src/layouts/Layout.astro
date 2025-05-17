@@ -24,7 +24,7 @@ const { title } = Astro.props;
 					<h1 class="text-xl font-bold text-gray-800">HeadlessUI Astro</h1>
 					<p class="text-sm text-gray-600">Component Playground</p>
 				</div>
-				<nav class="mt-4">
+				<nav class="mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
 					<div class="px-4 py-2 text-sm font-medium text-gray-600 uppercase">Components</div>
 					<ul>
 						<li>
@@ -46,8 +46,8 @@ const { title } = Astro.props;
 									</a>
 								</li>
 								<li>
-									<a href="/menu/styled" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
-										Styled
+									<a href="/menu/sections" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										With Sections
 									</a>
 								</li>
 							</ul>
@@ -108,6 +108,111 @@ const { title } = Astro.props;
 								<li>
 									<a href="/listbox/multi" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
 										Multi-select
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Combobox</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/combobox/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/combobox/multi" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Multi-select
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Tabs</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/tabs/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+								<li>
+									<a href="/tabs/manual" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Manual
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Radio Group</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/radio-group/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Switch</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/switch/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Popover</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/popover/basic" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Basic
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<div class="px-4 py-2 text-gray-700 flex items-center justify-between">
+								<span>Combinations</span>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+							<ul class="ml-4">
+								<li>
+									<a href="/combinations/tabs-in-dialog" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Tabs in Dialog
+									</a>
+								</li>
+								<li>
+									<a href="/combinations/form" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-200">
+										Complex Form
 									</a>
 								</li>
 							</ul>

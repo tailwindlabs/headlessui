@@ -1,0 +1,26 @@
+---
+interface Props {
+  as?: string;
+  class?: string;
+  visuallyHidden?: boolean;
+}
+
+const { 
+  as: Component = 'div', 
+  class: className = '', 
+  visuallyHidden = false 
+} = Astro.props;
+
+// Create classes for visually hidden text, but still accessible to screen readers
+const visuallyHiddenClass = visuallyHidden 
+  ? 'position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;' 
+  : '';
+---
+
+<Component 
+  class={className} 
+  role="heading"
+  style={visuallyHiddenClass}
+>
+  <slot />
+</Component>

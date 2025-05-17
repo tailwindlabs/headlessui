@@ -1,0 +1,17 @@
+---
+interface Props {
+  as?: string;
+  class?: string;
+  label?: string;
+}
+
+const { as: Component = 'div', class: className = '', label } = Astro.props;
+---
+
+<Component 
+  class={className} 
+  role="group" 
+  aria-label={label}
+>
+  <slot />
+</Component>

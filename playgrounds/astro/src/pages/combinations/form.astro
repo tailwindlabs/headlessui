@@ -1,0 +1,273 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { 
+  Disclosure, DisclosureButton, DisclosurePanel,
+  Switch,
+  RadioGroup, RadioGroupLabel, RadioGroupOption, RadioGroupDescription
+} from '@headlessui-astro';
+
+const plans = [
+  {
+    name: 'Startup',
+    ram: '12GB',
+    cpus: '6 CPUs',
+    disk: '160 GB SSD',
+    price: '$99'
+  },
+  {
+    name: 'Business',
+    ram: '16GB',
+    cpus: '8 CPUs',
+    disk: '512 GB SSD',
+    price: '$199'
+  },
+  {
+    name: 'Enterprise',
+    ram: '32GB',
+    cpus: '12 CPUs',
+    disk: '1024 GB SSD',
+    price: '$399'
+  }
+];
+---
+
+<Layout title="Form with Multiple Components - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Form with Multiple Components</h1>
+    <p class="mb-8 text-gray-700">
+      This example demonstrates how to combine multiple HeadlessUI components to create a complex form interface.
+      It shows the Switch, Disclosure, and RadioGroup components working together in a cohesive layout.
+    </p>
+
+    <ExampleWrapper 
+      title="Advanced Form Example" 
+      description="A server configuration form using multiple HeadlessUI components."
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">Server Configuration</h2>
+
+        <form class="space-y-8">
+          <!-- Basic Settings Section -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900">Basic Settings</h3>
+            <div class="mt-4 space-y-4">
+              <div>
+                <label for="server-name" class="block text-sm font-medium text-gray-700">Server Name</label>
+                <input
+                  type="text"
+                  id="server-name"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="my-server-name"
+                />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <label for="auto-scaling" class="block text-sm font-medium text-gray-700">Enable Auto-scaling</label>
+                <Switch id="auto-scaling" client:visible>
+                  {({checked}) => (
+                    <span 
+                      class:list={[
+                        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                        checked ? 'bg-indigo-600' : 'bg-gray-200'
+                      ]}
+                    >
+                      <span 
+                        class:list={[
+                          'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                          checked ? 'translate-x-6' : 'translate-x-1'
+                        ]}
+                      />
+                    </span>
+                  )}
+                </Switch>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <label for="backup-enabled" class="block text-sm font-medium text-gray-700">Daily Backups</label>
+                <Switch id="backup-enabled" client:visible>
+                  {({checked}) => (
+                    <span 
+                      class:list={[
+                        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                        checked ? 'bg-indigo-600' : 'bg-gray-200'
+                      ]}
+                    >
+                      <span 
+                        class:list={[
+                          'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                          checked ? 'translate-x-6' : 'translate-x-1'
+                        ]}
+                      />
+                    </span>
+                  )}
+                </Switch>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hosting Plan Selection -->
+          <div>
+            <RadioGroup defaultValue={plans[0]} client:visible>
+              <RadioGroupLabel class="text-lg font-medium text-gray-900">Select a hosting plan</RadioGroupLabel>
+              <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {plans.map((plan) => (
+                  <RadioGroupOption value={plan}>
+                    {({checked}) => (
+                      <div
+                        class:list={[
+                          'flex cursor-pointer flex-col rounded-lg p-5 shadow-md',
+                          checked ? 'bg-indigo-50 ring-2 ring-indigo-600' : 'bg-white'
+                        ]}
+                      >
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center">
+                            <div class="text-sm">
+                              <RadioGroupLabel as="p" class="font-medium text-gray-900">
+                                {plan.name}
+                              </RadioGroupLabel>
+                              <RadioGroupDescription as="span" class="text-gray-500">
+                                <span class="block sm:inline">{plan.ram} / {plan.cpus}</span>
+                              </RadioGroupDescription>
+                            </div>
+                          </div>
+                          <div
+                            class:list={[
+                              'flex h-5 w-5 items-center justify-center rounded-full',
+                              checked ? 'bg-indigo-600' : 'bg-gray-200'
+                            ]}
+                          >
+                            <svg
+                              class:list={[
+                                'h-3 w-3',
+                                checked ? 'text-white' : 'hidden'
+                              ]}
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle cx="12" cy="12" r="12" fill="currentColor" />
+                            </svg>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <span class="block text-sm text-gray-500">{plan.disk}</span>
+                        </div>
+                        <div class="mt-6 border-t border-gray-200 pt-4">
+                          <span class="block text-base font-semibold text-gray-900">{plan.price}<span class="text-sm font-normal text-gray-500">/mo</span></span>
+                        </div>
+                      </div>
+                    )}
+                  </RadioGroupOption>
+                ))}
+              </div>
+            </RadioGroup>
+          </div>
+
+          <!-- Advanced Options -->
+          <Disclosure client:visible>
+            {({open}) => (
+              <>
+                <DisclosureButton
+                  class="flex w-full justify-between rounded-lg bg-gray-100 px-4 py-3 text-left text-sm font-medium text-gray-900 hover:bg-gray-200"
+                >
+                  <span>Advanced Options</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class:list={[
+                      'h-5 w-5 text-gray-500',
+                      open && 'rotate-180 transform'
+                    ]}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </DisclosureButton>
+                <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+                  <div class="space-y-4">
+                    <div>
+                      <label for="cpu-allocation" class="block text-sm font-medium text-gray-700">CPU Allocation Strategy</label>
+                      <select
+                        id="cpu-allocation"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      >
+                        <option>Balanced</option>
+                        <option>CPU Intensive</option>
+                        <option>Memory Intensive</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="max-memory" class="block text-sm font-medium text-gray-700">Max Memory (GB)</label>
+                      <input
+                        type="number"
+                        id="max-memory"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="16"
+                      />
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <label for="high-availability" class="block text-sm font-medium text-gray-700">High Availability Mode</label>
+                      <Switch id="high-availability" client:visible>
+                        {({checked}) => (
+                          <span 
+                            class:list={[
+                              'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                              checked ? 'bg-indigo-600' : 'bg-gray-200'
+                            ]}
+                          >
+                            <span 
+                              class:list={[
+                                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                                checked ? 'translate-x-6' : 'translate-x-1'
+                              ]}
+                            />
+                          </span>
+                        )}
+                      </Switch>
+                    </div>
+                  </div>
+                </DisclosurePanel>
+              </>
+            )}
+          </Disclosure>
+
+          <!-- Submit Button -->
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Create Server
+            </button>
+          </div>
+        </form>
+      </div>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Implementation Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• All interactive components use <code>client:visible</code> for hydration when they come into view</li>
+        <li>• Components are nested within standard HTML form elements</li>
+        <li>• Each component maintains its own state while working together in the form context</li>
+        <li>• The form demonstrates proper layout patterns for complex user interfaces</li>
+        <li>• Standard form elements are styled to match HeadlessUI components</li>
+      </ul>
+    </div>
+
+    <div class="mt-8 p-4 bg-amber-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-amber-800">Component Combination Tips</h2>
+      <ul class="mt-2 space-y-2 text-sm text-amber-700">
+        <li>• Use consistent styling across all components for visual cohesion</li>
+        <li>• Consider hydration strategy based on component visibility and importance</li>
+        <li>• Organize form sections logically with appropriate heading levels</li>
+        <li>• Combine standard HTML form elements with HeadlessUI components</li>
+        <li>• Use Disclosure for progressive disclosure of advanced options</li>
+        <li>• Ensure proper spacing between form sections for readability</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

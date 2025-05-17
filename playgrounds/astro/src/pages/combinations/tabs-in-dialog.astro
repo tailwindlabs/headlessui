@@ -1,0 +1,215 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { 
+  Dialog, DialogPanel, DialogTitle, DialogDescription,
+  TabGroup, TabList, Tab, TabPanels, TabPanel
+} from '@headlessui-astro';
+
+const tabs = [
+  { name: 'Account Settings', content: 'Manage your account preferences, profile information, and notification settings.' },
+  { name: 'Team Settings', content: 'Configure team permissions, roles, and member access.' },
+  { name: 'Billing Information', content: 'View billing history, update payment methods, and manage subscription plans.' },
+  { name: 'Integrations', content: 'Connect with third-party services and external tools.' },
+];
+
+const sourceCode = `
+<button
+  type="button"
+  id="openDialogBtn"
+  class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+>
+  Open Settings
+</button>
+
+<Dialog id="tabsDialog" client:load>
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+    <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl">
+      <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+        Settings
+      </DialogTitle>
+      <DialogDescription class="mt-2 text-sm text-gray-500">
+        Manage your account and application settings
+      </DialogDescription>
+
+      <div class="mt-6">
+        <TabGroup class="flex w-full flex-col">
+          <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow-sm">
+            {tabs.map((tab, tabIdx) => (
+              <Tab
+                class:list={[
+                  'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10',
+                  tabIdx === 0 ? 'rounded-l-lg' : '',
+                  tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
+                ]}
+              >
+                {({selected}) => (
+                  <>
+                    <span>{tab.name}</span>
+                    <span
+                      aria-hidden="true"
+                      class:list={[
+                        'absolute inset-x-0 bottom-0 h-0.5',
+                        selected ? 'bg-indigo-500' : 'bg-transparent'
+                      ]}
+                    ></span>
+                  </>
+                )}
+              </Tab>
+            ))}
+          </TabList>
+
+          <TabPanels class="mt-4">
+            {tabs.map((tab) => (
+              <TabPanel class="rounded-lg bg-white p-4 shadow-sm border border-gray-100">
+                <p class="text-gray-700">{tab.content}</p>
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </TabGroup>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button
+          type="button"
+          id="closeDialogBtn"
+          class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200"
+        >
+          Close
+        </button>
+      </div>
+    </DialogPanel>
+  </div>
+</Dialog>
+
+<script>
+  document.getElementById('openDialogBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('tabsDialog');
+    if (dialog) dialog.dataset.headlessuiState = 'open';
+  });
+
+  document.getElementById('closeDialogBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('tabsDialog');
+    if (dialog) dialog.dataset.headlessuiState = '';
+  });
+</script>
+`;
+---
+
+<Layout title="Tabs in Dialog - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Tabs in Dialog</h1>
+    <p class="mb-8 text-gray-700">
+      This example demonstrates how to combine the Dialog and TabGroup components to create a tabbed interface within a modal dialog.
+      This pattern is useful for settings panels, multi-step forms, or any context that requires categorized content in a modal.
+    </p>
+
+    <ExampleWrapper 
+      title="Tabs in Dialog Example" 
+      description="A dialog with a tabbed interface for settings management."
+      source={sourceCode}
+    >
+      <button
+        type="button"
+        id="openDialogBtn"
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+      >
+        Open Settings
+      </button>
+
+      <Dialog id="tabsDialog" client:load>
+        <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+          <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl">
+            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+              Settings
+            </DialogTitle>
+            <DialogDescription class="mt-2 text-sm text-gray-500">
+              Manage your account and application settings
+            </DialogDescription>
+
+            <div class="mt-6">
+              <TabGroup class="flex w-full flex-col">
+                <TabList class="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow-sm">
+                  {tabs.map((tab, tabIdx) => (
+                    <Tab
+                      class:list={[
+                        'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10',
+                        tabIdx === 0 ? 'rounded-l-lg' : '',
+                        tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
+                      ]}
+                    >
+                      {({selected}) => (
+                        <>
+                          <span>{tab.name}</span>
+                          <span
+                            aria-hidden="true"
+                            class:list={[
+                              'absolute inset-x-0 bottom-0 h-0.5',
+                              selected ? 'bg-indigo-500' : 'bg-transparent'
+                            ]}
+                          ></span>
+                        </>
+                      )}
+                    </Tab>
+                  ))}
+                </TabList>
+
+                <TabPanels class="mt-4">
+                  {tabs.map((tab) => (
+                    <TabPanel class="rounded-lg bg-white p-4 shadow-sm border border-gray-100">
+                      <p class="text-gray-700">{tab.content}</p>
+                    </TabPanel>
+                  ))}
+                </TabPanels>
+              </TabGroup>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <button
+                type="button"
+                id="closeDialogBtn"
+                class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200"
+              >
+                Close
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      <script>
+        document.getElementById('openDialogBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('tabsDialog');
+          if (dialog) dialog.dataset.headlessuiState = 'open';
+        });
+
+        document.getElementById('closeDialogBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('tabsDialog');
+          if (dialog) dialog.dataset.headlessuiState = '';
+        });
+      </script>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Implementation Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• The Dialog component uses <code>client:load</code> for immediate hydration</li>
+        <li>• TabGroup components work as expected within the Dialog context</li>
+        <li>• Focus management works across both component systems</li>
+        <li>• Keyboard navigation (Tab, Arrow keys) properly functions within the combined components</li>
+        <li>• This pattern preserves all accessibility features of both components</li>
+      </ul>
+    </div>
+
+    <div class="mt-8 p-4 bg-amber-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-amber-800">Accessibility Considerations</h2>
+      <ul class="mt-2 space-y-2 text-sm text-amber-700">
+        <li>• Focus is properly trapped within the Dialog</li>
+        <li>• Tab navigation respects the TabGroup's selected tab</li>
+        <li>• The Dialog uses appropriate ARIA roles and attributes</li>
+        <li>• Escape key will close the Dialog, even when focus is within the TabGroup</li>
+        <li>• Screen readers will announce both the Dialog title and the selected Tab content</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,16 @@
+---
+interface Props {
+  as?: string;
+  class?: string;
+}
+
+const { as: Component = 'div', class: className = '' } = Astro.props;
+---
+
+<Component 
+  class={className} 
+  role="separator"
+  aria-orientation="horizontal"
+>
+  <slot />
+</Component>
