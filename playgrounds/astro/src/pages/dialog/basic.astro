@@ -1,0 +1,122 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+
+const sourceCode = `
+<button
+  type="button"
+  id="openDialogBtn"
+  class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+>
+  Open Dialog
+</button>
+
+<Dialog id="simpleDialog" client:load>
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+    <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl">
+      <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+        Payment successful
+      </DialogTitle>
+      <DialogDescription class="mt-2 text-sm text-gray-500">
+        Your payment has been successfully processed. We've sent you
+        an email with all of the details of your order.
+      </DialogDescription>
+
+      <div class="mt-4">
+        <button
+          type="button"
+          id="closeDialogBtn"
+          class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200"
+        >
+          Got it, thanks!
+        </button>
+      </div>
+    </DialogPanel>
+  </div>
+</Dialog>
+
+<script>
+  document.getElementById('openDialogBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('simpleDialog');
+    if (dialog) dialog.dataset.headlessuiState = 'open';
+  });
+
+  document.getElementById('closeDialogBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('simpleDialog');
+    if (dialog) dialog.dataset.headlessuiState = '';
+  });
+</script>
+`;
+---
+
+<Layout title="Basic Dialog - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Dialog Component</h1>
+    <p class="mb-8 text-gray-700">
+      The Dialog component is a modal dialog that can be used to present important information
+      or request user confirmation. It follows the WAI-ARIA dialog pattern for accessibility.
+    </p>
+
+    <ExampleWrapper 
+      title="Basic Dialog Example" 
+      description="A simple modal dialog with a title, description, and close button."
+      source={sourceCode}
+    >
+      <button
+        type="button"
+        id="openDialogBtn"
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+      >
+        Open Dialog
+      </button>
+
+      <Dialog id="simpleDialog" client:load>
+        <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl">
+            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+              Payment successful
+            </DialogTitle>
+            <DialogDescription class="mt-2 text-sm text-gray-500">
+              Your payment has been successfully processed. We've sent you
+              an email with all of the details of your order.
+            </DialogDescription>
+
+            <div class="mt-4">
+              <button
+                type="button"
+                id="closeDialogBtn"
+                class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      <script>
+        document.getElementById('openDialogBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('simpleDialog');
+          if (dialog) dialog.dataset.headlessuiState = 'open';
+        });
+
+        document.getElementById('closeDialogBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('simpleDialog');
+          if (dialog) dialog.dataset.headlessuiState = '';
+        });
+      </script>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Usage Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• Dialog uses <code>client:load</code> for immediate hydration</li>
+        <li>• Focus is automatically trapped inside the dialog when open</li>
+        <li>• Press <kbd class="px-2 py-1 bg-blue-100 rounded">Escape</kbd> to close the dialog</li>
+        <li>• The background overlay blocks interaction with the rest of the page</li>
+        <li>• Setting <code>data-headlessuiState="open"</code> opens the dialog programmatically</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

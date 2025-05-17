@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/astro';
+
+const faqItems = [
+  {
+    question: "What is Astro?",
+    answer: "Astro is a modern web framework that allows you to build faster websites with less client-side JavaScript. It allows you to build your site using components from your favorite UI libraries (React, Vue, Svelte, etc.) and renders them to HTML at build time."
+  },
+  {
+    question: "How does HeadlessUI work with Astro?",
+    answer: "HeadlessUI Astro provides unstyled, accessible UI components specifically for Astro projects. It leverages Astro's partial hydration system to minimize JavaScript while providing interactive components. This means components only ship JavaScript when needed for interactivity."
+  },
+  {
+    question: "Do I need to use Tailwind with HeadlessUI Astro?",
+    answer: "No, you don't need to use Tailwind CSS with HeadlessUI Astro. While the examples in this playground use Tailwind for convenience, HeadlessUI components are completely unstyled and can be styled with any CSS approach you prefer."
+  },
+  {
+    question: "Is HeadlessUI Astro accessible?",
+    answer: "Yes, HeadlessUI Astro components are fully accessible. They implement proper ARIA attributes, support keyboard navigation, and follow WAI-ARIA patterns. This makes it easier to build accessible interfaces without having to implement these complex patterns yourself."
+  }
+]
+
+const sourceCode = `
+<div class="w-full max-w-md mx-auto space-y-2">
+  {faqItems.map((item, index) => (
+    <Disclosure as="div" class="border border-gray-200 rounded-lg">
+      <DisclosureButton class="flex w-full justify-between rounded-lg bg-white px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+        <span>{item.question}</span>
+        <svg class="h-5 w-5 text-gray-500 ui-open:rotate-180 ui-open:transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </DisclosureButton>
+      <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+        {item.answer}
+      </DisclosurePanel>
+    </Disclosure>
+  ))}
+</div>
+`;
+---
+
+<Layout title="Disclosure Group - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Disclosure Group (FAQ Example)</h1>
+    <p class="mb-8 text-gray-700">
+      This example shows how to create a group of independent disclosure components, commonly used for FAQs.
+      Each disclosure can be opened and closed independently.
+    </p>
+
+    <ExampleWrapper 
+      title="FAQ Example" 
+      description="A set of disclosure components with an animated icon that rotates when opened."
+      source={sourceCode}
+    >
+      <div class="w-full max-w-md mx-auto space-y-2">
+        {faqItems.map((item, index) => (
+          <Disclosure as="div" class="border border-gray-200 rounded-lg">
+            <DisclosureButton class="flex w-full justify-between rounded-lg bg-white px-4 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+              <span>{item.question}</span>
+              <svg class="h-5 w-5 text-gray-500 ui-open:rotate-180 ui-open:transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </DisclosureButton>
+            <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+              {item.answer}
+            </DisclosurePanel>
+          </Disclosure>
+        ))}
+      </div>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Implementation Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• Each Disclosure component is independent in this example</li>
+        <li>• Use <code>transition-transform duration-200</code> with <code>ui-open:transform</code> to animate the icon</li>
+        <li>• The structure is ideal for mapping over data to create FAQ sections</li>
+        <li>• For an accordion where only one item can be open at a time, you'd need custom JavaScript to manage state</li>
+        <li>• Focus ring styling helps ensure good accessibility</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

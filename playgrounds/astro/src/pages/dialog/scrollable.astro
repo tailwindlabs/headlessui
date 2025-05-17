@@ -1,0 +1,215 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+
+const sourceCode = `
+<button
+  type="button"
+  id="openScrollableDialogBtn"
+  class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+>
+  Open Scrollable Dialog
+</button>
+
+<Dialog id="scrollableDialog" client:load>
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+    <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl">
+      <div class="p-6">
+        <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+          Terms and Conditions
+        </DialogTitle>
+        <DialogDescription class="mt-2 text-sm text-gray-500">
+          Please read and accept our terms and conditions.
+        </DialogDescription>
+      </div>
+      
+      <div class="px-6 max-h-60 overflow-y-auto">
+        <p class="text-sm text-gray-500 mb-4">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce luctus vestibulum augue. 
+          Nulla facilisi. Suspendisse et turpis et leo venenatis facilisis quis sit amet dui.
+        </p>
+        <!-- Multiple paragraphs to demonstrate scrolling -->
+        <p class="text-sm text-gray-500 mb-4">
+          Cras maximus, magna eget finibus elementum, turpis nulla facilisis felis, ac eleifend lorem turpis ut metus. 
+          Nulla facilisi. Suspendisse potenti. Nullam id dolor a augue pellentesque facilisis.
+        </p>
+        <p class="text-sm text-gray-500 mb-4">
+          Integer ut sollicitudin erat, id rutrum mauris. Suspendisse ac rutrum mauris. 
+          Cras congue urna mi, sed lobortis turpis hendrerit eu. Nulla facilisi. 
+          Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+        </p>
+        <p class="text-sm text-gray-500 mb-4">
+          Praesent non diam at dui placerat imperdiet. Ut tincidunt diam eu urna sagittis rutrum. 
+          Vestibulum et mauris id arcu fermentum dignissim nec sit amet turpis.
+        </p>
+        <p class="text-sm text-gray-500 mb-4">
+          Morbi rutrum arcu nisl, id lobortis velit eleifend sit amet. 
+          Donec aliquet tempor augue ac consequat. Nulla facilisi. Ut luctus eu mi in tempor. 
+          Suspendisse potenti. Nam id purus eu risus scelerisque euismod.
+        </p>
+        <p class="text-sm text-gray-500 mb-4">
+          Curabitur varius elit non felis fringilla faucibus. Nam bibendum augue sed aliquam pulvinar. 
+          Duis venenatis vestibulum elementum. Nullam lobortis, nisi ut feugiat hendrerit, 
+          lorem ipsum fermentum enim, quis ultrices justo sem vitae enim.
+        </p>
+      </div>
+      
+      <div class="p-6 border-t border-gray-200">
+        <div class="flex justify-end gap-3">
+          <button
+            type="button"
+            id="declineBtn"
+            class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Decline
+          </button>
+          <button
+            type="button"
+            id="acceptBtn"
+            class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Accept
+          </button>
+        </div>
+      </div>
+    </DialogPanel>
+  </div>
+</Dialog>
+
+<script>
+  document.getElementById('openScrollableDialogBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('scrollableDialog');
+    if (dialog) dialog.dataset.headlessuiState = 'open';
+  });
+
+  document.getElementById('declineBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('scrollableDialog');
+    if (dialog) dialog.dataset.headlessuiState = '';
+  });
+
+  document.getElementById('acceptBtn')?.addEventListener('click', () => {
+    const dialog = document.getElementById('scrollableDialog');
+    if (dialog) dialog.dataset.headlessuiState = '';
+    // In a real app, you would handle the acceptance logic here
+  });
+</script>
+`;
+---
+
+<Layout title="Scrollable Dialog - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Scrollable Dialog</h1>
+    <p class="mb-8 text-gray-700">
+      This example demonstrates a dialog with scrollable content, useful for displaying terms and conditions, 
+      privacy policies, or other long-form content.
+    </p>
+
+    <ExampleWrapper 
+      title="Scrollable Dialog Example" 
+      description="A dialog with a fixed header and footer, and scrollable content in the middle."
+      source={sourceCode}
+    >
+      <button
+        type="button"
+        id="openScrollableDialogBtn"
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+      >
+        Open Scrollable Dialog
+      </button>
+
+      <Dialog id="scrollableDialog" client:load>
+        <div class="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
+          <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl">
+            <div class="p-6">
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                Terms and Conditions
+              </DialogTitle>
+              <DialogDescription class="mt-2 text-sm text-gray-500">
+                Please read and accept our terms and conditions.
+              </DialogDescription>
+            </div>
+            
+            <div class="px-6 max-h-60 overflow-y-auto">
+              <p class="text-sm text-gray-500 mb-4">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce luctus vestibulum augue. 
+                Nulla facilisi. Suspendisse et turpis et leo venenatis facilisis quis sit amet dui.
+              </p>
+              <!-- Multiple paragraphs to demonstrate scrolling -->
+              <p class="text-sm text-gray-500 mb-4">
+                Cras maximus, magna eget finibus elementum, turpis nulla facilisis felis, ac eleifend lorem turpis ut metus. 
+                Nulla facilisi. Suspendisse potenti. Nullam id dolor a augue pellentesque facilisis.
+              </p>
+              <p class="text-sm text-gray-500 mb-4">
+                Integer ut sollicitudin erat, id rutrum mauris. Suspendisse ac rutrum mauris. 
+                Cras congue urna mi, sed lobortis turpis hendrerit eu. Nulla facilisi. 
+                Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+              </p>
+              <p class="text-sm text-gray-500 mb-4">
+                Praesent non diam at dui placerat imperdiet. Ut tincidunt diam eu urna sagittis rutrum. 
+                Vestibulum et mauris id arcu fermentum dignissim nec sit amet turpis.
+              </p>
+              <p class="text-sm text-gray-500 mb-4">
+                Morbi rutrum arcu nisl, id lobortis velit eleifend sit amet. 
+                Donec aliquet tempor augue ac consequat. Nulla facilisi. Ut luctus eu mi in tempor. 
+                Suspendisse potenti. Nam id purus eu risus scelerisque euismod.
+              </p>
+              <p class="text-sm text-gray-500 mb-4">
+                Curabitur varius elit non felis fringilla faucibus. Nam bibendum augue sed aliquam pulvinar. 
+                Duis venenatis vestibulum elementum. Nullam lobortis, nisi ut feugiat hendrerit, 
+                lorem ipsum fermentum enim, quis ultrices justo sem vitae enim.
+              </p>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200">
+              <div class="flex justify-end gap-3">
+                <button
+                  type="button"
+                  id="declineBtn"
+                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Decline
+                </button>
+                <button
+                  type="button"
+                  id="acceptBtn"
+                  class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  Accept
+                </button>
+              </div>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      <script>
+        document.getElementById('openScrollableDialogBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('scrollableDialog');
+          if (dialog) dialog.dataset.headlessuiState = 'open';
+        });
+
+        document.getElementById('declineBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('scrollableDialog');
+          if (dialog) dialog.dataset.headlessuiState = '';
+        });
+
+        document.getElementById('acceptBtn')?.addEventListener('click', () => {
+          const dialog = document.getElementById('scrollableDialog');
+          if (dialog) dialog.dataset.headlessuiState = '';
+          // In a real app, you would handle the acceptance logic here
+        });
+      </script>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Implementation Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• Keep the header and footer fixed with <code>p-6</code> padding</li>
+        <li>• Apply <code>max-h-60 overflow-y-auto</code> to the content area to make it scrollable</li>
+        <li>• Use a border to visually separate the scrollable area from the footer</li>
+        <li>• Focus is still properly trapped within the dialog, including the scrollable area</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

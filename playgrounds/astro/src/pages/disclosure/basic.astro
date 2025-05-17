@@ -1,0 +1,62 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/astro';
+
+const sourceCode = `
+<Disclosure as="div" class="w-full max-w-md">
+  <DisclosureButton class="flex w-full justify-between rounded-lg bg-purple-100 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-purple-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+    <span>What is HeadlessUI?</span>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500 ui-open:rotate-180 ui-open:transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </DisclosureButton>
+  <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+    HeadlessUI is a set of completely unstyled, fully accessible UI components for
+    building user interfaces with complete styling freedom. It provides the functionality
+    and accessibility features while letting you control every aspect of the styling.
+  </DisclosurePanel>
+</Disclosure>
+`;
+---
+
+<Layout title="Basic Disclosure - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Disclosure Component</h1>
+    <p class="mb-8 text-gray-700">
+      The Disclosure component is an expandable/collapsible section that can show or hide content.
+      It's commonly used for FAQs, accordions, and any place where content needs to be shown on demand.
+    </p>
+
+    <ExampleWrapper 
+      title="Basic Disclosure Example" 
+      description="A simple disclosure component with an icon that rotates when opened."
+      source={sourceCode}
+    >
+      <Disclosure as="div" class="w-full max-w-md">
+        <DisclosureButton class="flex w-full justify-between rounded-lg bg-purple-100 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-purple-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+          <span>What is HeadlessUI?</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500 ui-open:rotate-180 ui-open:transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </DisclosureButton>
+        <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+          HeadlessUI is a set of completely unstyled, fully accessible UI components for
+          building user interfaces with complete styling freedom. It provides the functionality
+          and accessibility features while letting you control every aspect of the styling.
+        </DisclosurePanel>
+      </Disclosure>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Usage Notes</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• The disclosure component is fully accessible and can be used with keyboard navigation</li>
+        <li>• Press <kbd class="px-2 py-1 bg-blue-100 rounded">Space</kbd> or <kbd class="px-2 py-1 bg-blue-100 rounded">Enter</kbd> to toggle the disclosure</li>
+        <li>• Use <code>ui-open:</code> modifiers to apply styles when the disclosure is open</li>
+        <li>• No manual JavaScript is needed - the state is handled by HeadlessUI</li>
+        <li>• The component is hydrated with <code>client:visible</code> by default, so it only loads when visible</li>
+      </ul>
+    </div>
+  </div>
+</Layout>
