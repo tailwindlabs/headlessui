@@ -1,0 +1,9 @@
+---
+import Combobox from './Combobox.astro';
+import { EAGER_HYDRATION } from '../../utils/hydration';
+import type { ComboboxProps } from '../../types/combobox';
+
+type Props = ComboboxProps;
+---
+
+<Combobox {...Astro.props} client={EAGER_HYDRATION} />

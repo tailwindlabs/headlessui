@@ -1,0 +1,133 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOptions, ComboboxOption, ComboboxLabel } from '@headlessui/astro';
+
+const sourceCode = `
+<Combobox client="visible" class="relative max-w-xs mx-auto">
+  <ComboboxLabel class="block text-sm font-medium text-gray-700 mb-1">
+    Select a country
+  </ComboboxLabel>
+  
+  <div class="relative">
+    <ComboboxInput 
+      class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      placeholder="Search for a country..."
+      displayClearButton={true}
+      openOnFocus={true}
+    />
+    
+    <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5 text-gray-400">
+        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+      </svg>
+    </ComboboxButton>
+  </div>
+  
+  <ComboboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+    <ComboboxOption value="us" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      United States
+    </ComboboxOption>
+    <ComboboxOption value="ca" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Canada
+    </ComboboxOption>
+    <ComboboxOption value="uk" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      United Kingdom
+    </ComboboxOption>
+    <ComboboxOption value="au" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Australia
+    </ComboboxOption>
+    <ComboboxOption value="de" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Germany
+    </ComboboxOption>
+    <ComboboxOption value="fr" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      France
+    </ComboboxOption>
+    <ComboboxOption value="jp" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Japan
+    </ComboboxOption>
+    <ComboboxOption value="cn" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      China
+    </ComboboxOption>
+    <ComboboxOption value="br" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Brazil
+    </ComboboxOption>
+    <ComboboxOption value="mx" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      Mexico
+    </ComboboxOption>
+  </ComboboxOptions>
+</Combobox>
+`;
+
+const countries = [
+  { id: 'us', name: 'United States' },
+  { id: 'ca', name: 'Canada' },
+  { id: 'uk', name: 'United Kingdom' },
+  { id: 'au', name: 'Australia' },
+  { id: 'de', name: 'Germany' },
+  { id: 'fr', name: 'France' },
+  { id: 'jp', name: 'Japan' },
+  { id: 'cn', name: 'China' },
+  { id: 'br', name: 'Brazil' },
+  { id: 'mx', name: 'Mexico' },
+];
+---
+
+<Layout title="Basic Combobox Example | HeadlessUI Astro">
+  <main class="py-8 px-4">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-3xl font-bold mb-6">Combobox Component</h1>
+      
+      <p class="mb-6 text-gray-700">
+        The Combobox component is a combination of a text input and a dropdown list. 
+        It allows users to filter through a list of options by typing, and select one 
+        from the filtered results.
+      </p>
+
+      <ExampleWrapper title="Basic Combobox" sourceCode={sourceCode}>
+        <div class="p-4 border rounded-lg bg-white">
+          <Combobox client="visible" class="relative max-w-xs mx-auto">
+            <ComboboxLabel class="block text-sm font-medium text-gray-700 mb-1">
+              Select a country
+            </ComboboxLabel>
+            
+            <div class="relative">
+              <ComboboxInput 
+                class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Search for a country..."
+                displayClearButton={true}
+                openOnFocus={true}
+              />
+              
+              <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5 text-gray-400">
+                  <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+                </svg>
+              </ComboboxButton>
+            </div>
+            
+            <ComboboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {countries.map((country) => (
+                <ComboboxOption value={country.id} class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[headlessui-active-option]:bg-indigo-600 data-[headlessui-active-option]:text-white data-[headlessui-selected]:font-semibold">
+                  {country.name}
+                </ComboboxOption>
+              ))}
+            </ComboboxOptions>
+          </Combobox>
+        </div>
+
+        <div class="mt-4 p-4 bg-gray-50 border rounded-lg">
+          <h3 class="font-medium text-lg mb-2">Usage Notes</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li>Type in the input to filter the list of countries</li>
+            <li>Click the button or focus the input to open the dropdown</li>
+            <li>Use <kbd>↑</kbd> and <kbd>↓</kbd> to navigate options</li>
+            <li>Press <kbd>Enter</kbd> to select the focused option</li>
+            <li>Press <kbd>Escape</kbd> to close the dropdown</li>
+            <li>Type first few letters of an option for quick match</li>
+          </ul>
+        </div>
+      </ExampleWrapper>
+    </div>
+  </main>
+</Layout>

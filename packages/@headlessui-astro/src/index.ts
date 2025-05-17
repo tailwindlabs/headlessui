@@ -26,6 +26,15 @@ export { default as ListboxOptions } from './components/listbox/ListboxOptions.a
 export { default as ListboxOption } from './components/listbox/ListboxOption.astro';
 export { default as ListboxLabel } from './components/listbox/ListboxLabel.astro';
 
+// Export Combobox components
+export { default as Combobox } from './components/combobox/Combobox.astro';
+export { default as ComboboxLoad } from './components/combobox/Combobox.load.astro';
+export { default as ComboboxInput } from './components/combobox/ComboboxInput.astro';
+export { default as ComboboxButton } from './components/combobox/ComboboxButton.astro';
+export { default as ComboboxOptions } from './components/combobox/ComboboxOptions.astro';
+export { default as ComboboxOption } from './components/combobox/ComboboxOption.astro';
+export { default as ComboboxLabel } from './components/combobox/ComboboxLabel.astro';
+
 // Export types
 export type {
   // Base types
@@ -64,6 +73,19 @@ export type {
   ListboxOptionProps,
   ListboxLabelProps,
 } from './types/listbox';
+
+// Combobox types
+export type {
+  ComboboxProps,
+  ComboboxInputProps,
+  ComboboxButtonProps,
+  ComboboxOptionsProps,
+  ComboboxOptionProps,
+  ComboboxLabelProps,
+  ComboboxGroupProps,
+  ComboboxGroupLabelProps,
+  ComboboxEmptyStateProps,
+} from './types/combobox';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented

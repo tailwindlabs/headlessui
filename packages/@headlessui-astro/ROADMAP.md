@@ -9,6 +9,11 @@ This document outlines the planned development steps for the HeadlessUI Astro pa
 ✅ TypeScript type definitions for components
 ✅ Documentation and examples
 ✅ Menu component and subcomponents implemented (independent)
+✅ Dialog component and subcomponents implemented (independent)
+✅ Disclosure component and subcomponents implemented (independent)
+✅ Listbox component and subcomponents implemented (independent)
+✅ Combobox component and subcomponents implemented (independent)
+✅ Astro playground with component examples
 
 ## Architecture Evolution
 
@@ -48,13 +53,22 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
 
 ### Phase 2: Additional Components (Independent Implementation)
 
-- [ ] Combobox component
-  - [ ] Combobox.astro 
-  - [ ] ComboboxInput.astro
-  - [ ] ComboboxButton.astro
-  - [ ] ComboboxOptions.astro
-  - [ ] ComboboxOption.astro
-  - [ ] ComboboxLabel.astro
+- [x] Combobox component
+  - [x] Combobox.astro 
+  - [x] ComboboxInput.astro
+  - [x] ComboboxButton.astro
+  - [x] ComboboxOptions.astro
+  - [x] ComboboxOption.astro
+  - [x] ComboboxLabel.astro
+  - [x] Combobox.load.astro (eager hydration variant)
+
+- [ ] Tabs component
+  - [ ] Tabs.astro
+  - [ ] TabGroup.astro
+  - [ ] TabList.astro
+  - [ ] Tab.astro
+  - [ ] TabPanels.astro
+  - [ ] TabPanel.astro
 
 - [ ] RadioGroup component
   - [ ] RadioGroup.astro
@@ -68,14 +82,6 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [ ] SwitchDescription.astro
   - [ ] SwitchGroup.astro
 
-- [ ] Tabs component
-  - [ ] Tabs.astro
-  - [ ] TabGroup.astro
-  - [ ] TabList.astro
-  - [ ] Tab.astro
-  - [ ] TabPanels.astro
-  - [ ] TabPanel.astro
-
 - [ ] Popover component
   - [ ] Popover.astro
   - [ ] PopoverButton.astro
@@ -84,12 +90,16 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
 
 ### Phase 3: Playground and Documentation
 
-- [x] Create an Astro playground - In Progress
+- [x] Create an Astro playground
   - [x] Set up playground directory structure
   - [x] Configure playground with Tailwind CSS
-  - [ ] Create basic layout and navigation
-  - [ ] Implement examples for all components
-  - [ ] Create complex pattern examples
+  - [x] Create basic layout and navigation
+  - [x] Implement examples for Menu component
+  - [x] Implement examples for Dialog component
+  - [x] Implement examples for Disclosure component
+  - [x] Implement examples for Listbox component
+  - [x] Implement examples for Combobox component
+  - [ ] Create complex pattern examples (combinations of components)
 
 - [ ] Enhance documentation
   - [ ] API reference for each component

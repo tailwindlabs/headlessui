@@ -1,0 +1,22 @@
+---
+import type { ComboboxOptionsProps } from '../../types/combobox';
+
+interface Props extends ComboboxOptionsProps {}
+
+const {
+  static: isStatic = false,
+  hold = false,
+  as = 'ul',
+  class: className,
+} = Astro.props;
+---
+
+<Dynamic tag={as} 
+  data-headlessui-combobox-options
+  data-static={isStatic ? 'true' : undefined}
+  data-hold={hold ? 'true' : undefined}
+  class={className}
+  style={{ display: 'none' }}
+>
+  <slot />
+</Dynamic>

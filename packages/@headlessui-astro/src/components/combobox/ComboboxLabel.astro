@@ -1,0 +1,21 @@
+---
+import type { ComboboxLabelProps } from '../../types/combobox';
+
+interface Props extends ComboboxLabelProps {}
+
+const {
+  as = 'label',
+  class: className,
+} = Astro.props;
+
+// Generate a unique ID for the label
+const labelId = `headlessui-combobox-label-${Math.floor(Math.random() * 1000000)}`;
+---
+
+<Dynamic tag={as} 
+  id={labelId}
+  data-headlessui-combobox-label
+  class={className}
+>
+  <slot />
+</Dynamic>

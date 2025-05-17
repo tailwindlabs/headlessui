@@ -1,0 +1,19 @@
+---
+import type { ComboboxButtonProps } from '../../types/combobox';
+
+interface Props extends ComboboxButtonProps {}
+
+const {
+  as = 'button',
+  class: className,
+} = Astro.props;
+---
+
+<Dynamic tag={as} 
+  data-headlessui-combobox-button
+  type={as === 'button' ? 'button' : undefined}
+  aria-haspopup="listbox"
+  class={className}
+>
+  <slot />
+</Dynamic>

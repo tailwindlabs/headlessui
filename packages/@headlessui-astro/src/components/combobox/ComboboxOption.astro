@@ -1,0 +1,26 @@
+---
+import type { ComboboxOptionProps } from '../../types/combobox';
+
+interface Props extends ComboboxOptionProps {}
+
+const {
+  value,
+  disabled = false,
+  as = 'li',
+  class: className,
+} = Astro.props;
+
+// Generate a unique ID for the option
+const optionId = `headlessui-combobox-option-${Math.floor(Math.random() * 1000000)}`;
+---
+
+<Dynamic tag={as} 
+  id={optionId}
+  data-headlessui-combobox-option
+  data-value={value}
+  data-disabled={disabled ? 'true' : undefined}
+  aria-disabled={disabled ? 'true' : undefined}
+  class={className}
+>
+  <slot />
+</Dynamic>

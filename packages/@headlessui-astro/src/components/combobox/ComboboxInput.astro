@@ -1,0 +1,30 @@
+---
+import type { ComboboxInputProps } from '../../types/combobox';
+
+interface Props extends ComboboxInputProps {}
+
+const {
+  displayClearButton = false,
+  placeholder,
+  as = 'input',
+  class: className,
+  openOnFocus = false,
+  onChange,
+} = Astro.props;
+---
+
+<Dynamic tag={as} 
+  data-headlessui-combobox-input
+  type="text"
+  placeholder={placeholder}
+  data-display-clear-button={displayClearButton ? 'true' : undefined}
+  data-open-on-focus={openOnFocus ? 'true' : undefined}
+  autocomplete="off"
+  autocorrect="off"
+  autocapitalize="off"
+  spellcheck="false"
+  role="combobox"
+  class={className}
+>
+  <slot />
+</Dynamic>

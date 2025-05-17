@@ -1,0 +1,65 @@
+---
+import { getComponentHydration, DEFAULT_HYDRATION } from '../../utils/hydration';
+import type { ComboboxProps } from '../../types/combobox';
+
+interface Props extends ComboboxProps {
+  /**
+   * Astro client directive to control hydration.
+   * @default 'visible'
+   */
+  client?: 'load' | 'visible' | 'idle' | 'media' | null;
+}
+
+const {
+  value,
+  onChange,
+  multiple = false,
+  disabled = false,
+  as = 'div',
+  class: className,
+  id,
+  defaultOpen = false,
+  open,
+  onOpenChange,
+  name,
+  filter,
+  client = DEFAULT_HYDRATION,
+} = Astro.props;
+
+// Generate a unique ID for the combobox
+const comboboxId = id || `headlessui-combobox-${Math.floor(Math.random() * 1000000)}`;
+
+// Convert value to JSON string for client-side use
+const valueString = value !== undefined ? JSON.stringify(value) : undefined;
+
+// Get the appropriate client directive based on the component type
+const clientDirective = getComponentHydration(client, 'combobox');
+---
+
+<Dynamic tag={as}
+  id={comboboxId}
+  data-headlessui-combobox
+  data-headlessui-state={open ? 'open' : 'closed'}
+  data-initial-value={valueString}
+  data-multiple={multiple ? 'true' : undefined}
+  data-disabled={disabled ? 'true' : undefined}
+  data-default-open={defaultOpen ? 'true' : undefined}
+  class={className}
+  {clientDirective}
+>
+  <slot />
+
+  <script>
+    import { initComboboxes } from './combobox-client';
+    
+    // Initialize comboboxes on page load and navigation
+    document.addEventListener('astro:page-load', () => {
+      initComboboxes();
+    });
+    
+    // Initial load
+    if (document.readyState !== 'loading') {
+      initComboboxes();
+    }
+  </script>
+</Dynamic>

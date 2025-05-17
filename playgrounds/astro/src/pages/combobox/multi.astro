@@ -1,0 +1,121 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOptions, ComboboxOption, ComboboxLabel } from '@headlessui/astro';
+
+const sourceCode = `
+<Combobox multiple={true} client="visible" class="relative max-w-xs mx-auto">
+  <ComboboxLabel class="block text-sm font-medium text-gray-700 mb-1">
+    Select technologies
+  </ComboboxLabel>
+  
+  <div class="relative">
+    <ComboboxInput 
+      class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      placeholder="Select technologies..."
+      displayClearButton={true}
+      openOnFocus={true}
+    />
+    
+    <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5 text-gray-400">
+        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+      </svg>
+    </ComboboxButton>
+  </div>
+  
+  <ComboboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+    <ComboboxOption value="react" class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 ui-active:bg-indigo-600 ui-active:text-white">
+      <span class="block truncate ui-selected:font-semibold">
+        React
+        <span class="ui-selected:inline hidden absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 ui-active:text-white">
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+        </span>
+      </span>
+    </ComboboxOption>
+    <!-- More options... -->
+  </ComboboxOptions>
+</Combobox>
+`;
+
+const technologies = [
+  { id: 'react', name: 'React' },
+  { id: 'vue', name: 'Vue' },
+  { id: 'angular', name: 'Angular' },
+  { id: 'svelte', name: 'Svelte' },
+  { id: 'astro', name: 'Astro' },
+  { id: 'tailwind', name: 'Tailwind CSS' },
+  { id: 'typescript', name: 'TypeScript' },
+  { id: 'javascript', name: 'JavaScript' },
+  { id: 'node', name: 'Node.js' },
+  { id: 'python', name: 'Python' },
+];
+---
+
+<Layout title="Multi-Select Combobox Example | HeadlessUI Astro">
+  <main class="py-8 px-4">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-3xl font-bold mb-6">Multi-Select Combobox</h1>
+      
+      <p class="mb-6 text-gray-700">
+        This example demonstrates a multi-select Combobox that allows users to 
+        select multiple options from the dropdown list.
+      </p>
+
+      <ExampleWrapper title="Multi-Select Combobox" sourceCode={sourceCode}>
+        <div class="p-4 border rounded-lg bg-white">
+          <Combobox multiple={true} client="visible" class="relative max-w-xs mx-auto">
+            <ComboboxLabel class="block text-sm font-medium text-gray-700 mb-1">
+              Select technologies
+            </ComboboxLabel>
+            
+            <div class="relative">
+              <ComboboxInput 
+                class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Select technologies..."
+                displayClearButton={true}
+                openOnFocus={true}
+              />
+              
+              <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5 text-gray-400">
+                  <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+                </svg>
+              </ComboboxButton>
+            </div>
+            
+            <ComboboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {technologies.map((tech) => (
+                <ComboboxOption value={tech.id} class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[headlessui-active-option]:bg-indigo-600 data-[headlessui-active-option]:text-white">
+                  <span class="block truncate data-[headlessui-selected]:font-semibold">
+                    {tech.name}
+                    <span class="data-[headlessui-selected]:inline hidden absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 data-[headlessui-active-option]:text-white">
+                      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  </span>
+                </ComboboxOption>
+              ))}
+            </ComboboxOptions>
+          </Combobox>
+        </div>
+
+        <div class="mt-4 p-4 bg-gray-50 border rounded-lg">
+          <h3 class="font-medium text-lg mb-2">Usage Notes</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li>Type in the input to filter the list of technologies</li>
+            <li>Click an option to toggle its selection status</li>
+            <li>Selected options are marked with a checkmark</li>
+            <li>You can select multiple options at once</li>
+            <li>Use <kbd>↑</kbd> and <kbd>↓</kbd> to navigate options</li>
+            <li>Press <kbd>Enter</kbd> to toggle selection of the focused option</li>
+            <li>Press <kbd>Escape</kbd> to close the dropdown</li>
+          </ul>
+        </div>
+      </ExampleWrapper>
+    </div>
+  </main>
+</Layout>
