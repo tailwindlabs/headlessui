@@ -1,0 +1,12 @@
+---
+// Switch.load.astro - Same as Switch.astro but with client:load hydration
+import type { SwitchProps } from '../../types/switch';
+import Switch from './Switch.astro';
+
+// Pass props to the base component but override client directive
+const props = Astro.props as SwitchProps;
+---
+
+<Switch {...props} client:load>
+  <slot />
+</Switch>

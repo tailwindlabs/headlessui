@@ -1,0 +1,20 @@
+---
+// SwitchGroup.astro - Container component for Switch and related components
+import type { SwitchGroupProps } from '../../types/switch';
+
+// Destructure props with defaults
+const { 
+  as = 'div',
+  ...rest 
+} = Astro.props as SwitchGroupProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-switch-group
+  {...rest}
+>
+  <slot />
+</Element>

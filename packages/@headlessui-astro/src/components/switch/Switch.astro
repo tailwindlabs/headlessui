@@ -1,0 +1,52 @@
+---
+// Switch.astro - Independent implementation with client:visible hydration
+import type { SwitchProps } from '../../types/switch';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'button',
+  client = DEFAULT_HYDRATION,
+  checked,
+  defaultChecked = false,
+  disabled = false,
+  checkedClass,
+  uncheckedClass,
+  ...rest 
+} = Astro.props as SwitchProps;
+
+// Generate unique ID
+const switchId = `headlessui-switch-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={switchId}
+  type={as === 'button' ? 'button' : undefined}
+  data-headlessui-switch
+  data-checked={checked !== undefined ? String(checked) : undefined}
+  data-default-checked={String(defaultChecked)}
+  data-disabled={String(disabled)}
+  data-checked-class={checkedClass}
+  data-unchecked-class={uncheckedClass}
+  {...rest}
+  client:visible
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    import { createSwitchContext } from './switch-client';
+    
+    // Initialize all switch components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-switch]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createSwitchContext(element);
+        }
+      });
+    });
+  </script>
+</Element>
