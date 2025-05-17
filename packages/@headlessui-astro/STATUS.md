@@ -62,6 +62,14 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
    - ComboboxLabel.astro
    - Backed by combobox-client.ts for client-side functionality
 
+6. **Tabs Component (Independent Implementation)**
+   - TabGroup.astro and TabGroup.load.astro
+   - TabList.astro
+   - Tab.astro
+   - TabPanels.astro
+   - TabPanel.astro
+   - Backed by tabs-client.ts for client-side functionality
+
 ### Documentation
 
 - Created README with usage examples
@@ -81,18 +89,23 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
 
 According to our roadmap, we should focus on implementing these components next with native implementations (no Vue dependencies):
 
-1. **Tabs Component**
-   - Tabs.astro (independent implementation)
-   - Tab.astro
-   - TabGroup.astro
-   - TabList.astro
-   - TabPanel.astro
-   - TabPanels.astro
+1. **RadioGroup Component**
+   - RadioGroup.astro (independent implementation)
+   - RadioGroupLabel.astro
+   - RadioGroupOption.astro
+   - RadioGroupDescription.astro
 
-Following those, we'll move on to:
-- RadioGroup
-- Switch
-- Popover
+2. **Switch Component**
+   - Switch.astro (independent implementation)
+   - SwitchGroup.astro
+   - SwitchLabel.astro
+   - SwitchDescription.astro
+
+3. **Popover Component**
+   - Popover.astro (independent implementation)
+   - PopoverButton.astro
+   - PopoverPanel.astro
+   - PopoverGroup.astro
 
 ## Challenges and Solutions
 
@@ -127,8 +140,9 @@ Following those, we'll move on to:
 3. ✅ Set up an Astro playground - Completed
    - A playground has been created in `/playgrounds/astro/` to demonstrate and test components
    - This provides real-world usage examples and testing
-4. Set up a testing infrastructure
-5. Implement remaining components (Tabs, RadioGroup, Switch, etc.)
+4. ✅ Implement Tabs component independently - Completed
+5. Set up a testing infrastructure
+6. Implement remaining components (RadioGroup, Switch, Popover, etc.)
 
 ## Beta Release Timeline
 
@@ -139,7 +153,8 @@ We are targeting a beta release once all main components have been implemented i
 - Disclosure (✅ Completed)
 - Listbox (✅ Completed)
 - Combobox (✅ Completed)
-- Tabs (Next priority)
+- Tabs (✅ Completed)
+- RadioGroup (Next priority)
 - Switch (Next priority)
 
 Each component will have comprehensive documentation, TypeScript type definitions, and proper accessibility support.

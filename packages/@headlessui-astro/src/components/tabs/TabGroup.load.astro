@@ -1,0 +1,12 @@
+---
+// TabGroup.load.astro - Same as TabGroup.astro but with client:load hydration
+import type { TabGroupProps } from '../../types/tabs';
+import TabGroup from './TabGroup.astro';
+
+// Pass props to the base component but override client directive
+const props = Astro.props as TabGroupProps;
+---
+
+<TabGroup {...props} client:load>
+  <slot />
+</TabGroup>

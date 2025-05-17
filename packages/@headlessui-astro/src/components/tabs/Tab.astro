@@ -1,0 +1,26 @@
+---
+// Tab.astro - Individual tab component
+import type { TabProps } from '../../types/tabs';
+
+// Destructure props with defaults
+const { 
+  as = 'button', 
+  disabled = false,
+  value,
+  ...rest 
+} = Astro.props as TabProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-tab
+  data-disabled={disabled.toString()}
+  data-value={value !== undefined ? JSON.stringify(value) : undefined}
+  tabindex="-1"
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

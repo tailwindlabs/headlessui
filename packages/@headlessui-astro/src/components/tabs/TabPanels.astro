@@ -1,0 +1,20 @@
+---
+// TabPanels.astro - Container for tab panels
+import type { TabPanelsProps } from '../../types/tabs';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  ...rest 
+} = Astro.props as TabPanelsProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-tab-panels
+  {...rest}
+>
+  <slot />
+</Element>

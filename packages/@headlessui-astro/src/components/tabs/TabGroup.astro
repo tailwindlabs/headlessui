@@ -1,0 +1,49 @@
+---
+// TabGroup.astro - Independent implementation with client:visible hydration
+import type { TabGroupProps } from '../../types/tabs';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  client = DEFAULT_HYDRATION,
+  manual = false,
+  vertical = false,
+  defaultIndex = 0,
+  selectedIndex, // Optional controlled value
+  ...rest 
+} = Astro.props as TabGroupProps;
+
+// Generate unique ID
+const tabGroupId = `headlessui-tabgroup-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={tabGroupId}
+  data-headlessui-tabgroup
+  data-manual={manual.toString()}
+  data-vertical={vertical.toString()}
+  data-default-index={defaultIndex.toString()}
+  data-selected-index={selectedIndex !== undefined ? selectedIndex.toString() : undefined}
+  {...rest}
+  client:visible
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    import { createTabsContext } from './tabs-client';
+    
+    // Initialize all tab group components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-tabgroup]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createTabsContext(element);
+        }
+      });
+    });
+  </script>
+</Element>

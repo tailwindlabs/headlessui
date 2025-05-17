@@ -87,5 +87,22 @@ export type {
   ComboboxEmptyStateProps,
 } from './types/combobox';
 
+// Tabs types
+export type {
+  TabGroupProps,
+  TabListProps,
+  TabProps,
+  TabPanelsProps,
+  TabPanelProps,
+} from './types/tabs';
+
+// Export Tabs components
+export { default as TabGroup } from './components/tabs/TabGroup.astro';
+export { default as TabGroupLoad } from './components/tabs/TabGroup.load.astro';
+export { default as TabList } from './components/tabs/TabList.astro';
+export { default as Tab } from './components/tabs/Tab.astro';
+export { default as TabPanels } from './components/tabs/TabPanels.astro';
+export { default as TabPanel } from './components/tabs/TabPanel.astro';
+
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented

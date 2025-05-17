@@ -1,0 +1,25 @@
+---
+// TabList.astro - Component for tabs container
+import type { TabListProps } from '../../types/tabs';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  activeClass,
+  inactiveClass,
+  ...rest 
+} = Astro.props as TabListProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-tab-list
+  role="tablist"
+  data-active-class={activeClass}
+  data-inactive-class={inactiveClass}
+  {...rest}
+>
+  <slot />
+</Element>
