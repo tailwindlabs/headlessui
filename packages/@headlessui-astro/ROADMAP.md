@@ -78,11 +78,11 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [x] RadioGroupOption.astro
   - [x] RadioGroupDescription.astro
 
-- [ ] Switch component
-  - [ ] Switch.astro
-  - [ ] SwitchLabel.astro
-  - [ ] SwitchDescription.astro
-  - [ ] SwitchGroup.astro
+- [x] Switch component
+  - [x] Switch.astro
+  - [x] SwitchLabel.astro
+  - [x] SwitchDescription.astro
+  - [x] SwitchGroup.astro
 
 - [ ] Popover component
   - [ ] Popover.astro

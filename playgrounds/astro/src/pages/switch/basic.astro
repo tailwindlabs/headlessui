@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { Switch, SwitchGroup, SwitchLabel, SwitchDescription } from '@headlessui-astro';
+---
+
+<Layout title="Switch Basic Example">
+  <ExampleWrapper label="Basic Toggle Switch">
+    <div class="py-16">
+      <div class="w-full max-w-md mx-auto">
+        <!-- Simple Switch -->
+        <div class="mb-8">
+          <Switch 
+            class="relative inline-flex h-6 w-11 items-center rounded-full ui-checked:bg-indigo-600 ui-not-checked:bg-gray-200"
+            checkedClass="bg-indigo-600"
+            uncheckedClass="bg-gray-200"
+          >
+            <span class="sr-only">Enable notifications</span>
+            <span 
+              class:list={[
+                "inline-block h-4 w-4 transform rounded-full bg-white transition",
+                "ui-checked:translate-x-6 ui-not-checked:translate-x-1"
+              ]}
+            ></span>
+          </Switch>
+        </div>
+
+        <!-- Switch with Label -->
+        <div class="mb-8">
+          <SwitchGroup as="div" class="flex items-center">
+            <SwitchLabel as="span" class="mr-3 text-sm font-medium text-gray-900">
+              Automatic updates
+            </SwitchLabel>
+            <Switch 
+              class="relative inline-flex h-6 w-11 items-center rounded-full ui-checked:bg-indigo-600 ui-not-checked:bg-gray-200"
+              checkedClass="bg-indigo-600"
+              uncheckedClass="bg-gray-200"
+            >
+              <span 
+                class:list={[
+                  "inline-block h-4 w-4 transform rounded-full bg-white transition",
+                  "ui-checked:translate-x-6 ui-not-checked:translate-x-1"
+                ]}
+              ></span>
+            </Switch>
+          </SwitchGroup>
+        </div>
+
+        <!-- Switch with Label and Description -->
+        <div>
+          <SwitchGroup as="div" class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <SwitchLabel as="span" class="text-sm font-medium text-gray-900" passive>
+                Available to hire
+              </SwitchLabel>
+              <SwitchDescription as="span" class="text-sm text-gray-500">
+                Make your profile visible to potential employers
+              </SwitchDescription>
+            </div>
+            <Switch 
+              class:list={[
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75",
+                "ui-checked:bg-indigo-600 ui-not-checked:bg-gray-200"
+              ]}
+              checkedClass="bg-indigo-600"
+              uncheckedClass="bg-gray-200"
+            >
+              <span 
+                class:list={[
+                  "pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  "ui-checked:translate-x-5 ui-checked:bg-white ui-not-checked:translate-x-0"
+                ]}
+              >
+                <span 
+                  class:list={[
+                    "absolute inset-0 flex h-full w-full items-center justify-center transition-opacity",
+                    "ui-not-checked:opacity-0 ui-not-checked:duration-100 ui-checked:opacity-100 ui-checked:duration-200"
+                  ]}
+                  aria-hidden="true"
+                >
+                  <svg class="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
+                    <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
+                  </svg>
+                </span>
+                <span 
+                  class:list={[
+                    "absolute inset-0 flex h-full w-full items-center justify-center transition-opacity",
+                    "ui-checked:opacity-0 ui-checked:duration-100 ui-not-checked:opacity-100 ui-not-checked:duration-200"
+                  ]}
+                  aria-hidden="true"
+                >
+                  <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+                    <path
+                      d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </Switch>
+          </SwitchGroup>
+        </div>
+      </div>
+    </div>
+  </ExampleWrapper>
+</Layout>

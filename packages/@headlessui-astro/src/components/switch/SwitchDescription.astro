@@ -1,0 +1,21 @@
+---
+// SwitchDescription.astro - Description component for Switch
+import type { SwitchDescriptionProps } from '../../types/switch';
+
+// Destructure props with defaults
+const { 
+  as = 'p',
+  ...rest 
+} = Astro.props as SwitchDescriptionProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-switch-description
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

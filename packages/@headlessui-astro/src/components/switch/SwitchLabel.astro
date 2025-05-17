@@ -1,0 +1,24 @@
+---
+// SwitchLabel.astro - Label component for Switch
+import type { SwitchLabelProps } from '../../types/switch';
+
+// Destructure props with defaults
+const { 
+  as = 'label', 
+  asLabel = true,
+  passive = false,
+  ...rest 
+} = Astro.props as SwitchLabelProps;
+
+// Determine the element to render (either actual HTML label or generic element)
+const Element = asLabel ? 'label' : as;
+---
+
+<Element 
+  data-headlessui-switch-label
+  data-passive={String(passive)}
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

@@ -104,6 +104,14 @@ export type {
   RadioGroupDescriptionProps,
 } from './types/radiogroup';
 
+// Switch types
+export type {
+  SwitchProps,
+  SwitchGroupProps,
+  SwitchLabelProps,
+  SwitchDescriptionProps,
+} from './types/switch';
+
 // Export Tabs components
 export { default as TabGroup } from './components/tabs/TabGroup.astro';
 export { default as TabGroupLoad } from './components/tabs/TabGroup.load.astro';
@@ -118,6 +126,13 @@ export { default as RadioGroupLoad } from './components/radiogroup/RadioGroup.lo
 export { default as RadioGroupLabel } from './components/radiogroup/RadioGroupLabel.astro';
 export { default as RadioGroupOption } from './components/radiogroup/RadioGroupOption.astro';
 export { default as RadioGroupDescription } from './components/radiogroup/RadioGroupDescription.astro';
+
+// Export Switch components
+export { default as Switch } from './components/switch/Switch.astro';
+export { default as SwitchLoad } from './components/switch/Switch.load.astro';
+export { default as SwitchGroup } from './components/switch/SwitchGroup.astro';
+export { default as SwitchLabel } from './components/switch/SwitchLabel.astro';
+export { default as SwitchDescription } from './components/switch/SwitchDescription.astro';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented
