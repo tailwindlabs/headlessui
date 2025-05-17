@@ -54,7 +54,7 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
 ### Phase 2: Additional Components (Independent Implementation)
 
 - [x] Combobox component
-  - [x] Combobox.astro 
+  - [x] Combobox.astro
   - [x] ComboboxInput.astro
   - [x] ComboboxButton.astro
   - [x] ComboboxOptions.astro
@@ -62,13 +62,13 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [x] ComboboxLabel.astro
   - [x] Combobox.load.astro (eager hydration variant)
 
-- [ ] Tabs component
-  - [ ] Tabs.astro
-  - [ ] TabGroup.astro
-  - [ ] TabList.astro
-  - [ ] Tab.astro
-  - [ ] TabPanels.astro
-  - [ ] TabPanel.astro
+- [x] Tabs component
+  - [x] Tabs.astro
+  - [x] TabGroup.astro
+  - [x] TabList.astro
+  - [x] Tab.astro
+  - [x] TabPanels.astro
+  - [x] TabPanel.astro
 
 - [ ] RadioGroup component
   - [ ] RadioGroup.astro

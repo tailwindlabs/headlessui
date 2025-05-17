@@ -1,5 +1,5 @@
 {
-  "name": "@headlessui-astro",
+  "name": "@headlessui/astro",
   "version": "0.1.0",
   "description": "Completely unstyled, fully accessible UI components for Astro",
   "main": "dist/index.js",

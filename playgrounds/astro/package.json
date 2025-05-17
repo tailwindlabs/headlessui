@@ -1,5 +1,5 @@
 {
-  "name": "playground-astro",
+  "name": "@headlessui/playground-astro",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -18,9 +18,10 @@
   },
   "dependencies": {
     "@astrojs/tailwind": "^5.1.0",
+    "@headlessui/tailwindcss": "*",
+    "@tanstack/virtual-core": "^3.13.6",
     "astro": "^4.4.0",
-    "tailwindcss": "^3.4.1",
-    "@headlessui/tailwindcss": "*"
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5",
