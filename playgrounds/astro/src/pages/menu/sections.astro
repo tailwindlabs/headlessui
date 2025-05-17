@@ -1,0 +1,149 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { 
+  Menu, 
+  MenuButton, 
+  MenuItems, 
+  MenuItem, 
+  MenuSection, 
+  MenuHeading, 
+  MenuSeparator 
+} from '../../components/menu';
+
+const sourceCode = `
+<Menu as="div" class="relative inline-block text-left">
+  <MenuButton class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+    Advanced Options
+    <svg class="w-5 h-5 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+  </MenuButton>
+  
+  <MenuItems class="absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+    <MenuSection label="File Operations">
+      <MenuHeading class="px-3 py-2 text-xs font-semibold text-gray-500">
+        File Operations
+      </MenuHeading>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        New File
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        Open File
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        Save File
+      </MenuItem>
+    </MenuSection>
+    
+    <MenuSeparator class="my-1 h-px bg-gray-200" />
+    
+    <MenuSection label="Edit Operations">
+      <MenuHeading class="px-3 py-2 text-xs font-semibold text-gray-500">
+        Edit Operations
+      </MenuHeading>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        Cut
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        Copy
+      </MenuItem>
+      <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+        Paste
+      </MenuItem>
+    </MenuSection>
+    
+    <MenuSeparator class="my-1 h-px bg-gray-200" />
+    
+    <MenuHeading visuallyHidden={true}>Danger Zone</MenuHeading>
+    <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm text-red-600 ui-active:bg-red-500 ui-active:text-white">
+      Delete File
+    </MenuItem>
+  </MenuItems>
+</Menu>
+`;
+---
+
+<Layout title="Menu with Sections - HeadlessUI Astro Playground">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Menu with Sections</h1>
+    <p class="mb-8 text-gray-700">
+      This example demonstrates how to use the MenuSection, MenuHeading, and MenuSeparator 
+      components to create a more structured and accessible menu.
+    </p>
+
+    <ExampleWrapper 
+      title="Menu with Sections Example" 
+      description="A menu with clearly defined sections, headings, and separators."
+      source={sourceCode}
+    >
+      <Menu as="div" class="relative inline-block text-left">
+        <MenuButton class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+          Advanced Options
+          <svg class="w-5 h-5 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </MenuButton>
+        
+        <MenuItems class="absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <MenuSection label="File Operations">
+            <MenuHeading class="px-3 py-2 text-xs font-semibold text-gray-500">
+              File Operations
+            </MenuHeading>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              New File
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              Open File
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              Save File
+            </MenuItem>
+          </MenuSection>
+          
+          <MenuSeparator class="my-1 h-px bg-gray-200" />
+          
+          <MenuSection label="Edit Operations">
+            <MenuHeading class="px-3 py-2 text-xs font-semibold text-gray-500">
+              Edit Operations
+            </MenuHeading>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              Cut
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              Copy
+            </MenuItem>
+            <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm ui-active:bg-blue-500 ui-active:text-white">
+              Paste
+            </MenuItem>
+          </MenuSection>
+          
+          <MenuSeparator class="my-1 h-px bg-gray-200" />
+          
+          <MenuHeading visuallyHidden={true}>Danger Zone</MenuHeading>
+          <MenuItem as="button" class="w-full text-left px-3 py-2 text-sm text-red-600 ui-active:bg-red-500 ui-active:text-white">
+            Delete File
+          </MenuItem>
+        </MenuItems>
+      </Menu>
+    </ExampleWrapper>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-blue-800">Component Details</h2>
+      <ul class="mt-2 space-y-2 text-sm text-blue-700">
+        <li>• <strong>MenuSection</strong>: Provides a grouping container with proper ARIA role="group"</li>
+        <li>• <strong>MenuHeading</strong>: Provides a heading for sections with proper accessibility semantics</li>
+        <li>• <strong>MenuSeparator</strong>: Adds visual and semantic separation between menu sections</li>
+      </ul>
+    </div>
+
+    <div class="mt-8 p-4 bg-yellow-50 rounded-lg">
+      <h2 class="text-lg font-semibold text-yellow-800">Accessibility Features</h2>
+      <ul class="mt-2 space-y-2 text-sm text-yellow-700">
+        <li>• MenuSection components have the proper ARIA role="group" for screen readers</li>
+        <li>• MenuHeading can be visually hidden while still maintaining structure for screen readers</li>
+        <li>• MenuSeparator has the appropriate role="separator" for semantic meaning</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

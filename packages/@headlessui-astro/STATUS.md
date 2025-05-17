@@ -149,9 +149,69 @@ According to our roadmap, we should focus on implementing these components next 
    - **Solution**: Rewrote core functionality with pure TypeScript
    - **Progress**: All implemented components are now fully independent from Vue
 
-5. **Testing**:
+5. **Client Hydration Directive Issues**:
+   - **Challenge**: Astro errors when client directives are passed to components that already have internal client directives
+   - **Error Example**: `You are attempting to render <Dialog client:load />, but Dialog is an Astro component. Astro components do not render in the client and should not have a hydration directive.`
+   - **Solution**: Modified component implementation to accept and use a `client` prop instead of hardcoding the directive
+   - **Implementation**: Components now destructure a `client` prop that defaults to the appropriate hydration strategy
+
+6. **Testing**:
    - **Challenge**: Testing Astro components effectively
    - **Solution**: Planned testing infrastructure in Phase 3 of roadmap
+
+## Component Feature Parity Status
+
+While the core functionality of all main components has been implemented, there are some features from the original React/Vue implementations that are still missing. Below is a detailed analysis of feature parity status, focusing on the Menu component as an example:
+
+### Recently Implemented Features
+
+1. **Additional Menu Components**
+   - ✅ MenuSection - Added with proper role="group" and accessibility attributes
+   - ✅ MenuHeading - Added with proper role="presentation" and optional visual hiding
+   - ✅ MenuSeparator - Added with proper role="separator" and aria-orientation
+
+### Remaining Missing Features
+
+1. **Typeahead Search Functionality**
+   - React/Vue implementations support typeahead searching within menu items
+   - Current Astro implementation lacks this feature
+
+2. **Advanced Focus Management**
+   - More sophisticated focus tracking and restoration present in React/Vue
+   - Current implementation has basic focus management but lacks some advanced features
+
+3. **Transition Support**
+   - React has built-in transition support for smoother UI interactions
+   - Current Astro implementation lacks transition capabilities
+
+4. **Keyboard Navigation Refinements**
+   - Some advanced keyboard interactions like Home/End key support are incomplete
+   - Typeahead keyboard navigation is missing
+
+### Recommendations for Complete Feature Parity
+
+1. **Implement Missing Composite Components for Other UI Components**
+   - ✅ Menu Component: MenuSection, MenuHeading, and MenuSeparator added
+   - Add similar missing components for other UI component sets (Combobox, Listbox, etc.)
+
+2. **Enhance Keyboard Navigation and Focus Management**
+   - Improve the client-side scripts to handle more keyboard interactions
+   - Implement better focus restoration when components close
+   - Add Home/End key support for all component sets
+
+3. **Add Typeahead Search Functionality**
+   - Implement similar typeahead search as in React/Vue implementations
+   - Add appropriate event handlers and state management for this feature
+
+4. **Consider Adding Transition Support**
+   - Add basic transition capabilities, possibly leveraging Astro's own transition features
+   - Ensure transitions work correctly with partial hydration
+
+5. **Ensure Full WAI-ARIA Compliance**
+   - Review and enhance accessibility attributes and behaviors
+   - Test with screen readers and keyboard-only navigation
+
+The current Astro implementation provides a solid foundation that follows the core patterns of HeadlessUI. The main differences are in implementation details and some advanced features rather than fundamental architectural differences.
 
 ## Next Steps
 
@@ -166,7 +226,16 @@ According to our roadmap, we should focus on implementing these components next 
 7. ✅ Implement Popover component independently - Completed
    - Successfully implemented all Popover subcomponents
    - Added interactive example to the playground
-8. Set up a testing infrastructure
+8. ✅ Implement missing Menu composite components - Completed
+   - Added MenuSection component with proper ARIA role="group"
+   - Added MenuHeading component with presentation role
+   - Added MenuSeparator component with separator role
+   - Created examples demonstrating these components
+9. Implement missing component features for feature parity with React/Vue
+   - Implement missing composite components for other UI components
+   - Add typeahead search functionality
+   - Enhance keyboard navigation and focus management
+10. Set up a testing infrastructure
 
 ## Beta Release Timeline
 
@@ -182,6 +251,9 @@ We are targeting a beta release once all main components have been implemented i
 - Switch (✅ Completed)
 - Popover (✅ Completed)
 
-All main components have now been implemented independently! The next step is to set up a comprehensive testing infrastructure and enhance the documentation before the beta release.
+All main components have now been implemented independently! The next steps are to:
+1. Add missing features to achieve full parity with React/Vue implementations
+2. Set up a comprehensive testing infrastructure 
+3. Enhance the documentation before the beta release
 
 Each component will have comprehensive documentation, TypeScript type definitions, and proper accessibility support.

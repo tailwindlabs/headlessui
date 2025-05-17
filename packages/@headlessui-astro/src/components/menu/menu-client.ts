@@ -9,6 +9,7 @@ interface MenuState {
   open: boolean;
   activeIndex: number;
   items: HTMLElement[];
+  sections: HTMLElement[];
 }
 
 export function createMenuContext(element: HTMLElement) {
@@ -17,6 +18,7 @@ export function createMenuContext(element: HTMLElement) {
     open: false,
     activeIndex: -1,
     items: [],
+    sections: [],
   });
 
   // Get related elements
@@ -241,10 +243,30 @@ export function createMenuContext(element: HTMLElement) {
   if (itemsElement) {
     itemsElement.setAttribute('role', 'menu');
     
+    // Set roles for menu items
     const items = itemsElement.querySelectorAll('[data-headlessui-menu-item]');
     items.forEach(item => {
       item.setAttribute('role', 'menuitem');
       item.setAttribute('tabindex', '-1');
+    });
+    
+    // Find and initialize sections
+    const sections = itemsElement.querySelectorAll('[data-headlessui-menu-section]');
+    if (sections.length > 0) {
+      state.setState({ sections: Array.from(sections) as HTMLElement[] });
+    }
+    
+    // Ensure headings have proper presentation role
+    const headings = itemsElement.querySelectorAll('[data-headlessui-menu-heading]');
+    headings.forEach(heading => {
+      heading.setAttribute('role', 'presentation');
+    });
+    
+    // Ensure separators have correct role and orientation
+    const separators = itemsElement.querySelectorAll('[data-headlessui-menu-separator]');
+    separators.forEach(separator => {
+      separator.setAttribute('role', 'separator');
+      separator.setAttribute('aria-orientation', 'horizontal');
     });
   }
   

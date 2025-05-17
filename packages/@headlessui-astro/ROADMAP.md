@@ -109,8 +109,35 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [ ] Performance considerations
   - [ ] Advanced usage examples
   - [ ] Update documentation to reflect independent implementation
+  - [ ] Hydration guide for Astro components
+    - [ ] Explain proper usage of the `client` prop
+    - [ ] Document hydration strategies and best practices
+    - [ ] Provide examples of common hydration errors and solutions
 
-### Phase 4: Testing
+### Phase 4: Feature Parity Enhancements
+
+- [x] Add missing component variants
+  - [x] Menu component enhancements
+    - [x] Implement MenuSection component
+    - [x] Implement MenuHeading component 
+    - [x] Implement MenuSeparator component
+  - [ ] Similar additional components for other UI component sets
+    - [ ] Listbox component enhancements
+    - [ ] Combobox component enhancements
+    - [ ] Tabs component enhancements
+
+- [ ] Enhance component functionality
+  - [ ] Add typeahead search to Menu and other relevant components
+  - [ ] Improve keyboard navigation (Home/End keys, etc.)
+  - [ ] Enhance focus management and restoration
+  - [ ] Add transition support
+
+- [ ] Enhance accessibility
+  - [ ] Review and improve ARIA attributes
+  - [ ] Ensure full keyboard navigability
+  - [ ] Test with screen readers
+
+### Phase 5: Testing
 
 - [ ] Setup testing infrastructure
   - [ ] Configure Jest or Vitest for Astro components
@@ -122,8 +149,9 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [ ] Component tests
   - [ ] Keyboard navigation tests
   - [ ] Accessibility tests
+  - [ ] Feature parity verification tests
 
-### Phase 5: Performance Optimization
+### Phase 6: Performance Optimization
 
 - [ ] Optimize bundle size
   - [ ] Tree-shaking optimization

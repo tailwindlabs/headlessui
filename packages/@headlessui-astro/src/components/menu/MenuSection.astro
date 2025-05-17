@@ -1,0 +1,35 @@
+---
+// MenuSection.astro - Container for menu sections with appropriate role and accessibility
+import type { BaseProps } from '../../types/common';
+
+interface MenuSectionProps extends BaseProps {
+  /**
+   * Custom section label, for accessibility purposes
+   */
+  label?: string;
+}
+
+const { 
+  as = 'div',
+  label,
+  ...rest 
+} = Astro.props as MenuSectionProps;
+
+// Generate unique ID for accessibility if needed
+const sectionId = label ? `headlessui-menu-section-${Math.random().toString(36).substring(2, 9)}` : undefined;
+---
+
+<div 
+  id={sectionId}
+  data-headlessui-menu-section
+  role="group"
+  aria-labelledby={label ? sectionId + '-heading' : undefined}
+  {...rest}
+>
+  {label && (
+    <div id={sectionId + '-heading'} role="presentation" style="display: none;">
+      {label}
+    </div>
+  )}
+  <slot />
+</div>

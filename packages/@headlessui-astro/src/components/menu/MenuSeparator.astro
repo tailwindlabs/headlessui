@@ -1,0 +1,31 @@
+---
+// MenuSeparator.astro - Separator for menu items
+import type { BaseProps } from '../../types/common';
+
+interface MenuSeparatorProps extends BaseProps {
+  /**
+   * Label for accessibility purposes (usually not displayed visually)
+   */
+  label?: string;
+}
+
+const { 
+  as = 'div',
+  label,
+  ...rest 
+} = Astro.props as MenuSeparatorProps;
+
+// Generate unique ID for accessibility if needed
+const separatorId = label ? `headlessui-menu-separator-${Math.random().toString(36).substring(2, 9)}` : undefined;
+---
+
+<div 
+  id={separatorId}
+  data-headlessui-menu-separator
+  role="separator"
+  aria-orientation="horizontal"
+  aria-label={label}
+  {...rest}
+>
+  <slot />
+</div>

@@ -1,0 +1,34 @@
+---
+// MenuHeading.astro - Heading for menu sections
+import type { BaseProps } from '../../types/common';
+
+interface MenuHeadingProps extends BaseProps {
+  /**
+   * Visually hidden, only for screen readers
+   */
+  visuallyHidden?: boolean;
+}
+
+const { 
+  as = 'div',
+  visuallyHidden = false,
+  ...rest 
+} = Astro.props as MenuHeadingProps;
+
+// Generate unique ID for accessibility
+const headingId = `headlessui-menu-heading-${Math.random().toString(36).substring(2, 9)}`;
+
+// Setup styles for visually hidden elements if needed
+const visuallyHiddenStyles = visuallyHidden ? 
+  'position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;' : '';
+---
+
+<div 
+  id={headingId}
+  data-headlessui-menu-heading
+  role="presentation"
+  style={visuallyHiddenStyles}
+  {...rest}
+>
+  <slot />
+</div>

@@ -4,12 +4,18 @@ import MenuLoadComponent from './components/menu/Menu.load.astro';
 import MenuButtonComponent from './components/menu/MenuButton.astro';
 import MenuItemsComponent from './components/menu/MenuItems.astro';
 import MenuItemComponent from './components/menu/MenuItem.astro';
+import MenuSectionComponent from './components/menu/MenuSection.astro';
+import MenuHeadingComponent from './components/menu/MenuHeading.astro';
+import MenuSeparatorComponent from './components/menu/MenuSeparator.astro';
 
 export const Menu = MenuComponent;
 export const MenuLoad = MenuLoadComponent;
 export const MenuButton = MenuButtonComponent;
 export const MenuItems = MenuItemsComponent;
 export const MenuItem = MenuItemComponent;
+export const MenuSection = MenuSectionComponent;
+export const MenuHeading = MenuHeadingComponent;
+export const MenuSeparator = MenuSeparatorComponent;
 
 // Export Dialog components
 export { default as Dialog } from './components/dialog/Dialog.astro';
@@ -54,6 +60,9 @@ export type {
   MenuButtonProps, 
   MenuItemsProps, 
   MenuItemProps,
+  MenuSectionProps,
+  MenuHeadingProps,
+  MenuSeparatorProps,
 } from './types/menu';
 
 // Dialog types

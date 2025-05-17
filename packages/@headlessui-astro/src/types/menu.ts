@@ -33,3 +33,33 @@ export interface MenuItemProps extends BaseProps {
    */
   value?: unknown;
 }
+
+/**
+ * Props for the MenuSection component
+ */
+export interface MenuSectionProps extends BaseProps {
+  /**
+   * Custom section label, for accessibility purposes
+   */
+  label?: string;
+}
+
+/**
+ * Props for the MenuHeading component
+ */
+export interface MenuHeadingProps extends BaseProps {
+  /**
+   * Visually hidden, only for screen readers
+   */
+  visuallyHidden?: boolean;
+}
+
+/**
+ * Props for the MenuSeparator component
+ */
+export interface MenuSeparatorProps extends BaseProps {
+  /**
+   * Label for accessibility purposes (usually not displayed visually)
+   */
+  label?: string;
+}
