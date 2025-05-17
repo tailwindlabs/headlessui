@@ -1,0 +1,27 @@
+---
+// DisclosurePanel.astro - Independent implementation
+import type { DisclosurePanelProps } from '../../types/disclosure';
+
+// Destructure props with defaults
+const { 
+  as = 'div',
+  id,
+  hidden = true,
+  ...rest 
+} = Astro.props as DisclosurePanelProps;
+
+// Generate ID if not provided
+const panelId = id || `headlessui-disclosure-panel-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element
+  id={panelId}
+  data-headlessui-disclosure-panel
+  hidden={hidden}
+  {...rest}
+>
+  <slot />
+</Element>

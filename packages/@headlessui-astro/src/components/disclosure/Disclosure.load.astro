@@ -1,0 +1,44 @@
+---
+// Disclosure.load.astro - Independent implementation with client:load hydration for immediate loading
+import type { DisclosureProps } from '../../types/disclosure';
+import { EAGER_HYDRATION } from '../../utils/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  open = false,
+  static: isStatic = false,
+  ...rest 
+} = Astro.props as DisclosureProps;
+
+// Generate unique ID for accessibility
+const disclosureId = `headlessui-disclosure-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={disclosureId}
+  data-headlessui-disclosure
+  data-headlessui-state={open ? 'open' : ''}
+  {...rest}
+  client:load
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createDisclosureContext } from './disclosure-client';
+    
+    // Initialize all disclosure components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-disclosure]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createDisclosureContext(element);
+        }
+      });
+    });
+  </script>
+</Element>

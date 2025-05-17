@@ -12,6 +12,12 @@ export { default as DialogPanel } from './components/dialog/DialogPanel.astro';
 export { default as DialogTitle } from './components/dialog/DialogTitle.astro';
 export { default as DialogDescription } from './components/dialog/DialogDescription.astro';
 
+// Export Disclosure components
+export { default as Disclosure } from './components/disclosure/Disclosure.astro';
+export { default as DisclosureLoad } from './components/disclosure/Disclosure.load.astro';
+export { default as DisclosureButton } from './components/disclosure/DisclosureButton.astro';
+export { default as DisclosurePanel } from './components/disclosure/DisclosurePanel.astro';
+
 // Export types
 export type {
   // Base types
@@ -34,6 +40,13 @@ export type {
   DialogTitleProps,
   DialogDescriptionProps,
 } from './types/dialog';
+
+// Disclosure types
+export type {
+  DisclosureProps,
+  DisclosureButtonProps,
+  DisclosurePanelProps,
+} from './types/disclosure';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented

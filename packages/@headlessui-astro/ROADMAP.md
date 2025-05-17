@@ -25,18 +25,18 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
 
 ### Phase 1: Complete Core Components (Independent Implementation)
 
-- [ ] Dialog component
-  - [ ] Convert Dialog.astro from Vue-based to independent implementation
-  - [ ] Create dialog-client.ts for client-side functionality
-  - [ ] Implement DialogPanel.astro, DialogTitle.astro, DialogDescription.astro
-  - [ ] Create Dialog.load.astro (eager hydration variant)
-  - [ ] Implement focus trap functionality specific to Dialog
+- [x] Dialog component
+  - [x] Convert Dialog.astro from Vue-based to independent implementation
+  - [x] Create dialog-client.ts for client-side functionality
+  - [x] Implement DialogPanel.astro, DialogTitle.astro, DialogDescription.astro
+  - [x] Create Dialog.load.astro (eager hydration variant)
+  - [x] Implement focus trap functionality specific to Dialog
 
-- [ ] Disclosure component
-  - [ ] Disclosure.astro (independent implementation)
-  - [ ] DisclosureButton.astro
-  - [ ] DisclosurePanel.astro
-  - [ ] Disclosure.load.astro (eager hydration variant)
+- [x] Disclosure component
+  - [x] Disclosure.astro (independent implementation)
+  - [x] DisclosureButton.astro
+  - [x] DisclosurePanel.astro
+  - [x] Disclosure.load.astro (eager hydration variant)
 
 - [ ] Listbox component
   - [ ] Listbox.astro (independent implementation)

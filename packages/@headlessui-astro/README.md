@@ -140,6 +140,42 @@ import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui
 </script>
 ```
 
+### Disclosure Component
+
+```astro
+---
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/astro';
+---
+
+<Disclosure as="div" class="w-full max-w-md mx-auto">
+  <DisclosureButton class="flex justify-between w-full px-4 py-2 text-sm font-medium text-left text-purple-900 bg-purple-100 rounded-lg hover:bg-purple-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+    <span>What is HeadlessUI?</span>
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-purple-500" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+  </DisclosureButton>
+  <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+    HeadlessUI is a set of completely unstyled, fully accessible UI components for building user interfaces with complete styling freedom.
+  </DisclosurePanel>
+</Disclosure>
+```
+
+You can use Tailwind's plugin for headlessUI for active states:
+
+```astro
+<Disclosure as="div" class="w-full max-w-md mx-auto">
+  <DisclosureButton class="flex justify-between w-full px-4 py-2 text-sm font-medium text-left bg-purple-100 rounded-lg ui-open:bg-purple-200">
+    <span>What is HeadlessUI?</span>
+    <svg class="w-5 h-5 ui-open:transform ui-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+  </DisclosureButton>
+  <DisclosurePanel class="px-4 pt-4 pb-2 text-sm text-gray-500">
+    HeadlessUI is a set of completely unstyled, fully accessible UI components.
+  </DisclosurePanel>
+</Disclosure>
+```
+
 ### Hydration Strategies
 
 HeadlessUI Astro provides different hydration strategies to optimize performance:
@@ -211,6 +247,10 @@ You can also access active states in your templates:
   - DialogPanel
   - DialogTitle
   - DialogDescription
+- Disclosure (Accordion)
+  - Disclosure
+  - DisclosureButton
+  - DisclosurePanel
 - More components coming soon...
 
 ## Technical Details
