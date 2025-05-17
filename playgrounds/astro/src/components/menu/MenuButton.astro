@@ -1,0 +1,23 @@
+---
+// MenuButton.astro - Independent implementation
+import type { MenuButtonProps } from '../../types/menu';
+
+// Destructure props with defaults
+const { 
+  as = 'button', 
+  disabled = false,
+  id,
+  ...rest 
+} = Astro.props as MenuButtonProps;
+---
+
+<button
+  data-headlessui-menu-button
+  aria-haspopup="true"
+  aria-expanded="false"
+  disabled={disabled}
+  id={id}
+  {...rest}
+>
+  <slot />
+</button>

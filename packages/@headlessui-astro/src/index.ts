@@ -1,9 +1,15 @@
 // Export Menu components
-export { default as Menu } from './components/menu/Menu.astro';
-export { default as MenuLoad } from './components/menu/Menu.load.astro';
-export { default as MenuButton } from './components/menu/MenuButton.astro';
-export { default as MenuItems } from './components/menu/MenuItems.astro';
-export { default as MenuItem } from './components/menu/MenuItem.astro';
+import MenuComponent from './components/menu/Menu.astro';
+import MenuLoadComponent from './components/menu/Menu.load.astro';
+import MenuButtonComponent from './components/menu/MenuButton.astro';
+import MenuItemsComponent from './components/menu/MenuItems.astro';
+import MenuItemComponent from './components/menu/MenuItem.astro';
+
+export const Menu = MenuComponent;
+export const MenuLoad = MenuLoadComponent;
+export const MenuButton = MenuButtonComponent;
+export const MenuItems = MenuItemsComponent;
+export const MenuItem = MenuItemComponent;
 
 // Export Dialog components
 export { default as Dialog } from './components/dialog/Dialog.astro';

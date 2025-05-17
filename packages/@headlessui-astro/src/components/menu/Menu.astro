@@ -13,12 +13,9 @@ const {
 
 // Generate unique ID for accessibility
 const menuId = `headlessui-menu-${Math.random().toString(36).substring(2, 9)}`;
-
-// Determine the element to render
-const Element = as;
 ---
 
-<Element 
+<div 
   id={menuId}
   data-headlessui-menu
   data-headlessui-state={open ? 'open' : ''}
@@ -41,4 +38,4 @@ const Element = as;
       });
     });
   </script>
-</Element>
+</div>
