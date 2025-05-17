@@ -12,20 +12,28 @@ export { default as DialogPanel } from './components/dialog/DialogPanel.astro';
 export { default as DialogTitle } from './components/dialog/DialogTitle.astro';
 export { default as DialogDescription } from './components/dialog/DialogDescription.astro';
 
-// Re-export types from @headlessui/vue
-export type { 
-  // Menu types
+// Export types
+export type {
+  // Base types
+  BaseProps,
+  HydrationProps,
+} from './types/common';
+
+// Menu types
+export type {
   MenuProps, 
   MenuButtonProps, 
   MenuItemsProps, 
   MenuItemProps,
-  
-  // Dialog types
+} from './types/menu';
+
+// Dialog types
+export type {
   DialogProps,
   DialogPanelProps,
   DialogTitleProps,
-  DialogDescriptionProps
-} from '@headlessui/vue';
+  DialogDescriptionProps,
+} from './types/dialog';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented

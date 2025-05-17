@@ -1,28 +1,31 @@
 ---
-// MenuItems.astro
-import { MenuItems as VueMenuItems } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
-import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface
-interface Props extends BaseProps, HydrationProps {
-  static?: boolean;
-}
+// MenuItems.astro - Independent implementation
+import type { MenuItemsProps } from '../../types/menu';
 
 // Destructure props with defaults
 const { 
   as = 'div',
   static: isStatic = false,
-  client = DEFAULT_HYDRATION,
   ...rest 
-} = Astro.props;
+} = Astro.props as MenuItemsProps;
+
+// Generate unique ID for accessibility
+const menuItemsId = `headlessui-menu-items-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+
+// Set initial display style (hidden by default, shown when menu is open)
+const style = isStatic ? {} : { display: 'none' };
 ---
 
-<VueMenuItems 
-  as={as}
-  static={isStatic}
+<Element
+  id={menuItemsId}
+  data-headlessui-menu-items
+  data-headlessui-state=""
+  role="menu"
+  style={style}
   {...rest}
-  client:visible
 >
   <slot />
-</VueMenuItems>
+</Element>

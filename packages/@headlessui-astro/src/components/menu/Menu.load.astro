@@ -1,18 +1,42 @@
 ---
-// Menu.load.astro - Component with client:load hydration
-import { Menu as VueMenu } from '@headlessui/vue';
-import type { BaseProps } from '../../types/common';
-
-// Define props interface
-interface Props extends BaseProps {}
+// Menu.load.astro - Independent implementation with client:load hydration
+import type { MenuProps } from '../../types/menu';
 
 // Destructure props with defaults
 const { 
-  as = 'template', 
+  as = 'div', 
+  open = false,
   ...rest 
-} = Astro.props;
+} = Astro.props as MenuProps;
+
+// Generate unique ID for accessibility
+const menuId = `headlessui-menu-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueMenu as={as} {...rest} client:load>
+<Element 
+  id={menuId}
+  data-headlessui-menu
+  data-headlessui-state={open ? 'open' : ''}
+  {...rest}
+  client:load
+>
   <slot />
-</VueMenu>
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createMenuContext } from './menu-client';
+    
+    // Initialize all menu components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-menu]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createMenuContext(element);
+        }
+      });
+    });
+  </script>
+</Element>

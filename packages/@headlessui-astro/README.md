@@ -1,23 +1,14 @@
 # HeadlessUI for Astro
 
-Completely unstyled, fully accessible UI components for Astro, based on HeadlessUI Vue.
+Completely unstyled, fully accessible UI components for Astro.
 
 ## Installation
 
 ```bash
-npm install @headlessui/astro @headlessui/vue vue
+npm install @headlessui/astro
 ```
 
-Make sure to configure the Astro Vue integration in your `astro.config.mjs`:
-
-```js
-import { defineConfig } from 'astro/config';
-import vue from '@astrojs/vue';
-
-export default defineConfig({
-  integrations: [vue()],
-});
-```
+No additional integrations are required. HeadlessUI Astro is a standalone package that works directly with Astro's partial hydration system.
 
 ## Usage
 
@@ -34,12 +25,8 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
   </MenuButton>
   
   <MenuItems class="absolute right-0 mt-2 w-56 bg-white rounded shadow-lg">
-    <MenuItem>
-      {({active}) => (
-        <a href="#" class:list={[active && 'bg-blue-500 text-white', 'block px-4 py-2']}>
-          Account settings
-        </a>
-      )}
+    <MenuItem as="a" href="#" class="block px-4 py-2 ui-active:bg-blue-500 ui-active:text-white">
+      Account settings
     </MenuItem>
     <MenuItem disabled>
       <span class="block px-4 py-2 opacity-50">Invite a friend (coming soon!)</span>
@@ -48,12 +35,66 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
 </Menu>
 ```
 
+With Tailwind, you can use data attribute selectors to style active states:
+
+```astro
+<style global>
+  [data-headlessui-menu-item][data-active="true"] {
+    @apply bg-blue-500 text-white;
+  }
+</style>
+```
+
+Or with Tailwind's plugin for headlessUI:
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    // ...
+  },
+  plugins: [
+    require('@headlessui/tailwindcss')
+  ],
+}
+```
+
+```astro
+<MenuItem as="a" href="#" class="block px-4 py-2 ui-active:bg-blue-500 ui-active:text-white">
+  Account settings
+</MenuItem>
+```
+
 ### Dialog Component
 
 ```astro
 ---
 import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
 ---
+
+<script>
+  // Client-side JavaScript to control dialog
+  let isOpen = false;
+  
+  function openDialog() {
+    const dialog = document.querySelector('[data-headlessui-dialog]');
+    if (dialog) {
+      dialog.dataset.headlessuiState = 'open';
+      // The dialog component's client-side script will handle focus management
+    }
+  }
+  
+  function closeDialog() {
+    const dialog = document.querySelector('[data-headlessui-dialog]');
+    if (dialog) {
+      dialog.dataset.headlessuiState = '';
+    }
+  }
+</script>
+
+<button onclick="openDialog()" class="px-4 py-2 bg-blue-500 text-white rounded">
+  Open Dialog
+</button>
 
 <Dialog client:load>
   <div class="fixed inset-0 flex items-center justify-center p-4 bg-black/30">
@@ -66,7 +107,7 @@ import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui
       </DialogDescription>
 
       <div class="mt-4">
-        <button class="px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 rounded-md">
+        <button onclick="closeDialog()" class="px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 rounded-md">
           Got it, thanks!
         </button>
       </div>
@@ -75,7 +116,29 @@ import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui
 </Dialog>
 ```
 
-Note: For a fully functional dialog, you'll need to manage the open state using client-side JavaScript.
+For a more integrated solution, you can use Astro's client directives to manage dialog state:
+
+```astro
+---
+import { Dialog, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/astro';
+---
+
+<button id="openDialog" class="px-4 py-2 bg-blue-500 text-white rounded" client:load>
+  Open Dialog
+</button>
+
+<Dialog id="myDialog" client:load>
+  <!-- Dialog content -->
+</Dialog>
+
+<script>
+  // More robust state management
+  document.getElementById('openDialog')?.addEventListener('click', () => {
+    const dialog = document.getElementById('myDialog');
+    if (dialog) dialog.dataset.headlessuiState = 'open';
+  });
+</script>
+```
 
 ### Hydration Strategies
 
@@ -96,15 +159,36 @@ Example:
 </MenuLoad>
 ```
 
-## Compatibility with Vue HeadlessUI
+## Component API
 
-HeadlessUI Astro maintains the same API as HeadlessUI Vue with some Astro-specific adaptations:
+HeadlessUI Astro provides components with a consistent API that's designed specifically for Astro:
 
-| Vue Syntax | Astro Syntax |
-|------------|--------------|
-| `:class="[active ? 'bg-blue-500' : '']"` | `class:list={[active ? 'bg-blue-500' : '']}` |
-| `v-slot="{ active }"` | `{({active}) => (...)}` |
-| `@click="doSomething"` | Use Vue component with client directive |
+- `as` prop to control the rendered element (e.g., `<Menu as="div">`)
+- Data attributes for CSS styling (e.g., `[data-headlessui-state="open"]`)
+- Automatic ARIA attributes for accessibility
+- Slot-based composition pattern
+
+### Active States
+
+Active states for items are exposed via data attributes that you can style with CSS:
+
+```css
+/* Style active menu items */
+[data-headlessui-menu-item][data-active="true"] {
+  background-color: #3b82f6;
+  color: white;
+}
+```
+
+You can also access active states in your templates:
+
+```astro
+<MenuItem class="group">
+  <button class:list={["block px-4 py-2 w-full text-left", "group-data-[active=true]:bg-blue-500 group-data-[active=true]:text-white"]}>
+    Account settings
+  </button>
+</MenuItem>
+```
 
 ## Components
 

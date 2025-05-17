@@ -1,0 +1,35 @@
+import type { BaseProps, HydrationProps } from './common';
+
+export interface MenuProps extends BaseProps, HydrationProps {
+  /**
+   * Whether the menu is open or not
+   */
+  open?: boolean;
+}
+
+export interface MenuButtonProps extends BaseProps {
+  /**
+   * Whether the button is disabled or not
+   */
+  disabled?: boolean;
+}
+
+export interface MenuItemsProps extends BaseProps {
+  /**
+   * The static prop allows you to control whether the MenuItems component
+   * is always rendered or if it should be conditionally rendered when the menu is open
+   */
+  static?: boolean;
+}
+
+export interface MenuItemProps extends BaseProps {
+  /**
+   * Whether the item is disabled or not
+   */
+  disabled?: boolean;
+
+  /**
+   * The value associated with the menu item
+   */
+  value?: unknown;
+}

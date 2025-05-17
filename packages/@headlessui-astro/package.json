@@ -1,7 +1,7 @@
 {
   "name": "@headlessui/astro",
   "version": "0.1.0",
-  "description": "Completely unstyled, fully accessible UI components for Astro, based on HeadlessUI Vue",
+  "description": "Completely unstyled, fully accessible UI components for Astro",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -16,14 +16,13 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external astro,vue,@headlessui/vue",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --external astro,vue,@headlessui/vue --watch",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external astro",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --external astro --watch",
     "lint": "eslint . --ext .ts,.astro",
     "clean": "rimraf ./dist"
   },
   "keywords": [
     "astro",
-    "vue",
     "headlessui",
     "ui",
     "components",
@@ -31,19 +30,15 @@
     "tailwindcss"
   ],
   "peerDependencies": {
-    "@headlessui/vue": "^2.0.0",
-    "astro": "^4.0.0",
-    "vue": "^3.2.0"
+    "astro": "^4.0.0"
   },
   "devDependencies": {
-    "@headlessui/vue": "^2.0.0",
     "astro": "^4.0.0",
     "eslint": "^8.0.0",
     "eslint-plugin-astro": "^0.27.0",
     "rimraf": "^5.0.0",
     "tsup": "^7.0.0",
-    "typescript": "^5.0.0",
-    "vue": "^3.2.0"
+    "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",

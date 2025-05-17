@@ -1,27 +1,44 @@
 ---
-// Menu.astro - Base component with client:visible hydration
-import { Menu as VueMenu } from '@headlessui/vue';
-import type { BaseProps, HydrationProps } from '../../types/common';
+// Menu.astro - Independent implementation with client:visible hydration
+import type { MenuProps } from '../../types/menu';
 import { DEFAULT_HYDRATION } from '../../utils/hydration';
-
-// Define props interface to match Vue component props + Astro HTML attributes
-interface Props extends BaseProps, HydrationProps {}
 
 // Destructure props with defaults
 const { 
-  as = 'template', 
+  as = 'div', 
   client = DEFAULT_HYDRATION,
-  clientParams,
+  open = false,
   ...rest 
-} = Astro.props;
+} = Astro.props as MenuProps;
 
-// Determine client directive (Astro doesn't actually allow dynamically setting directives like this,
-// but in a real implementation we'd create separate components for each hydration strategy)
-const clientDirective = clientParams 
-  ? `client:${client}="${clientParams}"` 
-  : `client:${client}`;
+// Generate unique ID for accessibility
+const menuId = `headlessui-menu-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
 ---
 
-<VueMenu as={as} {...rest} client:visible>
+<Element 
+  id={menuId}
+  data-headlessui-menu
+  data-headlessui-state={open ? 'open' : ''}
+  {...rest}
+  client:visible
+>
   <slot />
-</VueMenu>
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createMenuContext } from './menu-client';
+    
+    // Initialize all menu components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-menu]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createMenuContext(element);
+        }
+      });
+    });
+  </script>
+</Element>
