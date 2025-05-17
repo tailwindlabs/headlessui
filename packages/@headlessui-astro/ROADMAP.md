@@ -84,11 +84,11 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [x] SwitchDescription.astro
   - [x] SwitchGroup.astro
 
-- [ ] Popover component
-  - [ ] Popover.astro
-  - [ ] PopoverButton.astro
-  - [ ] PopoverPanel.astro
-  - [ ] PopoverGroup.astro
+- [x] Popover component
+  - [x] Popover.astro
+  - [x] PopoverButton.astro
+  - [x] PopoverPanel.astro
+  - [x] PopoverGroup.astro
 
 ### Phase 3: Playground and Documentation
 

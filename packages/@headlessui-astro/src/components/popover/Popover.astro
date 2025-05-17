@@ -1,0 +1,44 @@
+---
+// Popover.astro - Independent implementation with client:visible hydration
+import type { PopoverProps } from '../../types/popover';
+import { DEFAULT_HYDRATION } from '../../core/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  client = DEFAULT_HYDRATION,
+  open = false,
+  ...rest 
+} = Astro.props as PopoverProps;
+
+// Generate unique ID for accessibility
+const popoverId = `headlessui-popover-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={popoverId}
+  data-headlessui-popover
+  data-headlessui-state={open ? 'open' : ''}
+  {...rest}
+  client:visible
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    // This script will be included once per component type
+    import { createPopoverContext } from './popover-client';
+    
+    // Initialize all popover components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-popover]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createPopoverContext(element);
+        }
+      });
+    });
+  </script>
+</Element>

@@ -1,0 +1,33 @@
+---
+// PopoverPanel.astro - Panel component for the Popover
+import type { PopoverPanelProps } from '../../types/popover';
+
+// Destructure props with defaults
+const {
+  as = 'div',
+  focus = 'first',
+  unmount = true,
+  ...rest
+} = Astro.props as PopoverPanelProps;
+
+// Generate unique ID for accessibility
+const panelId = `headlessui-popover-panel-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element
+  id={panelId}
+  data-headlessui-popover-panel
+  data-headlessui-state=""
+  data-focus={focus}
+  data-unmount={unmount.toString()}
+  role="dialog"
+  tabindex="-1"
+  aria-modal="true"
+  style="display: none;"
+  {...rest}
+>
+  <slot />
+</Element>

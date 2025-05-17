@@ -1,0 +1,30 @@
+---
+// PopoverButton.astro - Button component for the Popover
+import type { PopoverButtonProps } from '../../types/popover';
+
+// Destructure props with defaults
+const {
+  as = 'button',
+  type = 'button',
+  disabled = false,
+  ...rest
+} = Astro.props as PopoverButtonProps;
+
+// Generate unique ID for accessibility
+const buttonId = `headlessui-popover-button-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element
+  id={buttonId}
+  data-headlessui-popover-button
+  type={as === 'button' ? type : undefined}
+  disabled={disabled}
+  aria-expanded="false"
+  aria-haspopup="dialog"
+  {...rest}
+>
+  <slot />
+</Element>

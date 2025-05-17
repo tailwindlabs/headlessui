@@ -112,6 +112,14 @@ export type {
   SwitchDescriptionProps,
 } from './types/switch';
 
+// Popover types
+export type {
+  PopoverProps,
+  PopoverButtonProps,
+  PopoverPanelProps,
+  PopoverGroupProps,
+} from './types/popover';
+
 // Export Tabs components
 export { default as TabGroup } from './components/tabs/TabGroup.astro';
 export { default as TabGroupLoad } from './components/tabs/TabGroup.load.astro';
@@ -134,5 +142,9 @@ export { default as SwitchGroup } from './components/switch/SwitchGroup.astro';
 export { default as SwitchLabel } from './components/switch/SwitchLabel.astro';
 export { default as SwitchDescription } from './components/switch/SwitchDescription.astro';
 
-// Export all other components following the same pattern...
-// Will add more component exports as they're implemented
+// Export Popover components
+export { default as Popover } from './components/popover/Popover.astro';
+export { default as PopoverLoad } from './components/popover/Popover.load.astro';
+export { default as PopoverButton } from './components/popover/PopoverButton.astro';
+export { default as PopoverPanel } from './components/popover/PopoverPanel.astro';
+export { default as PopoverGroup } from './components/popover/PopoverGroup.astro';
