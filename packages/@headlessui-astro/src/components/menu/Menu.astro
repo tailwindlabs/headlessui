@@ -1,0 +1,27 @@
+---
+// Menu.astro - Base component with client:visible hydration
+import { Menu as VueMenu } from '@headlessui/vue';
+import type { BaseProps, HydrationProps } from '../../types/common';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Define props interface to match Vue component props + Astro HTML attributes
+interface Props extends BaseProps, HydrationProps {}
+
+// Destructure props with defaults
+const { 
+  as = 'template', 
+  client = DEFAULT_HYDRATION,
+  clientParams,
+  ...rest 
+} = Astro.props;
+
+// Determine client directive (Astro doesn't actually allow dynamically setting directives like this,
+// but in a real implementation we'd create separate components for each hydration strategy)
+const clientDirective = clientParams 
+  ? `client:${client}="${clientParams}"` 
+  : `client:${client}`;
+---
+
+<VueMenu as={as} {...rest} client:visible>
+  <slot />
+</VueMenu>

@@ -1,0 +1,30 @@
+---
+// MenuButton.astro
+import { MenuButton as VueMenuButton } from '@headlessui/vue';
+import type { BaseProps, HydrationProps } from '../../types/common';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Define props interface to match Vue component props + Astro HTML attributes
+interface Props extends BaseProps, HydrationProps {
+  disabled?: boolean;
+}
+
+// Destructure props with defaults
+const { 
+  as = 'button', 
+  disabled = false,
+  client = DEFAULT_HYDRATION,
+  id,
+  ...rest 
+} = Astro.props;
+---
+
+<VueMenuButton 
+  as={as} 
+  disabled={disabled} 
+  id={id} 
+  {...rest} 
+  client:visible
+>
+  <slot />
+</VueMenuButton>

@@ -1,0 +1,28 @@
+---
+// MenuItems.astro
+import { MenuItems as VueMenuItems } from '@headlessui/vue';
+import type { BaseProps, HydrationProps } from '../../types/common';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Define props interface
+interface Props extends BaseProps, HydrationProps {
+  static?: boolean;
+}
+
+// Destructure props with defaults
+const { 
+  as = 'div',
+  static: isStatic = false,
+  client = DEFAULT_HYDRATION,
+  ...rest 
+} = Astro.props;
+---
+
+<VueMenuItems 
+  as={as}
+  static={isStatic}
+  {...rest}
+  client:visible
+>
+  <slot />
+</VueMenuItems>

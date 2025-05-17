@@ -1,0 +1,18 @@
+---
+// Menu.load.astro - Component with client:load hydration
+import { Menu as VueMenu } from '@headlessui/vue';
+import type { BaseProps } from '../../types/common';
+
+// Define props interface
+interface Props extends BaseProps {}
+
+// Destructure props with defaults
+const { 
+  as = 'template', 
+  ...rest 
+} = Astro.props;
+---
+
+<VueMenu as={as} {...rest} client:load>
+  <slot />
+</VueMenu>

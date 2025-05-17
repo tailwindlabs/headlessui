@@ -1,0 +1,73 @@
+---
+// Example usage in an Astro file
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/astro';
+---
+
+<div class="relative">
+  <Menu>
+    <MenuButton class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+      Options
+    </MenuButton>
+
+    <MenuItems class="absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <div class="px-1 py-1">
+        <MenuItem>
+          {({active}) => (
+            <button
+              class:list={[
+                active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                'group flex w-full items-center rounded-md px-2 py-2 text-sm'
+              ]}
+            >
+              Edit
+            </button>
+          )}
+        </MenuItem>
+        <MenuItem>
+          {({active}) => (
+            <button
+              class:list={[
+                active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                'group flex w-full items-center rounded-md px-2 py-2 text-sm'
+              ]}
+            >
+              Duplicate
+            </button>
+          )}
+        </MenuItem>
+      </div>
+      <div class="px-1 py-1">
+        <MenuItem>
+          {({active}) => (
+            <button
+              class:list={[
+                active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                'group flex w-full items-center rounded-md px-2 py-2 text-sm'
+              ]}
+            >
+              Archive
+            </button>
+          )}
+        </MenuItem>
+        <MenuItem disabled>
+          <span class="text-gray-500 w-full items-center rounded-md px-2 py-2 text-sm">
+            Move (unavailable)
+          </span>
+        </MenuItem>
+      </div>
+    </MenuItems>
+  </Menu>
+</div>
+
+<!-- 
+Note: In reality, using these components in Astro would require some adjustments:
+
+1. The slot function pattern ({active}) => (...) would need a different approach
+   in Astro since Astro components use a different templating system.
+
+2. Astro's class:list directive works similarly to Vue's :class binding but with
+   a slightly different syntax.
+
+3. Event handlers would need special consideration since they require client-side
+   JavaScript.
+-->
