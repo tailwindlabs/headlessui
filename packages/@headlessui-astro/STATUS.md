@@ -103,19 +103,17 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
 
 According to our roadmap, we should focus on implementing these components next with native implementations (no Vue dependencies):
 
-1. **Standardize Import Patterns**
-   - Align all components to use the `/core/` directory structure consistently
-   - Current issues identified:
-     - Combobox uses imports from `/utils/keyboard` and `/utils/state`
-     - Switch uses imports from `/core/state/state`
-     - Inconsistent import paths need standardization
-   - Tasks:
-     - Update Combobox to use `/core/` imports
-     - Ensure focus-trap is consistently imported
-     - Add 'popover' to component types in hydration utilities
-     - Verify all components follow consistent patterns
+1. ✅ **Standardize Import Patterns** - Completed
+   - Aligned all components to use the `/core/` directory structure consistently
+   - Accomplishments:
+     - Updated all components to use imports from `/core/` directory
+     - Moved hydration utilities from `/utils/` to `/core/`
+     - Ensured focus-trap is consistently imported
+     - Added 'popover' to component types in hydration utilities
+     - Verified all components follow consistent patterns
+   - All components now use a standardized import structure
 
-2. **Popover Component**
+2. **Popover Component** (Next Priority)
    - Popover.astro (independent implementation)
    - PopoverButton.astro
    - PopoverPanel.astro

@@ -2,8 +2,8 @@
  * Client-side functionality for the Combobox component.
  */
 
-import { createKeyboardHandler } from '../../utils/keyboard';
-import { createState } from '../../utils/state';
+import { createKeyboardHandler } from '../../core/keyboard/keyboard-handler';
+import { createState } from '../../core/state/state';
 
 /**
  * State interface for the Combobox component.

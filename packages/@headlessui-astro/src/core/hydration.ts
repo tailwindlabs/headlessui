@@ -32,7 +32,7 @@ export const IDLE_HYDRATION = 'idle' as const;
  * @returns The appropriate hydration directive
  */
 export function getComponentHydration(
-  componentType: 'dialog' | 'menu' | 'listbox' | 'disclosure' | 'switch' | 'tabs', 
+  componentType: 'dialog' | 'menu' | 'listbox' | 'disclosure' | 'switch' | 'tabs' | 'popover' | 'radiogroup', 
   isEager: boolean = false
 ): HydrationDirective {
   // Components that should always be eagerly hydrated regardless of isEager flag
