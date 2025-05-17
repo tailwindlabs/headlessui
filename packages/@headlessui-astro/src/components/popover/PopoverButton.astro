@@ -13,18 +13,30 @@ const {
 // Generate unique ID for accessibility
 const buttonId = `headlessui-popover-button-${Math.random().toString(36).substring(2, 9)}`;
 
-// Determine the element to render
-const Element = as;
+// Explicitly use the HTML tag based on the as prop
+const Tag = as;
 ---
 
-<Element
-  id={buttonId}
-  data-headlessui-popover-button
-  type={as === 'button' ? type : undefined}
-  disabled={disabled}
-  aria-expanded="false"
-  aria-haspopup="dialog"
-  {...rest}
->
-  <slot />
-</Element>
+{as === 'button' ? (
+  <button
+    id={buttonId}
+    data-headlessui-popover-button
+    type={type}
+    disabled={disabled}
+    aria-expanded="false"
+    aria-haspopup="dialog"
+    {...rest}
+  >
+    <slot />
+  </button>
+) : (
+  <Tag
+    id={buttonId}
+    data-headlessui-popover-button
+    aria-expanded="false"
+    aria-haspopup="dialog"
+    {...rest}
+  >
+    <slot />
+  </Tag>
+)}

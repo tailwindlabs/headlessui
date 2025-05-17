@@ -12,15 +12,26 @@ const {
 // Generate unique ID for accessibility
 const groupId = `headlessui-popover-group-${Math.random().toString(36).substring(2, 9)}`;
 
-// Determine the element to render
-const Element = as;
+// Explicitly use the HTML tag based on the as prop
+const Tag = as;
 ---
 
-<Element
-  id={groupId}
-  data-headlessui-popover-group
-  data-autoclose={autoClose.toString()}
-  {...rest}
->
-  <slot />
-</Element>
+{as === 'div' ? (
+  <div
+    id={groupId}
+    data-headlessui-popover-group
+    data-autoclose={autoClose.toString()}
+    {...rest}
+  >
+    <slot />
+  </div>
+) : (
+  <Tag
+    id={groupId}
+    data-headlessui-popover-group
+    data-autoclose={autoClose.toString()}
+    {...rest}
+  >
+    <slot />
+  </Tag>
+)}

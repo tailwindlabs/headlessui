@@ -14,31 +14,58 @@ const {
 // Generate unique ID for accessibility
 const popoverId = `headlessui-popover-${Math.random().toString(36).substring(2, 9)}`;
 
-// Determine the element to render
-const Element = as;
+// Explicitly use the HTML tag based on the as prop
+const Tag = as;
 ---
 
-<Element 
-  id={popoverId}
-  data-headlessui-popover
-  data-headlessui-state={open ? 'open' : ''}
-  {...rest}
-  client:visible
->
-  <slot />
-  
-  <script>
-    // Initialize component via client-side script
-    // This script will be included once per component type
-    import { createPopoverContext } from './popover-client';
+{as === 'div' ? (
+  <div 
+    id={popoverId}
+    data-headlessui-popover
+    data-headlessui-state={open ? 'open' : ''}
+    {...rest}
+    client:visible
+  >
+    <slot />
     
-    // Initialize all popover components when the DOM is ready
-    document.addEventListener('astro:page-load', () => {
-      document.querySelectorAll('[data-headlessui-popover]').forEach(element => {
-        if (element instanceof HTMLElement) {
-          createPopoverContext(element);
-        }
+    <script>
+      // Initialize component via client-side script
+      // This script will be included once per component type
+      import { createPopoverContext } from './popover-client';
+      
+      // Initialize all popover components when the DOM is ready
+      document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll('[data-headlessui-popover]').forEach(element => {
+          if (element instanceof HTMLElement) {
+            createPopoverContext(element);
+          }
+        });
       });
-    });
-  </script>
-</Element>
+    </script>
+  </div>
+) : (
+  <Tag 
+    id={popoverId}
+    data-headlessui-popover
+    data-headlessui-state={open ? 'open' : ''}
+    {...rest}
+    client:visible
+  >
+    <slot />
+    
+    <script>
+      // Initialize component via client-side script
+      // This script will be included once per component type
+      import { createPopoverContext } from './popover-client';
+      
+      // Initialize all popover components when the DOM is ready
+      document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll('[data-headlessui-popover]').forEach(element => {
+          if (element instanceof HTMLElement) {
+            createPopoverContext(element);
+          }
+        });
+      });
+    </script>
+  </Tag>
+)}
