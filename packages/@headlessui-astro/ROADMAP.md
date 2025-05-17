@@ -13,6 +13,8 @@ This document outlines the planned development steps for the HeadlessUI Astro pa
 ✅ Disclosure component and subcomponents implemented (independent)
 ✅ Listbox component and subcomponents implemented (independent)
 ✅ Combobox component and subcomponents implemented (independent)
+✅ Tabs component and subcomponents implemented (independent)
+✅ RadioGroup component and subcomponents implemented (independent)
 ✅ Astro playground with component examples
 
 ## Architecture Evolution
@@ -70,11 +72,11 @@ The HeadlessUI Astro package has evolved from using Vue components as a foundati
   - [x] TabPanels.astro
   - [x] TabPanel.astro
 
-- [ ] RadioGroup component
-  - [ ] RadioGroup.astro
-  - [ ] RadioGroupLabel.astro
-  - [ ] RadioGroupOption.astro
-  - [ ] RadioGroupDescription.astro
+- [x] RadioGroup component
+  - [x] RadioGroup.astro
+  - [x] RadioGroupLabel.astro
+  - [x] RadioGroupOption.astro
+  - [x] RadioGroupDescription.astro
 
 - [ ] Switch component
   - [ ] Switch.astro

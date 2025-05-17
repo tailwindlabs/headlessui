@@ -1,0 +1,21 @@
+---
+// RadioGroupDescription.astro - Description component for RadioGroup
+import type { RadioGroupDescriptionProps } from '../../types/radiogroup';
+
+// Destructure props with defaults
+const { 
+  as = 'p', 
+  ...rest 
+} = Astro.props as RadioGroupDescriptionProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-radiogroup-description
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

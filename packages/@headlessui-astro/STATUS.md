@@ -70,6 +70,13 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
    - TabPanel.astro
    - Backed by tabs-client.ts for client-side functionality
 
+7. **RadioGroup Component (Independent Implementation)**
+   - RadioGroup.astro and RadioGroup.load.astro
+   - RadioGroupLabel.astro
+   - RadioGroupOption.astro
+   - RadioGroupDescription.astro
+   - Backed by radiogroup-client.ts for client-side functionality
+
 ### Documentation
 
 - Created README with usage examples
@@ -89,11 +96,10 @@ We have successfully created the foundation for the HeadlessUI Astro package, wi
 
 According to our roadmap, we should focus on implementing these components next with native implementations (no Vue dependencies):
 
-1. **RadioGroup Component**
-   - RadioGroup.astro (independent implementation)
-   - RadioGroupLabel.astro
-   - RadioGroupOption.astro
-   - RadioGroupDescription.astro
+1. **Check what utils are needed**
+   - keyboard (according to packages/@headlessui-astro/src/components/combobox/combobox-client.ts)
+   - state
+   - LIST THE REMAINING
 
 2. **Switch Component**
    - Switch.astro (independent implementation)
@@ -109,7 +115,7 @@ According to our roadmap, we should focus on implementing these components next 
 
 ## Challenges and Solutions
 
-1. **Hydration Strategy**: 
+1. **Hydration Strategy**:
    - **Challenge**: Making components work efficiently with Astro's partial hydration model
    - **Solution**: Implemented separate component files for different hydration strategies (e.g., Menu.astro, Menu.load.astro)
    - **Enhanced**: Created a unified hydration utility system that adapts based on component type
@@ -141,8 +147,9 @@ According to our roadmap, we should focus on implementing these components next 
    - A playground has been created in `/playgrounds/astro/` to demonstrate and test components
    - This provides real-world usage examples and testing
 4. ✅ Implement Tabs component independently - Completed
-5. Set up a testing infrastructure
-6. Implement remaining components (RadioGroup, Switch, Popover, etc.)
+5. ✅ Implement RadioGroup component independently - Completed
+6. Set up a testing infrastructure
+7. Implement remaining components (Switch, Popover, etc.)
 
 ## Beta Release Timeline
 
@@ -154,7 +161,7 @@ We are targeting a beta release once all main components have been implemented i
 - Listbox (✅ Completed)
 - Combobox (✅ Completed)
 - Tabs (✅ Completed)
-- RadioGroup (Next priority)
+- RadioGroup (✅ Completed)
 - Switch (Next priority)
 
 Each component will have comprehensive documentation, TypeScript type definitions, and proper accessibility support.

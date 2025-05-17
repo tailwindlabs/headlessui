@@ -1,0 +1,22 @@
+---
+// RadioGroupLabel.astro - Label component for RadioGroup
+import type { RadioGroupLabelProps } from '../../types/radiogroup';
+
+// Destructure props with defaults
+const { 
+  as = 'label', 
+  asLabel = true,
+  ...rest 
+} = Astro.props as RadioGroupLabelProps;
+
+// Determine the element to render (either actual HTML label or generic element)
+const Element = asLabel ? 'label' : as;
+---
+
+<Element 
+  data-headlessui-radiogroup-label
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

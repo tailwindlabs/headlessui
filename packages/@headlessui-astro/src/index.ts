@@ -96,6 +96,14 @@ export type {
   TabPanelProps,
 } from './types/tabs';
 
+// RadioGroup types
+export type {
+  RadioGroupProps,
+  RadioGroupLabelProps,
+  RadioGroupOptionProps,
+  RadioGroupDescriptionProps,
+} from './types/radiogroup';
+
 // Export Tabs components
 export { default as TabGroup } from './components/tabs/TabGroup.astro';
 export { default as TabGroupLoad } from './components/tabs/TabGroup.load.astro';
@@ -103,6 +111,13 @@ export { default as TabList } from './components/tabs/TabList.astro';
 export { default as Tab } from './components/tabs/Tab.astro';
 export { default as TabPanels } from './components/tabs/TabPanels.astro';
 export { default as TabPanel } from './components/tabs/TabPanel.astro';
+
+// Export RadioGroup components
+export { default as RadioGroup } from './components/radiogroup/RadioGroup.astro';
+export { default as RadioGroupLoad } from './components/radiogroup/RadioGroup.load.astro';
+export { default as RadioGroupLabel } from './components/radiogroup/RadioGroupLabel.astro';
+export { default as RadioGroupOption } from './components/radiogroup/RadioGroupOption.astro';
+export { default as RadioGroupDescription } from './components/radiogroup/RadioGroupDescription.astro';
 
 // Export all other components following the same pattern...
 // Will add more component exports as they're implemented

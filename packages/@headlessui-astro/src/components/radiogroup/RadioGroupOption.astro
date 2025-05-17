@@ -1,0 +1,30 @@
+---
+// RadioGroupOption.astro - Individual radio option component
+import type { RadioGroupOptionProps } from '../../types/radiogroup';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  disabled = false,
+  value,
+  checkedClass,
+  uncheckedClass,
+  ...rest 
+} = Astro.props as RadioGroupOptionProps;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  data-headlessui-radiogroup-option
+  data-disabled={disabled.toString()}
+  data-value={value !== undefined ? String(value) : undefined}
+  data-checked-class={checkedClass}
+  data-unchecked-class={uncheckedClass}
+  tabindex="-1"
+  {...rest}
+>
+  <slot />
+  <slot name="default" />
+</Element>

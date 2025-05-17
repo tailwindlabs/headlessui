@@ -1,0 +1,12 @@
+---
+// RadioGroup.load.astro - Same as RadioGroup.astro but with client:load hydration
+import type { RadioGroupProps } from '../../types/radiogroup';
+import RadioGroup from './RadioGroup.astro';
+
+// Pass props to the base component but override client directive
+const props = Astro.props as RadioGroupProps;
+---
+
+<RadioGroup {...props} client:load>
+  <slot />
+</RadioGroup>

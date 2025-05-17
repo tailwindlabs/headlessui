@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExampleWrapper from '../../components/ExampleWrapper.astro';
+import { RadioGroup, RadioGroupLabel, RadioGroupOption, RadioGroupDescription } from '@headlessui-astro';
+
+const plans = [
+  {
+    name: 'Startup',
+    ram: '12GB',
+    cpus: '6 CPUs',
+    disk: '160 GB SSD disk',
+    price: '$99',
+  },
+  {
+    name: 'Business',
+    ram: '16GB',
+    cpus: '8 CPUs',
+    disk: '512 GB SSD disk',
+    price: '$199',
+  },
+  {
+    name: 'Enterprise',
+    ram: '32GB',
+    cpus: '12 CPUs',
+    disk: '1024 GB SSD disk',
+    price: '$399',
+  },
+];
+
+const defaultPlan = plans[0];
+---
+
+<Layout title="RadioGroup Basic Example">
+  <ExampleWrapper label="RadioGroup Example">
+    <div class="w-full max-w-lg px-4 py-6">
+      <RadioGroup value={defaultPlan.name} class="space-y-2">
+        <RadioGroupLabel class="text-lg font-medium text-gray-900">
+          Select a server plan
+        </RadioGroupLabel>
+        
+        <div class="space-y-2 mt-4">
+          {plans.map((plan) => (
+            <RadioGroupOption 
+              value={plan.name}
+              class="group relative flex cursor-pointer rounded-lg bg-white px-5 py-4 shadow-md border border-gray-200 focus:outline-none"
+            >
+              {({ checked }) => (
+                <div class="flex w-full items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="text-sm">
+                      <RadioGroupLabel as="p" class:list={["font-medium", checked ? "text-indigo-900" : "text-gray-900"]}>
+                        {plan.name}
+                      </RadioGroupLabel>
+                      <RadioGroupDescription as="span" class:list={["inline", checked ? "text-indigo-700" : "text-gray-500"]}>
+                        <span>{plan.ram} / {plan.cpus}</span>{" "}
+                        <span aria-hidden="true">&middot;</span>{" "}
+                        <span>{plan.disk}</span>
+                      </RadioGroupDescription>
+                    </div>
+                  </div>
+                  <div class:list={["shrink-0 text-white", checked ? "text-indigo-600" : "invisible"]}>
+                    <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6">
+                      <circle cx="12" cy="12" r="12" fill="#fff" opacity="0.2" />
+                      <path
+                        d="M7 13l3 3 7-7"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div class:list={[
+                    "absolute -inset-px rounded-lg border-2",
+                    checked ? "border-indigo-500" : "border-transparent"
+                  ]} aria-hidden="true" />
+                </div>
+              )}
+            </RadioGroupOption>
+          ))}
+        </div>
+      </RadioGroup>
+    </div>
+  </ExampleWrapper>
+</Layout>

@@ -1,0 +1,49 @@
+---
+// RadioGroup.astro - Independent implementation with client:visible hydration
+import type { RadioGroupProps } from '../../types/radiogroup';
+import { DEFAULT_HYDRATION } from '../../utils/hydration';
+
+// Destructure props with defaults
+const { 
+  as = 'div', 
+  client = DEFAULT_HYDRATION,
+  disabled = false,
+  value, // Optional controlled value
+  defaultValue,
+  name,
+  ...rest 
+} = Astro.props as RadioGroupProps;
+
+// Generate unique ID
+const radioGroupId = `headlessui-radiogroup-${Math.random().toString(36).substring(2, 9)}`;
+
+// Determine the element to render
+const Element = as;
+---
+
+<Element 
+  id={radioGroupId}
+  data-headlessui-radiogroup
+  data-disabled={disabled.toString()}
+  data-value={value !== undefined ? String(value) : undefined}
+  data-default-value={defaultValue !== undefined ? String(defaultValue) : undefined}
+  data-name={name}
+  {...rest}
+  client:visible
+>
+  <slot />
+  
+  <script>
+    // Initialize component via client-side script
+    import { createRadioGroupContext } from './radiogroup-client';
+    
+    // Initialize all radio group components when the DOM is ready
+    document.addEventListener('astro:page-load', () => {
+      document.querySelectorAll('[data-headlessui-radiogroup]').forEach(element => {
+        if (element instanceof HTMLElement) {
+          createRadioGroupContext(element);
+        }
+      });
+    });
+  </script>
+</Element>
