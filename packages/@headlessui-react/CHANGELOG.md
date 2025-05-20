@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix `Combobox` error (unexpected undefined) when using virtual mode ([#3734](https://github.com/tailwindlabs/headlessui/pull/3734))
 
 ## [2.2.3] - 2025-05-12
 
