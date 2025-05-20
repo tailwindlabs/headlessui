@@ -67,6 +67,9 @@ jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => 
   toJSON: () => {},
 }))
 
+jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(100)
+jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(40)
+
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
