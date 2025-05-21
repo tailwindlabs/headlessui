@@ -14,6 +14,7 @@ import React, {
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type Ref,
+  type RefObject,
 } from 'react'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
@@ -161,6 +162,7 @@ export type RadioGroupProps<
     disabled?: boolean
     form?: string
     name?: string
+    inputRef?: RefObject<HTMLInputElement>
   }
 >
 
@@ -322,7 +324,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
               <FormFields
                 disabled={disabled}
                 data={{ [name]: value || 'on' }}
-                overrides={{ type: 'radio', checked: value != null }}
+                overrides={{ type: 'radio', checked: value != null, ref: theirProps?.inputRef }}
                 form={form}
                 onReset={reset}
               />
