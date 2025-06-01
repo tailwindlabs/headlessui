@@ -1821,7 +1821,7 @@ describe('Mouse interactions', () => {
       // Verify that the wrapper function has not been called yet
       expect(wrapperFn).toHaveBeenCalledTimes(0)
 
-      // Click the button inside the the Dialog
+      // Click the button inside the Dialog
       await click(getByText('Inside'))
 
       // Verify it is closed
@@ -1864,7 +1864,7 @@ describe('Mouse interactions', () => {
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
 
-      // Click the button inside the the Dialog
+      // Click the button inside the Dialog
       await click(getByText('Inside'))
 
       // Verify it is still open
