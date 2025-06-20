@@ -1,6 +1,5 @@
 import {
   Teleport,
-  computed,
   defineComponent,
   getCurrentInstance,
   h,
@@ -51,7 +50,6 @@ export let Portal = defineComponent({
   },
   setup(props, { slots, attrs }) {
     let element = ref<HTMLElement | null>(null)
-    let ownerDocument = computed(() => getOwnerDocument(element))
 
     let forcePortalRoot = usePortalRoot()
     let groupContext = inject(PortalGroupContext, null)
@@ -88,16 +86,6 @@ export let Portal = defineComponent({
       if (!domElement) return
       onUnmounted(parent.register(domElement), instance)
       didRegister = true
-    })
-
-    onUnmounted(() => {
-      let root = ownerDocument.value?.getElementById('headlessui-portal-root')
-      if (!root) return
-      if (myTarget.value !== root) return
-
-      if (myTarget.value.children.length <= 0) {
-        myTarget.value.parentElement?.removeChild(myTarget.value)
-      }
     })
 
     return () => {
