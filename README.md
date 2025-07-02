@@ -39,13 +39,9 @@ You can install the insiders version (which points to whatever the latest commit
 
 ## Community
 
-For help, discussion about best practices, or any other conversation that would benefit from being searchable:
+For help, discussion about best practices, or feature ideas:
 
 [Discuss Headless UI on GitHub](https://github.com/tailwindlabs/headlessui/discussions)
-
-For casual chit-chat with others using the library:
-
-[Join the Tailwind CSS Discord Server](https://discord.gg/7NF8GNe)
 
 ## Contributing
 
