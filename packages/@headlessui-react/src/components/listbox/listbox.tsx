@@ -441,9 +441,19 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       flushSync(() => machine.actions.closeListbox())
       machine.state.buttonElement?.focus({ preventScroll: true })
     } else {
+      if (event.pointerType !== 'mouse') return
       event.preventDefault()
       machine.actions.openListbox({ focus: Focus.Nothing })
     }
+  })
+
+  let handleClick = useEvent((event: ReactPointerEvent) => {
+    if (event.button !== 0) return // Only handle left clicks
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    if (machine.state.listboxState !== ListboxStates.Closed) return
+    if (event.pointerType === 'mouse') return
+    event.preventDefault()
+    machine.actions.openListbox({ focus: Focus.Nothing })
   })
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
@@ -487,6 +497,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
       onPointerDown: handlePointerDown,
+      onClick: handleClick,
     },
     focusProps,
     hoverProps,
