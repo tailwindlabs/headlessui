@@ -1,9 +1,19 @@
-import React, { useState } from 'react'
+import React, { cloneElement, isValidElement, useState } from 'react'
 
-export function Frozen({ children, freeze }: { children: React.ReactNode; freeze: boolean }) {
+function FrozenFn(
+  { children, freeze }: { children: React.ReactNode; freeze: boolean },
+  ref: React.ForwardedRef<HTMLElement>
+) {
   let contents = useFrozenData(freeze, children)
+
+  if (isValidElement(contents)) {
+    return cloneElement(contents as React.ReactElement, { ref })
+  }
+
   return <>{contents}</>
 }
+
+export const Frozen = React.forwardRef(FrozenFn)
 
 export function useFrozenData<T>(freeze: boolean, data: T) {
   let [frozenValue, setFrozenValue] = useState(data)
