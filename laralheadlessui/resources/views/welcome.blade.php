@@ -45,20 +45,22 @@
     ];
     @endphp
     <section id="components" class="mb-16">
-        <h2 class="text-2xl font-bold mb-6 text-blue-700">Composants UI</h2>
+        <h2 class="text-2xl font-bold mb-8 text-blue-700">Composants UI</h2>
         <div class="space-y-10">
             @foreach ($components as [$name, $code])
-                <x-card>
-                    <div class="flex flex-col md:flex-row md:items-center md:gap-8">
-                        <div class="flex-1 mb-4 md:mb-0">
-                            <h3 class="font-semibold text-lg mb-2">{{ $name }}</h3>
+                <div class="bg-white rounded-lg shadow border border-gray-100 p-6 flex flex-col md:flex-row md:items-start md:gap-8 transition hover:shadow-md">
+                    <div class="flex-1 mb-4 md:mb-0">
+                        <h3 class="font-semibold text-lg mb-3 text-gray-800">{{ $name }}</h3>
+                        <div class="py-4 px-2 bg-gray-50 rounded flex items-center justify-center min-h-[48px]">
                             {!! $code !!}
                         </div>
-                        <div class="bg-gray-100 rounded p-3 text-xs font-mono text-gray-700 overflow-x-auto min-w-[200px]">
-                            <pre><code>{{ htmlentities($code) }}</code></pre>
+                    </div>
+                    <div class="w-full md:w-1/2 mt-4 md:mt-0">
+                        <div class="bg-gray-900 text-gray-100 rounded p-4 text-xs font-mono overflow-x-auto">
+                            <pre class="whitespace-pre-wrap break-words"><code>{{ htmlentities($code) }}</code></pre>
                         </div>
                     </div>
-                </x-card>
+                </div>
             @endforeach
         </div>
     </section>
