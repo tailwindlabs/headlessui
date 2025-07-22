@@ -1,0 +1,1 @@
+<img {{ $attributes->merge(['class' => 'rounded shadow-sm']) }} /> 
