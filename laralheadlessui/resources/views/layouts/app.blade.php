@@ -29,7 +29,7 @@
     </section>
     <!-- Main Content -->
     <main class="flex-1 w-full max-w-4xl mx-auto py-10 px-4">
-        {{ $slot }}
+        @yield('content')
     </main>
     <!-- Footer -->
     <footer class="w-full bg-white border-t border-gray-200 py-6 mt-10 text-center text-sm text-gray-500">
