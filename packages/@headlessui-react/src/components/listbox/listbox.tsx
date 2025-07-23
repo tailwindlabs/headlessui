@@ -435,25 +435,35 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
+  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
   let handlePointerDown = useEvent((event: ReactPointerEvent) => {
+    pointerTypeRef.current = event.pointerType
+
+    if (event.pointerType !== 'mouse') return
+
     if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
       flushSync(() => machine.actions.closeListbox())
       machine.state.buttonElement?.focus({ preventScroll: true })
     } else {
-      if (event.pointerType !== 'mouse') return
       event.preventDefault()
       machine.actions.openListbox({ focus: Focus.Nothing })
     }
   })
 
   let handleClick = useEvent((event: ReactPointerEvent) => {
+    if (pointerTypeRef.current === 'mouse') return
+
     if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (machine.state.listboxState !== ListboxStates.Closed) return
-    event.preventDefault()
-    machine.actions.openListbox({ focus: Focus.Nothing })
+    if (machine.state.listboxState === ListboxStates.Open) {
+      flushSync(() => machine.actions.closeListbox())
+      machine.state.buttonElement?.focus({ preventScroll: true })
+    } else {
+      event.preventDefault()
+      machine.actions.openListbox({ focus: Focus.Nothing })
+    }
   })
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
