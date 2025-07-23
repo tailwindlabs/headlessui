@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix listbox closing immediately after opening on touch devices ([#3755](https://github.com/tailwindlabs/headlessui/pull/3755))
 
 ## [2.2.4] - 2025-05-20
 

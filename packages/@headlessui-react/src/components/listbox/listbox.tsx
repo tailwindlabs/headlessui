@@ -83,6 +83,7 @@ import {
 import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
+import { MouseButton } from '../mouse'
 import { Portal } from '../portal/portal'
 import { ActionTypes, ActivationTrigger, ListboxStates, ValueMode } from './listbox-machine'
 import { ListboxContext, useListboxMachine, useListboxMachineContext } from './listbox-machine-glue'
@@ -434,8 +435,27 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
+  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
   let handlePointerDown = useEvent((event: ReactPointerEvent) => {
-    if (event.button !== 0) return // Only handle left clicks
+    pointerTypeRef.current = event.pointerType
+
+    if (event.pointerType !== 'mouse') return
+
+    if (event.button !== MouseButton.Left) return // Only handle left clicks
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    if (machine.state.listboxState === ListboxStates.Open) {
+      flushSync(() => machine.actions.closeListbox())
+      machine.state.buttonElement?.focus({ preventScroll: true })
+    } else {
+      event.preventDefault()
+      machine.actions.openListbox({ focus: Focus.Nothing })
+    }
+  })
+
+  let handleClick = useEvent((event: ReactPointerEvent) => {
+    if (pointerTypeRef.current === 'mouse') return
+
+    if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
       flushSync(() => machine.actions.closeListbox())
@@ -487,6 +507,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
       onPointerDown: handlePointerDown,
+      onClick: handleClick,
     },
     focusProps,
     hoverProps,

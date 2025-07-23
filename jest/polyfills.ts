@@ -29,6 +29,18 @@ class PointerEvent extends Event {
       // @ts-expect-error JSDOM doesn't support `button` yet...
       this.button = props.button
     }
+
+    if (props.pointerType != null) {
+      // @ts-expect-error JSDOM doesn't support `pointerType` yet...
+      this.pointerType = props.pointerType
+    }
+
+    // @ts-expect-error JSDOM doesn't support `pointerType` yet...
+    if (this.pointerType === undefined) {
+      // Fallback to `pointerType` of `'mouse'` if not provided.
+      // @ts-expect-error JSDOM doesn't support `pointerType` yet...
+      this.pointerType = 'mouse'
+    }
   }
 }
 // @ts-expect-error JSDOM doesn't support `PointerEvent` yet...
