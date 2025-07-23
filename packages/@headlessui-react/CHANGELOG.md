@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.2.5] - 2025-07-23
+
 ### Fixed
 
 - Fix listbox closing immediately after opening on touch devices ([#3755](https://github.com/tailwindlabs/headlessui/pull/3755))
@@ -852,7 +856,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.5...HEAD
+[2.2.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.4...@headlessui/react@v2.2.5
 [2.2.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.3...@headlessui/react@v2.2.4
 [2.2.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.2...@headlessui/react@v2.2.3
 [2.2.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.1...@headlessui/react@v2.2.2
