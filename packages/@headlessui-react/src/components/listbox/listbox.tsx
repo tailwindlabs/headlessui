@@ -452,7 +452,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState !== ListboxStates.Closed) return
-    if (event.pointerType === 'mouse') return
     event.preventDefault()
     machine.actions.openListbox({ focus: Focus.Nothing })
   })
