@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.2.6] - 2025-07-24
+
 ### Fixed
 
 - Fix immediately closing Listbox by requiring some cursor movement ([#3762](https://github.com/tailwindlabs/headlessui/pull/3762))
@@ -858,7 +862,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.5...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.6...HEAD
+[2.2.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.5...@headlessui/react@v2.2.6
 [2.2.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.4...@headlessui/react@v2.2.5
 [2.2.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.3...@headlessui/react@v2.2.4
 [2.2.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.2...@headlessui/react@v2.2.3
