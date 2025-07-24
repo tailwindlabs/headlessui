@@ -28,6 +28,10 @@ export const Action = {
 // Pointerdown -> drag over an item -> pointer up -> "click" on the item
 const POINTER_HOLD_THRESHOLD = 200
 
+// We should at least move this amount of pixels before we consider it a quick
+// release. Otherwise it's just a normal click.
+const POINTER_MOVEMENT_THRESHOLD = 5
+
 type PointerEventWithTarget = Exclude<PointerEvent, 'target'> & {
   target: HTMLElement
 }
@@ -54,9 +58,14 @@ export function useQuickRelease(
   // Capture the timestamp of when the `pointerdown` event happened on the
   // trigger.
   let triggeredAtRef = useRef<Date | null>(null)
+  let startXRef = useRef<number | null>(null)
+  let startYRef = useRef<number | null>(null)
   useDocumentEvent(enabled && trigger !== null, 'pointerdown', (e) => {
     if (!DOM.isNode(e?.target)) return
     if (!trigger?.contains(e.target)) return
+
+    startXRef.current = e.x
+    startYRef.current = e.y
 
     triggeredAtRef.current = new Date()
   })
@@ -67,6 +76,15 @@ export function useQuickRelease(
     (e) => {
       if (triggeredAtRef.current === null) return
       if (!DOM.isHTMLorSVGElement(e.target)) return
+
+      // Ensure we moved the pointer a bit before considering it a quick
+      // release.
+      if (
+        Math.abs(e.x - (startXRef.current ?? e.x)) < POINTER_MOVEMENT_THRESHOLD &&
+        Math.abs(e.y - (startYRef.current ?? e.y)) < POINTER_MOVEMENT_THRESHOLD
+      ) {
+        return
+      }
 
       let result = action(e as PointerEventWithTarget)
 

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix immediately closing Listbox by requiring some cursor movement ([#3762](https://github.com/tailwindlabs/headlessui/pull/3762))
 
 ## [2.2.5] - 2025-07-23
 
