@@ -83,6 +83,7 @@ export function useQuickRelease(
         Math.abs(e.x - (startXRef.current ?? e.x)) < POINTER_MOVEMENT_THRESHOLD &&
         Math.abs(e.y - (startYRef.current ?? e.y)) < POINTER_MOVEMENT_THRESHOLD
       ) {
+        triggeredAtRef.current = null
         return
       }
 
