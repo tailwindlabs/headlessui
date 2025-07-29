@@ -74,7 +74,10 @@ export function useQuickRelease(
     enabled && trigger !== null,
     'pointerup',
     (e) => {
-      if (triggeredAtRef.current === null) return
+      let triggeredAt = triggeredAtRef.current
+      triggeredAtRef.current = null
+
+      if (triggeredAt === null) return
       if (!DOM.isHTMLorSVGElement(e.target)) return
 
       // Ensure we moved the pointer a bit before considering it a quick
@@ -83,14 +86,12 @@ export function useQuickRelease(
         Math.abs(e.x - (startXRef.current ?? e.x)) < POINTER_MOVEMENT_THRESHOLD &&
         Math.abs(e.y - (startYRef.current ?? e.y)) < POINTER_MOVEMENT_THRESHOLD
       ) {
-        triggeredAtRef.current = null
         return
       }
 
       let result = action(e as PointerEventWithTarget)
 
-      let diffInMs = e.timeStamp - triggeredAtRef.current
-      triggeredAtRef.current = null
+      let diffInMs = e.timeStamp - triggeredAt
 
       switch (result.kind) {
         case ActionKind.Ignore:
