@@ -13,6 +13,13 @@ export abstract class Machine<State, Event extends { type: number | string }> {
 
   constructor(initialState: State) {
     this.#state = initialState
+
+    if (env.isServer) {
+      // Cleanup any disposables that were registerd on the server-side
+      this.disposables.microTask(() => {
+        this.dispose()
+      })
+    }
   }
 
   dispose() {
