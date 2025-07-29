@@ -1,5 +1,6 @@
 import { DefaultMap } from './utils/default-map'
 import { disposables } from './utils/disposables'
+import { env } from './utils/env'
 
 export abstract class Machine<State, Event extends { type: number | string }> {
   #state: State = {} as State
@@ -12,6 +13,13 @@ export abstract class Machine<State, Event extends { type: number | string }> {
 
   constructor(initialState: State) {
     this.#state = initialState
+
+    if (env.isServer) {
+      // Cleanup any disposables that were registerd on the server-side
+      this.disposables.microTask(() => {
+        this.dispose()
+      })
+    }
   }
 
   dispose() {
@@ -28,6 +36,8 @@ export abstract class Machine<State, Event extends { type: number | string }> {
     selector: (state: Readonly<State>) => Slice,
     callback: (state: Slice) => void
   ): () => void {
+    if (env.isServer) return () => {}
+
     let subscriber: Subscriber<State, Slice> = {
       selector,
       callback,
@@ -41,6 +51,8 @@ export abstract class Machine<State, Event extends { type: number | string }> {
   }
 
   on(type: Event['type'], callback: (state: State, event: Event) => void) {
+    if (env.isServer) return () => {}
+
     this.#eventSubscribers.get(type).add(callback)
     return this.disposables.add(() => {
       this.#eventSubscribers.get(type).delete(callback)
