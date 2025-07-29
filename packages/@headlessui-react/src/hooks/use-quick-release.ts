@@ -75,9 +75,9 @@ export function useQuickRelease(
     'pointerup',
     (e) => {
       let triggeredAt = triggeredAtRef.current
+      if (triggeredAt === null) return
       triggeredAtRef.current = null
 
-      if (triggeredAt === null) return
       if (!DOM.isHTMLorSVGElement(e.target)) return
 
       // Ensure we moved the pointer a bit before considering it a quick
