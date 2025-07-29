@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix incorrect double invocation of menu items, listbox options and combobox options ([#3766](https://github.com/tailwindlabs/headlessui/pull/3766))
 
 ## [2.2.6] - 2025-07-24
 
