@@ -57,7 +57,7 @@ export function useQuickRelease(
 ) {
   // Capture the timestamp of when the `pointerdown` event happened on the
   // trigger.
-  let triggeredAtRef = useRef<Date | null>(null)
+  let triggeredAtRef = useRef<number | null>(null)
   let startXRef = useRef<number | null>(null)
   let startYRef = useRef<number | null>(null)
   useDocumentEvent(enabled && trigger !== null, 'pointerdown', (e) => {
@@ -67,7 +67,7 @@ export function useQuickRelease(
     startXRef.current = e.x
     startYRef.current = e.y
 
-    triggeredAtRef.current = new Date()
+    triggeredAtRef.current = e.timeStamp
   })
 
   useDocumentEvent(
@@ -89,7 +89,7 @@ export function useQuickRelease(
 
       let result = action(e as PointerEventWithTarget)
 
-      let diffInMs = new Date().getTime() - triggeredAtRef.current.getTime()
+      let diffInMs = e.timeStamp - triggeredAtRef.current
       triggeredAtRef.current = null
 
       switch (result.kind) {
