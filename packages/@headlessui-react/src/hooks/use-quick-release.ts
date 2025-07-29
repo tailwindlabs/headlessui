@@ -91,14 +91,12 @@ export function useQuickRelease(
 
       let result = action(e as PointerEventWithTarget)
 
-      let diffInMs = e.timeStamp - triggeredAt
-
       switch (result.kind) {
         case ActionKind.Ignore:
           return
 
         case ActionKind.Select: {
-          if (diffInMs > POINTER_HOLD_THRESHOLD) {
+          if (e.timeStamp - triggeredAt > POINTER_HOLD_THRESHOLD) {
             select(result.target)
             close()
           }
