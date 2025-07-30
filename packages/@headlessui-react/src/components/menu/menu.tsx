@@ -698,7 +698,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (active) return
 
     // pointermove / mousemove will only be fired when the pointer is actually
-    // moving, therefore we can go to the optoin with the `Pointer` activation
+    // moving, therefore we can go to the option with the `Pointer` activation
     // trigger.
     machine.send({
       type: ActionTypes.GoToItem,

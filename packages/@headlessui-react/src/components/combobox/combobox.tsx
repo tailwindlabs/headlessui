@@ -1536,14 +1536,14 @@ function OptionFn<
     if (disabled) return
 
     // Skip if the option is already active, however, if the activation trigger
-    // is not `Poitner` we have to convert it to a `Pointer` trigger
+    // is not `Pointer` we have to convert it to a `Pointer` trigger
     // activation instead.
     if (active && machine.state.activationTrigger === ActivationTrigger.Pointer) return
 
     let idx = data.calculateIndex(value)
 
     // pointermove / mousemove will only be fired when the pointer is actually
-    // moving, therefore we can go to the optoin with the `Pointer` activation
+    // moving, therefore we can go to the option with the `Pointer` activation
     // trigger.
     machine.actions.goToOption({ focus: Focus.Specific, idx }, ActivationTrigger.Pointer)
   })
