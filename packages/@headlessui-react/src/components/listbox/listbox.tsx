@@ -15,6 +15,7 @@ import React, {
   type ElementType,
   type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
@@ -435,12 +436,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
-  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
-    pointerTypeRef.current = event.pointerType
-
-    if (event.pointerType !== 'mouse') return
-
+  let toggle = useEvent((event: ReactPointerEvent | ReactMouseEvent) => {
     if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
@@ -452,18 +448,16 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactPointerEvent) => {
-    if (pointerTypeRef.current === 'mouse') return
+  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
+    pointerTypeRef.current = event.pointerType
+    if (event.pointerType !== 'mouse') return
+    toggle(event)
+  })
 
-    if (event.button !== MouseButton.Left) return // Only handle left clicks
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (machine.state.listboxState === ListboxStates.Open) {
-      flushSync(() => machine.actions.closeListbox())
-      machine.state.buttonElement?.focus({ preventScroll: true })
-    } else {
-      event.preventDefault()
-      machine.actions.openListbox({ focus: Focus.Nothing })
-    }
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (pointerTypeRef.current === 'mouse') return
+    toggle(event)
   })
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
