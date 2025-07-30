@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.2.7] - 2025-07-30
+
 ### Fixed
 
 - Fix incorrect double invocation of menu items, listbox options and combobox options ([#3766](https://github.com/tailwindlabs/headlessui/pull/3766))
@@ -867,7 +871,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.6...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.7...HEAD
+[2.2.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.6...@headlessui/react@v2.2.7
 [2.2.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.5...@headlessui/react@v2.2.6
 [2.2.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.4...@headlessui/react@v2.2.5
 [2.2.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.3...@headlessui/react@v2.2.4
