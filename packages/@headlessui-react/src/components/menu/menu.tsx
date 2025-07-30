@@ -448,7 +448,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     if (menuState !== MenuState.Open) return
     if (container === ownerDocument?.activeElement) return
 
-    container.focus({ preventScroll: true })
+    // @ts-expect-error FocusVisible is not available everywhere yet
+    container.focus({ preventScroll: true, focusVisible: false })
   }, [menuState, localItemsElement, ownerDocument])
 
   useTreeWalker(menuState === MenuState.Open, {

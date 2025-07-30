@@ -687,7 +687,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     if (listboxState !== ListboxStates.Open) return
     if (container === getOwnerDocument(container)?.activeElement) return
 
-    container?.focus({ preventScroll: true })
+    // @ts-expect-error FocusVisible is not available everywhere yet
+    container?.focus({ preventScroll: true, focusVisible: false })
   }, [listboxState, optionsElement])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
