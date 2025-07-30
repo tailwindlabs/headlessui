@@ -690,22 +690,16 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
   let pointer = useTrackedPointer()
 
-  let handleEnter = useEvent((event) => {
-    pointer.update(event)
-    if (disabled) return
-    if (active) return
-    machine.send({
-      type: ActionTypes.GoToItem,
-      focus: Focus.Specific,
-      id,
-      trigger: ActivationTrigger.Pointer,
-    })
-  })
+  let handleEnter = useEvent((event) => pointer.update(event))
 
   let handleMove = useEvent((event) => {
     if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (active) return
+
+    // pointermove / mousemove will only be fired when the pointer is actually
+    // moving, therefore we can go to the optoin with the `Pointer` activation
+    // trigger.
     machine.send({
       type: ActionTypes.GoToItem,
       focus: Focus.Specific,
@@ -718,6 +712,12 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (!pointer.wasMoved(event)) return
     if (disabled) return
     if (!active) return
+
+    // pointerenter / mouseenter will be fired when the mouse is on top of an
+    // element that scrolls into view even when using the keyboard to
+    // navigate. Only handle the event when the pointer was actually moved.
+    if (machine.state.activationTrigger !== ActivationTrigger.Pointer) return
+
     machine.send({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 

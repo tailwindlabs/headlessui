@@ -1534,8 +1534,17 @@ function OptionFn<
   let handleMove = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
     if (disabled) return
-    if (active) return
+
+    // Skip if the option is already active, however, if the activation trigger
+    // is not `Poitner` we have to convert it to a `Pointer` trigger
+    // activation instead.
+    if (active && machine.state.activationTrigger === ActivationTrigger.Pointer) return
+
     let idx = data.calculateIndex(value)
+
+    // pointermove / mousemove will only be fired when the pointer is actually
+    // moving, therefore we can go to the optoin with the `Pointer` activation
+    // trigger.
     machine.actions.goToOption({ focus: Focus.Specific, idx }, ActivationTrigger.Pointer)
   })
 
@@ -1544,6 +1553,12 @@ function OptionFn<
     if (disabled) return
     if (!active) return
     if (data.optionsPropsRef.current.hold) return
+
+    // pointerenter / mouseenter will be fired when the mouse is on top of an
+    // element that scrolls into view even when using the keyboard to
+    // navigate. Only handle the event when the pointer was actually moved.
+    if (machine.state.activationTrigger !== ActivationTrigger.Pointer) return
+
     machine.actions.goToOption({ focus: Focus.Nothing })
   })
 
