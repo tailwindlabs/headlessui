@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix incorrect double invocation of menu items, listbox options and combobox options ([#3766](https://github.com/tailwindlabs/headlessui/pull/3766))
 - Fix memory leak in SSR environment ([#3767](https://github.com/tailwindlabs/headlessui/pull/3767))
+- Ensure programmatic `.click()` on `MenuButton` ref works ([#3768](https://github.com/tailwindlabs/headlessui/pull/3768))
 
 ## [2.2.6] - 2025-07-24
 
