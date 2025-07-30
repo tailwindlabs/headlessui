@@ -1,5 +1,5 @@
-import { render, waitFor } from '@testing-library/react'
-import React, { Fragment, createElement, useEffect } from 'react'
+import { act, render, waitFor } from '@testing-library/react'
+import React, { Fragment, createElement, createRef, useEffect } from 'react'
 import {
   MenuState,
   assertActiveElement,
@@ -542,6 +542,40 @@ describe('Rendering', () => {
     // Verify that the third menu item is active
     assertMenuLinkedWithMenuItem(items[2])
   })
+
+  it(
+    'should be possible to open a menu programmatically via .click()',
+    suppressConsoleLogs(async () => {
+      let btnRef = createRef<HTMLButtonElement>()
+
+      render(
+        <Menu>
+          <MenuButton ref={btnRef}>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      )
+
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Open menu
+      act(() => btnRef.current?.click())
+
+      // Verify it is open
+      assertMenuButton({ state: MenuState.Visible })
+      assertMenu({ state: MenuState.Visible })
+      assertMenuButtonLinkedWithMenu()
+
+      // Verify we have menu items
+      let items = getMenuItems()
+      expect(items).toHaveLength(3)
+      items.forEach((item) => assertMenuItem(item))
+    })
+  )
 })
 
 describe('Rendering composition', () => {

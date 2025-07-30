@@ -1,5 +1,5 @@
-import { render, waitFor } from '@testing-library/react'
-import React, { Fragment, createElement, useEffect, useState } from 'react'
+import { act, render, waitFor } from '@testing-library/react'
+import React, { Fragment, createElement, createRef, useEffect, useState } from 'react'
 import {
   ListboxMode,
   ListboxState,
@@ -1233,6 +1233,40 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
     })
   })
+
+  it(
+    'should be possible to open a listbox programmatically via .click()',
+    suppressConsoleLogs(async () => {
+      let btnRef = createRef<HTMLButtonElement>()
+
+      render(
+        <Listbox>
+          <ListboxButton ref={btnRef}>Trigger</ListboxButton>
+          <ListboxOptions>
+            <ListboxOption value="a">Option A</ListboxOption>
+            <ListboxOption value="b">Option B</ListboxOption>
+            <ListboxOption value="c">Option C</ListboxOption>
+          </ListboxOptions>
+        </Listbox>
+      )
+
+      assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Open listbox
+      act(() => btnRef.current?.click())
+
+      // Verify it is open
+      assertListboxButton({ state: ListboxState.Visible })
+      assertListbox({ state: ListboxState.Visible })
+      assertListboxButtonLinkedWithListbox()
+
+      // Verify we have listbox options
+      let options = getListboxOptions()
+      expect(options).toHaveLength(3)
+      options.forEach((option) => assertListboxOption(option))
+    })
+  )
 })
 
 describe('Rendering composition', () => {

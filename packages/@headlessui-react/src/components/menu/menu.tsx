@@ -72,6 +72,7 @@ import {
 import { useDescriptions } from '../description/description'
 import { Keys } from '../keyboard'
 import { useLabelContext, useLabels } from '../label/label'
+import { MouseButton } from '../mouse'
 import { Portal } from '../portal/portal'
 import { ActionTypes, ActivationTrigger, MenuState, type MenuItemDataRef } from './menu-machine'
 import { MenuContext, useMenuMachine, useMenuMachineContext } from './menu-machine-glue'
@@ -265,8 +266,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     select: useCallback((target) => target.click(), []),
   })
 
-  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
-    if (event.button !== 0) return // Only handle left clicks
+  let toggle = useEvent((event: ReactPointerEvent) => {
+    if (event.button !== MouseButton.Left) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
     if (menuState === MenuState.Open) {
@@ -280,6 +281,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         trigger: ActivationTrigger.Pointer,
       })
     }
+  })
+
+  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
+  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
+    pointerTypeRef.current = event.pointerType
+    if (event.pointerType !== 'mouse') return
+    toggle(event)
+  })
+
+  let handleClick = useEvent((event: ReactPointerEvent) => {
+    if (pointerTypeRef.current === 'mouse') return
+    toggle(event)
   })
 
   let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
@@ -311,6 +324,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onPointerDown: handlePointerDown,
+      onClick: handleClick,
     },
     focusProps,
     hoverProps,
