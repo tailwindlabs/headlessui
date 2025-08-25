@@ -75,7 +75,7 @@ export enum FocusableMode {
 }
 
 export function isFocusableElement(
-  element: HTMLElement,
+  element: HTMLOrSVGElement & Element,
   mode: FocusableMode = FocusableMode.Strict
 ) {
   if (element === getOwnerDocument(element)?.body) return false
@@ -85,7 +85,7 @@ export function isFocusableElement(
       return element.matches(focusableSelector)
     },
     [FocusableMode.Loose]() {
-      let next: HTMLElement | null = element
+      let next: Element | null = element
 
       while (next !== null) {
         if (next.matches(focusableSelector)) return true
