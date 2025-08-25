@@ -1,5 +1,5 @@
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
-import { dom } from '../utils/dom'
+import { dom, isHTMLIframeElement, isHTMLorSVGElement } from '../utils/dom'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
@@ -19,12 +19,15 @@ const MOVE_THRESHOLD_PX = 30
 
 export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
-  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void,
+  cb: (
+    event: MouseEvent | PointerEvent | FocusEvent | TouchEvent,
+    target: HTMLOrSVGElement & Element
+  ) => void,
   enabled: ComputedRef<boolean> = computed(() => true)
 ) {
   function handleOutsideClick<E extends MouseEvent | PointerEvent | FocusEvent | TouchEvent>(
     event: E,
-    resolveTarget: (event: E) => HTMLElement | null
+    resolveTarget: (event: E) => (HTMLOrSVGElement & Element) | null
   ) {
     // Check whether the event got prevented already. This can happen if you use the
     // useOutsideClick hook in both a Dialog and a Menu and the inner Menu "cancels" the default
@@ -162,7 +165,7 @@ export function useOutsideClick(
       }
 
       return handleOutsideClick(event, () => {
-        if (event.target instanceof HTMLElement) {
+        if (isHTMLorSVGElement(event.target)) {
           return event.target
         }
         return null
@@ -188,7 +191,7 @@ export function useOutsideClick(
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {
-        return window.document.activeElement instanceof HTMLIFrameElement
+        return isHTMLIframeElement(window.document.activeElement)
           ? window.document.activeElement
           : null
       })
