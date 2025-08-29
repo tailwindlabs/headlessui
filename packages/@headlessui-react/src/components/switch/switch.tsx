@@ -129,7 +129,7 @@ export type SwitchProps<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG> = 
   {
     checked?: boolean
     defaultChecked?: boolean
-    onChange?(checked: boolean): void
+    onChange?: (checked: boolean) => void
     name?: string
     value?: string
     form?: string

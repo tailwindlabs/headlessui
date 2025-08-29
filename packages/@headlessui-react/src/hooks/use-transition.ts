@@ -82,8 +82,8 @@ export function useTransition(
   element: HTMLElement | null,
   show: boolean,
   events?: {
-    start?(show: boolean): void
-    end?(show: boolean): void
+    start?: (show: boolean) => void
+    end?: (show: boolean) => void
   }
 ): [visible: boolean, data: TransitionData] {
   let [visible, setVisible] = useState(show)

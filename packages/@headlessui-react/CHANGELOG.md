@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure we are not freezing data when the `static` prop is used ([#3779](https://github.com/tailwindlabs/headlessui/pull/3779))
+- Ensure `onChange` types are contravariant instead of bivariant ([#3781](https://github.com/tailwindlabs/headlessui/pull/3781))
 
 ## [2.2.7] - 2025-07-30
 

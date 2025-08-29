@@ -256,9 +256,9 @@ export type ComboboxProps<
     value?: TMultiple extends true ? EnsureArray<TValue> : TValue
     defaultValue?: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>
 
-    onChange?(
+    onChange?: (
       value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue> | null
-    ): void
+    ) => void
     by?: ByComparator<
       TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
     >
@@ -279,7 +279,7 @@ export type ComboboxProps<
       ) => boolean
     } | null
 
-    onClose?(): void
+    onClose?: () => void
 
     __demoMode?: boolean
   }
@@ -513,8 +513,8 @@ export type ComboboxInputProps<
   {
     defaultValue?: TType
     disabled?: boolean
-    displayValue?(item: TType): string
-    onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+    displayValue?: (item: TType) => string
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
     autoFocus?: boolean
   }
 >

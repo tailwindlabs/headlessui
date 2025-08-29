@@ -147,7 +147,7 @@ export type ListboxProps<
   {
     value?: TType
     defaultValue?: TType
-    onChange?(value: TType): void
+    onChange?: (value: TType) => void
     by?: ByComparator<TActualType>
     disabled?: boolean
     invalid?: boolean
