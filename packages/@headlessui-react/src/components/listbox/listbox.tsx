@@ -629,12 +629,18 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // We should freeze when the listbox is visible but "closed". This means that
   // a transition is currently happening and the component is still visible (for
   // the transition) but closed from a functionality perspective.
-  let shouldFreeze = visible && listboxState === ListboxStates.Closed
+  //
+  // When the `static` prop is used, we should never freeze, because rendering
+  // is up to the user.
+  let shouldFreeze = visible && listboxState === ListboxStates.Closed && !props.static
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
 
-  let isSelected = useEvent((compareValue: unknown) => data.compare(frozenValue, compareValue))
+  let isSelected = useCallback(
+    (compareValue: unknown) => data.compare(frozenValue, compareValue),
+    [data.compare, frozenValue]
+  )
 
   let selectedOptionIndex = useSlice(machine, (state) => {
     if (anchor == null) return null
