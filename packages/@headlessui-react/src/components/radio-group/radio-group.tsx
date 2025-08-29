@@ -156,7 +156,7 @@ export type RadioGroupProps<
   {
     value?: TType
     defaultValue?: TType
-    onChange?(value: TType): void
+    onChange?: (value: TType) => void
     by?: ByComparator<TType>
     disabled?: boolean
     form?: string

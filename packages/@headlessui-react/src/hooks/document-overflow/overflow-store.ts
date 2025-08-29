@@ -28,8 +28,8 @@ export interface Context<MetaType extends Record<string, any> = any> {
 }
 
 export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
-  before?(ctx: Context<MetaType>): void
-  after?(ctx: Context<MetaType>): void
+  before?: (ctx: Context<MetaType>) => void
+  after?: (ctx: Context<MetaType>) => void
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
