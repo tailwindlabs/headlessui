@@ -1332,14 +1332,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // We should freeze when the combobox is visible but "closed". This means that
   // a transition is currently happening and the component is still visible (for
   // the transition) but closed from a functionality perspective.
-  let shouldFreeze = visible && comboboxState === ComboboxState.Closed
+  //
+  // When the `static` prop is used, we should never freeze, because rendering
+  // is up to the user.
+  let shouldFreeze = visible && comboboxState === ComboboxState.Closed && !props.static
 
   let options = useFrozenData(shouldFreeze, data.virtual?.options)
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Combobox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
 
-  let isSelected = useEvent((compareValue) => data.compare(frozenValue, compareValue))
+  let isSelected = useCallback(
+    (compareValue: unknown) => data.compare(frozenValue, compareValue),
+    [data.compare, frozenValue]
+  )
 
   // Map the children in a scrollable container when virtualization is enabled
   let newDataContextValue = useMemo(() => {
