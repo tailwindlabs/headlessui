@@ -609,19 +609,19 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     allowed: useCallback(() => [buttonElement, optionsElement], [buttonElement, optionsElement]),
   })
 
-  // We keep track whether the button moved or not, we only check this when the menu state becomes
-  // closed. If the button moved, then we want to cancel pending transitions to prevent that the
-  // attached `MenuItems` is still transitioning while the button moved away.
+  // We keep track whether the butotn moved or not, we only check this when the
+  // listbox state becomes closed. If the button moved, then we want to cancel
+  // pending transitions to prevent that the attached `ListboxOptions` is
+  // still transitioning while the button visually moved away.
   //
-  // If we don't cancel these transitions then there will be a period where the `MenuItems` is
-  // visible and moving around because it is trying to re-position itself based on the new position.
-  //
-  // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
-  // want to transition the y-axis for example you will run into the same issue again.
+  // If we don't cancel these transitions then there will be a period where the
+  // `ListboxOptions` is visible and moving around because it is trying to
+  // re-position itself based on the new position.
   let didButtonMove = useSlice(machine, machine.selectors.didButtonMove)
 
-  // Now that we know that the button did move or not, we can either disable the panel and all of
-  // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
+  // Now that we know that the button did move or not, we can either disable the
+  // panel and all of its transitions, or rely on the `visible` state to hide
+  // the panel whenever necessary.
   let panelEnabled = didButtonMove ? false : visible
 
   // We should freeze when the listbox is visible but "closed". This means that
