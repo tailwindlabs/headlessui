@@ -24,7 +24,6 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDefaultValue } from '../../hooks/use-default-value'
-import { useDidElementMove } from '../../hooks/use-did-element-move'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
@@ -619,8 +618,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   //
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
-  let didElementMoveEnabled = listboxState !== ListboxStates.Open
-  let didButtonMove = useDidElementMove(didElementMoveEnabled, buttonElement)
+  let didButtonMove = useSlice(machine, machine.selectors.didButtonMove)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.

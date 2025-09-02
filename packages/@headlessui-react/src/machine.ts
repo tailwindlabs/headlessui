@@ -4,9 +4,10 @@ import { env } from './utils/env'
 
 export abstract class Machine<State, Event extends { type: number | string }> {
   #state: State = {} as State
-  #eventSubscribers = new DefaultMap<Event['type'], Set<(state: State, event: Event) => void>>(
-    () => new Set()
-  )
+  #eventSubscribers = new DefaultMap<
+    Event['type'],
+    Set<(state: State, event: Extract<Event, { type: any }>) => void>
+  >(() => new Set())
   #subscribers: Set<Subscriber<State, any>> = new Set()
 
   disposables = disposables()
@@ -50,7 +51,10 @@ export abstract class Machine<State, Event extends { type: number | string }> {
     })
   }
 
-  on(type: Event['type'], callback: (state: State, event: Event) => void) {
+  on<T extends Event['type']>(
+    type: T,
+    callback: (state: State, event: Extract<Event, { type: T }>) => void
+  ) {
     if (env.isServer) return () => {}
 
     this.#eventSubscribers.get(type).add(callback)
@@ -74,7 +78,7 @@ export abstract class Machine<State, Event extends { type: number | string }> {
     }
 
     for (let callback of this.#eventSubscribers.get(event.type)) {
-      callback(this.#state, event)
+      callback(this.#state, event as any)
     }
   }
 }
