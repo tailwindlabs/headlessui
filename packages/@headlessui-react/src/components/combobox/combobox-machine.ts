@@ -2,6 +2,11 @@ import { Machine } from '../../machine'
 import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import type { EnsureArray } from '../../types'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import {
+  ElementPositionState,
+  computeVisualPosition,
+  detectMovement,
+} from '../../utils/element-movement'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 
@@ -74,6 +79,9 @@ export interface State<T> {
   buttonElement: HTMLButtonElement | null
   optionsElement: HTMLElement | null
 
+  // Track input to determine if it moved
+  inputPositionState: ElementPositionState
+
   __demoMode: boolean
 }
 
@@ -96,6 +104,8 @@ export enum ActionTypes {
   SetInputElement,
   SetButtonElement,
   SetOptionsElement,
+
+  MarkInputAsMoved,
 }
 
 function adjustOrderedState<T>(
@@ -160,6 +170,7 @@ type Actions<T> =
   | { type: ActionTypes.SetInputElement; element: HTMLInputElement | null }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
+  | { type: ActionTypes.MarkInputAsMoved }
 
 let reducers: {
   [P in ActionTypes]: <T>(state: State<T>, action: Extract<Actions<T>, { type: P }>) => State<T>
@@ -167,6 +178,9 @@ let reducers: {
   [ActionTypes.CloseCombobox](state) {
     if (state.dataRef.current?.disabled) return state
     if (state.comboboxState === ComboboxState.Closed) return state
+    let inputPositionState = state.inputElement
+      ? ElementPositionState.Tracked(computeVisualPosition(state.inputElement))
+      : state.inputPositionState
 
     return {
       ...state,
@@ -180,6 +194,8 @@ let reducers: {
       // resulting in it closing we might incorrectly handle the next interaction
       // for example, not scrolling to the active option in a virtual list
       activationTrigger: ActivationTrigger.Other,
+
+      inputPositionState,
 
       __demoMode: false,
     }
@@ -197,11 +213,17 @@ let reducers: {
           activeOptionIndex: idx,
           comboboxState: ComboboxState.Open,
           __demoMode: false,
+          inputPositionState: ElementPositionState.Idle,
         }
       }
     }
 
-    return { ...state, comboboxState: ComboboxState.Open, __demoMode: false }
+    return {
+      ...state,
+      comboboxState: ComboboxState.Open,
+      inputPositionState: ElementPositionState.Idle,
+      __demoMode: false,
+    }
   },
   [ActionTypes.SetTyping](state, action) {
     if (state.isTyping === action.isTyping) return state
@@ -404,6 +426,14 @@ let reducers: {
     if (state.optionsElement === action.element) return state
     return { ...state, optionsElement: action.element }
   },
+  [ActionTypes.MarkInputAsMoved](state) {
+    if (state.inputPositionState.kind !== 'Tracked') return state
+
+    return {
+      ...state,
+      inputPositionState: ElementPositionState.Moved,
+    }
+  },
 }
 
 export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
@@ -438,6 +468,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       buttonElement: null,
       optionsElement: null,
       __demoMode,
+      inputPositionState: ElementPositionState.Idle,
     })
   }
 
@@ -464,6 +495,20 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       this.on(ActionTypes.OpenCombobox, () => stackMachine.actions.push(id))
       this.on(ActionTypes.CloseCombobox, () => stackMachine.actions.pop(id))
     }
+
+    // Track whether the input moved or not
+    this.disposables.group((d) => {
+      this.on(ActionTypes.CloseCombobox, (state) => {
+        if (!state.inputElement) return
+
+        d.dispose()
+        d.add(
+          detectMovement(state.inputElement, state.inputPositionState, () => {
+            this.send({ type: ActionTypes.MarkInputAsMoved })
+          })
+        )
+      })
+    })
   }
 
   actions = {
@@ -639,6 +684,10 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       if (!active) return false
 
       return true
+    },
+
+    didInputMove(state: State<T>) {
+      return state.inputPositionState.kind === 'Moved'
     },
   }
 

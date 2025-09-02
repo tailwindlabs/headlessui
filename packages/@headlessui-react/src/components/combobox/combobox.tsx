@@ -1261,6 +1261,21 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ),
   })
 
+  // We keep track whether the input moved or not, we only check this when the
+  // combobox state becomes closed. If the input moved, then we want to cancel
+  // pending transitions to prevent that the attached `ComboboxOptions` is still
+  // transitioning while the input visually moved away.
+  //
+  // If we don't cancel these transitions then there will be a period where the
+  // `ComboboxOptions` is visible and moving around because it is trying to
+  // re-position itself based on the new position.
+  let didInputMove = useSlice(machine, machine.selectors.didInputMove)
+
+  // Now that we know that the input did move or not, we can either disable the
+  // panel and all of its transitions, or rely on the `visible` state to hide
+  // the panel whenever necessary.
+  let panelEnabled = didInputMove ? false : visible
+
   useIsoMorphicEffect(() => {
     data.optionsPropsRef.current.static = props.static ?? false
   }, [data.optionsPropsRef, props.static])
@@ -1392,7 +1407,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           slot,
           defaultTag: DEFAULT_OPTIONS_TAG,
           features: OptionsRenderFeatures,
-          visible,
+          visible: panelEnabled,
           name: 'Combobox.Options',
         })}
       </ComboboxDataContext.Provider>
