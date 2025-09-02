@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { flushSync } from 'react-dom'
+import { useDisposables } from './use-disposables'
 
 function getViewportXY(element: HTMLElement) {
   let rect = element.getBoundingClientRect()
@@ -35,12 +37,24 @@ function getViewportXY(element: HTMLElement) {
 export function useDidElementMove(enabled: boolean, element: HTMLElement | null) {
   let [previousXY, setPreviousXY] = useState<{ x: number; y: number } | null>(null)
   let [moved, setMoved] = useState(false)
+  let d = useDisposables()
 
   // Track the element position before we are interested in knowing if it was moved.
   if (!enabled && element) {
     let xy = getViewportXY(element)
     if (previousXY === null || previousXY.x !== xy.x || previousXY.y !== xy.y) {
       setPreviousXY(xy)
+
+      d.requestAnimationFrame(function retry() {
+        if (element) {
+          let newXY = getViewportXY(element)
+          if (xy.x !== newXY.x || xy.y !== newXY.y) {
+            flushSync(() => setMoved(true))
+          } else {
+            d.requestAnimationFrame(retry)
+          }
+        }
+      })
     }
   }
 
