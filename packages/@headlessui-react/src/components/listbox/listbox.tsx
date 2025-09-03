@@ -609,7 +609,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     allowed: useCallback(() => [buttonElement, optionsElement], [buttonElement, optionsElement]),
   })
 
-  // We keep track whether the butotn moved or not, we only check this when the
+  // We keep track whether the button moved or not, we only check this when the
   // listbox state becomes closed. If the button moved, then we want to cancel
   // pending transitions to prevent that the attached `ListboxOptions` is
   // still transitioning while the button visually moved away.
