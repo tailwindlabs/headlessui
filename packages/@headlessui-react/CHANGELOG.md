@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure we are not freezing data when the `static` prop is used ([#3779](https://github.com/tailwindlabs/headlessui/pull/3779))
 - Ensure `onChange` types are contravariant instead of bivariant ([#3781](https://github.com/tailwindlabs/headlessui/pull/3781))
+- Support `<details>` as a focusable element without `<summary>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
+- Support `<summary>` as a focusable element inside `<details>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
 
 ## [2.2.7] - 2025-07-30
 

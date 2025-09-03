@@ -15,6 +15,8 @@ export let focusableSelector = [
   'iframe',
   'input:not([disabled])',
   'select:not([disabled])',
+  'details:not(:has(> summary))',
+  'details>summary',
   'textarea:not([disabled])',
 ]
   .map(
