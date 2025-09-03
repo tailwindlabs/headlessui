@@ -1,6 +1,11 @@
 import { Machine, batch } from '../../machine'
 import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import {
+  ElementPositionState,
+  computeVisualPosition,
+  detectMovement,
+} from '../../utils/element-movement'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 
@@ -38,6 +43,9 @@ export interface State {
 
   pendingShouldSort: boolean
   pendingFocus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
+
+  // Track button to determine if it moved
+  buttonPositionState: ElementPositionState
 }
 
 export enum ActionTypes {
@@ -54,6 +62,8 @@ export enum ActionTypes {
   SetItemsElement,
 
   SortItems,
+
+  MarkButtonAsMoved,
 }
 
 function adjustOrderedState(
@@ -102,17 +112,23 @@ export type Actions =
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
   | { type: ActionTypes.SortItems }
+  | { type: ActionTypes.MarkButtonAsMoved }
 
 let reducers: {
   [P in ActionTypes]: (state: State, action: Extract<Actions, { type: P }>) => State
 } = {
   [ActionTypes.CloseMenu](state) {
     if (state.menuState === MenuState.Closed) return state
+    let buttonPositionState = state.buttonElement
+      ? ElementPositionState.Tracked(computeVisualPosition(state.buttonElement))
+      : state.buttonPositionState
+
     return {
       ...state,
       activeItemIndex: null,
       pendingFocus: { focus: Focus.Nothing },
       menuState: MenuState.Closed,
+      buttonPositionState,
     }
   },
   [ActionTypes.OpenMenu](state, action) {
@@ -124,6 +140,7 @@ let reducers: {
       __demoMode: false,
       pendingFocus: action.focus,
       menuState: MenuState.Open,
+      buttonPositionState: ElementPositionState.Idle,
     }
   },
   [ActionTypes.GoToItem]: (state, action) => {
@@ -331,6 +348,14 @@ let reducers: {
       pendingShouldSort: false,
     }
   },
+  [ActionTypes.MarkButtonAsMoved](state) {
+    if (state.buttonPositionState.kind !== 'Tracked') return state
+
+    return {
+      ...state,
+      buttonPositionState: ElementPositionState.Moved,
+    }
+  },
 }
 
 export class MenuMachine extends Machine<State, Actions> {
@@ -347,6 +372,7 @@ export class MenuMachine extends Machine<State, Actions> {
       activationTrigger: ActivationTrigger.Other,
       pendingShouldSort: false,
       pendingFocus: { focus: Focus.Nothing },
+      buttonPositionState: ElementPositionState.Idle,
     })
   }
 
@@ -379,6 +405,20 @@ export class MenuMachine extends Machine<State, Actions> {
       this.on(ActionTypes.OpenMenu, () => stackMachine.actions.push(id))
       this.on(ActionTypes.CloseMenu, () => stackMachine.actions.pop(id))
     }
+
+    // Track whether the button moved or not
+    this.disposables.group((d) => {
+      this.on(ActionTypes.CloseMenu, (state) => {
+        if (!state.buttonElement) return
+
+        d.dispose()
+        d.add(
+          detectMovement(state.buttonElement, state.buttonPositionState, () => {
+            this.send({ type: ActionTypes.MarkButtonAsMoved })
+          })
+        )
+      })
+    })
   }
 
   reduce(state: Readonly<State>, action: Actions): State {
@@ -432,6 +472,10 @@ export class MenuMachine extends Machine<State, Actions> {
       if (state.menuState !== MenuState.Open) return false
       if (state.activationTrigger === ActivationTrigger.Pointer) return false
       return this.isActive(state, id)
+    },
+
+    didButtonMove(state: State) {
+      return state.buttonPositionState.kind === 'Moved'
     },
   }
 }

@@ -1,6 +1,11 @@
 import { Machine, batch } from '../../machine'
 import { ActionTypes as StackActionTypes, stackMachines } from '../../machines/stack-machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import {
+  ElementPositionState,
+  computeVisualPosition,
+  detectMovement,
+} from '../../utils/element-movement'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 
@@ -65,6 +70,9 @@ interface State<T> {
 
   pendingShouldSort: boolean
   pendingFocus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
+
+  // Track button to determine if it moved
+  buttonPositionState: ElementPositionState
 }
 
 export enum ActionTypes {
@@ -82,6 +90,8 @@ export enum ActionTypes {
   SetOptionsElement,
 
   SortOptions,
+
+  MarkButtonAsMoved,
 }
 
 function adjustOrderedState<T>(
@@ -135,6 +145,7 @@ type Actions<T> =
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
   | { type: ActionTypes.SortOptions }
+  | { type: ActionTypes.MarkButtonAsMoved }
 
 let reducers: {
   [P in ActionTypes]: <T>(state: State<T>, action: Extract<Actions<T>, { type: P }>) => State<T>
@@ -142,12 +153,17 @@ let reducers: {
   [ActionTypes.CloseListbox](state) {
     if (state.dataRef.current.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
+    let buttonPositionState = state.buttonElement
+      ? ElementPositionState.Tracked(computeVisualPosition(state.buttonElement))
+      : state.buttonPositionState
+
     return {
       ...state,
       activeOptionIndex: null,
       pendingFocus: { focus: Focus.Nothing },
       listboxState: ListboxStates.Closed,
       __demoMode: false,
+      buttonPositionState,
     }
   },
   [ActionTypes.OpenListbox](state, action) {
@@ -169,6 +185,7 @@ let reducers: {
       listboxState: ListboxStates.Open,
       activeOptionIndex,
       __demoMode: false,
+      buttonPositionState: ElementPositionState.Idle,
     }
   },
   [ActionTypes.GoToOption](state, action) {
@@ -394,6 +411,14 @@ let reducers: {
       pendingShouldSort: false,
     }
   },
+  [ActionTypes.MarkButtonAsMoved](state) {
+    if (state.buttonPositionState.kind !== 'Tracked') return state
+
+    return {
+      ...state,
+      buttonPositionState: ElementPositionState.Moved,
+    }
+  },
 }
 
 export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
@@ -412,6 +437,7 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       pendingShouldSort: false,
       pendingFocus: { focus: Focus.Nothing },
       __demoMode,
+      buttonPositionState: ElementPositionState.Idle,
     })
   }
 
@@ -447,6 +473,20 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       this.on(ActionTypes.OpenListbox, () => stackMachine.actions.push(id))
       this.on(ActionTypes.CloseListbox, () => stackMachine.actions.pop(id))
     }
+
+    // Track whether the button moved or not
+    this.disposables.group((d) => {
+      this.on(ActionTypes.CloseListbox, (state) => {
+        if (!state.buttonElement) return
+
+        d.dispose()
+        d.add(
+          detectMovement(state.buttonElement, state.buttonPositionState, () => {
+            this.send({ type: ActionTypes.MarkButtonAsMoved })
+          })
+        )
+      })
+    })
   }
 
   actions = {
@@ -565,6 +605,10 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       if (state.listboxState !== ListboxStates.Open) return false
       if (state.activationTrigger === ActivationTrigger.Pointer) return false
       return this.isActive(state, id)
+    },
+
+    didButtonMove(state: State<T>) {
+      return state.buttonPositionState.kind === 'Moved'
     },
   }
 
