@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix restoring focus to correct element when closing `Dialog` component ([#3365](https://github.com/tailwindlabs/headlessui/pull/3365))
 - Cleanup `process` in Combobox component when using virtualization ([#3495](https://github.com/tailwindlabs/headlessui/pull/3495))
 - Ensure outside click properly works when clicking SVG elements ([#3777](https://github.com/tailwindlabs/headlessui/pull/3777))
-- Support `<details>` as a focusable element without `<summary>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
 - Support `<summary>` as a focusable element inside `<details>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
 
 ## [1.7.22] - 2024-05-08

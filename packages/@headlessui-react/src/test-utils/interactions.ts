@@ -489,7 +489,8 @@ let focusableSelector = [
   'iframe',
   'input:not([disabled])',
   'select:not([disabled])',
-  'details:not(:has(> summary))',
+  // TODO: Re-enable once we bump JSDOM
+  // 'details:not(:has(> summary))',
   'details>summary',
   'textarea:not([disabled])',
 ]
