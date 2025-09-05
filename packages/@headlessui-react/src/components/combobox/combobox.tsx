@@ -785,6 +785,7 @@ function InputFn<
         return machine.actions.closeCombobox()
 
       case Keys.Tab:
+        machine.actions.setIsTyping(false)
         if (machine.state.comboboxState !== ComboboxState.Open) return
         if (
           data.mode === ValueMode.Single &&
