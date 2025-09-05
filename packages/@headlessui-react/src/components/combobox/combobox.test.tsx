@@ -3035,6 +3035,56 @@ describe.each([{ virtual: true }, { virtual: false }])(
             assertActiveElement(document.querySelector('#before-combobox'))
           })
         )
+
+        it(
+          'pressing Tab should sync the ComboboxInput value again',
+          suppressConsoleLogs(async () => {
+            function Example() {
+              let [value, setValue] = useState<string | null>(null)
+
+              return (
+                <>
+                  <MyCombobox
+                    comboboxProps={{ value, onChange: setValue }}
+                    inputProps={{
+                      displayValue: (value: string | null) => value ?? '<cleared>',
+                    }}
+                  />
+                  <button id="clear" onClick={() => setValue(null)}>
+                    Clear selection
+                  </button>
+                </>
+              )
+            }
+
+            render(<Example />)
+
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+            // Open combobox
+            await click(getComboboxButton())
+
+            // Select the 2nd option
+            await press(Keys.ArrowDown)
+
+            // Tab to the next DOM node
+            await press(Keys.Tab)
+
+            // Verify it is closed
+            assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+            assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+            // Verify the selected value was the highlighted one
+            expect(getComboboxInput()?.value).toBe('Option B')
+
+            // Clear the option
+            await click(document.querySelector('button#clear') as HTMLButtonElement)
+
+            // Verify the input value is cleared
+            expect(getComboboxInput()?.value).toBe('<cleared>')
+          })
+        )
       })
 
       describe('`Escape` key', () => {
