@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `onChange` types are contravariant instead of bivariant ([#3781](https://github.com/tailwindlabs/headlessui/pull/3781))
 - Support `<summary>` as a focusable element inside `<details>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
 - Fix `Maximum update depth exceeded` crash when using `transition` prop ([#3782](https://github.com/tailwindlabs/headlessui/pull/3782))
+- Ensure pressing `Tab` in the `ComboboxInput`, correctly syncs the input value ([#3785](https://github.com/tailwindlabs/headlessui/pull/3785))
 
 ## [2.2.7] - 2025-07-30
 
