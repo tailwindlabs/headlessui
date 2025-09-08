@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support `<summary>` as a focusable element inside `<details>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
 - Fix `Maximum update depth exceeded` crash when using `transition` prop ([#3782](https://github.com/tailwindlabs/headlessui/pull/3782))
 - Ensure pressing `Tab` in the `ComboboxInput`, correctly syncs the input value ([#3785](https://github.com/tailwindlabs/headlessui/pull/3785))
+- Ensure `--button-width` and `--input-width` have the latest value ([#3786](https://github.com/tailwindlabs/headlessui/pull/3786))
 
 ## [2.2.7] - 2025-07-30
 
