@@ -1337,8 +1337,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--input-width': useElementSize(inputElement, true).width,
-      '--button-width': useElementSize(buttonElement, true).width,
+      '--input-width': useElementSize(visible, inputElement, true).width,
+      '--button-width': useElementSize(visible, buttonElement, true).width,
     } as CSSProperties,
     onWheel: activationTrigger === ActivationTrigger.Pointer ? undefined : handleWheel,
     onMouseDown: handleMouseDown,

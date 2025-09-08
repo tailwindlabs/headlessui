@@ -7,7 +7,7 @@ function computeSize(element: HTMLElement | null) {
   return { width, height }
 }
 
-export function useElementSize(element: HTMLElement | null, unit = false) {
+export function useElementSize(enabled: boolean, element: HTMLElement | null, unit = false) {
   let [identity, forceRerender] = useReducer(() => ({}), {})
 
   // When the element changes during a re-render, we want to make sure we

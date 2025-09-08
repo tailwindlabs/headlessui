@@ -581,7 +581,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(buttonElement, true).width,
+      '--button-width': useElementSize(visible, buttonElement, true).width,
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
