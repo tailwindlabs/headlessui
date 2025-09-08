@@ -1,4 +1,5 @@
-import { useMemo, useReducer } from 'react'
+import { useState } from 'react'
+import { disposables } from '../utils/disposables'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 function computeSize(element: HTMLElement | null) {
@@ -8,25 +9,35 @@ function computeSize(element: HTMLElement | null) {
 }
 
 export function useElementSize(enabled: boolean, element: HTMLElement | null, unit = false) {
-  let [identity, forceRerender] = useReducer(() => ({}), {})
-
-  // When the element changes during a re-render, we want to make sure we
-  // compute the correct size as soon as possible. However, once the element is
-  // stable, we also want to watch for changes to the element. The `identity`
-  // state can be used to recompute the size.
-  let size = useMemo(() => computeSize(element), [element, identity])
+  let [size, setSize] = useState(() => computeSize(element))
 
   useIsoMorphicEffect(() => {
     if (!element) return
+    if (!enabled) return
 
-    // Trigger a re-render whenever the element resizes
-    let observer = new ResizeObserver(forceRerender)
-    observer.observe(element)
+    let d = disposables()
+
+    // requestAnimationFrame loop to catch any visual changes such as a
+    // `transform: scale` which wouldn't trigger a ResizeObserver
+    d.requestAnimationFrame(function run() {
+      d.requestAnimationFrame(run)
+
+      setSize((current) => {
+        let newSize = computeSize(element)
+
+        if (newSize.width === current.width && newSize.height === current.height) {
+          // Return the old object to avoid re-renders
+          return current
+        }
+
+        return newSize
+      })
+    })
 
     return () => {
-      observer.disconnect()
+      d.dispose()
     }
-  }, [element])
+  }, [element, enabled])
 
   if (unit) {
     return {
