@@ -851,7 +851,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(button, true).width,
+      '--button-width': useElementSize(visible, button, true).width,
     } as React.CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
