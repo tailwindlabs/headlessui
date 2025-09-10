@@ -29,6 +29,7 @@ import {
   RenderStrategy,
   compact,
   forwardRefWithAs,
+  isFragment,
   useRender,
   type HasDisplayName,
   type PropsForFeatures,
@@ -71,7 +72,7 @@ function shouldForwardRef<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
         props.leaveTo
     ) ||
     // If the `as` prop is not a Fragment
-    (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment ||
+    !isFragment(props.as ?? DEFAULT_TRANSITION_CHILD_TAG) ||
     // If we have a single child, then we can forward the ref directly
     React.Children.count(props.children) === 1
   )
