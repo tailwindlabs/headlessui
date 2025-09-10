@@ -181,11 +181,12 @@ function _render<TTag extends ElementType, TSlot>(
     }
   }
 
-  if (Component === Fragment) {
+  if (isFragment(Component)) {
     if (Object.keys(compact(rest)).length > 0 || Object.keys(compact(dataAttributes)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
-        (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
+        (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) ||
+        isFragmentInstance(resolvedChildren)
       ) {
         if (Object.keys(compact(rest)).length > 0) {
           throw new Error(
@@ -270,8 +271,8 @@ function _render<TTag extends ElementType, TSlot>(
     Object.assign(
       {},
       omit(rest, ['ref']),
-      Component !== Fragment && refRelatedProps,
-      Component !== Fragment && dataAttributes
+      !isFragment(Component) && refRelatedProps,
+      !isFragment(Component) && dataAttributes
     ),
     resolvedChildren
   )
@@ -464,4 +465,12 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
 function getElementRef(element: React.ReactElement) {
   // @ts-expect-error
   return React.version.split('.')[0] >= '19' ? element.props.ref : element.ref
+}
+
+export function isFragment(element: any): element is typeof Fragment {
+  return element === Fragment || element === Symbol.for('react.fragment')
+}
+
+export function isFragmentInstance(element: React.ReactElement): boolean {
+  return isFragment(element.type)
 }

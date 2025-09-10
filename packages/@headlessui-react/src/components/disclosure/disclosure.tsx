@@ -41,6 +41,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import {
   RenderFeatures,
   forwardRefWithAs,
+  isFragment,
   mergeProps,
   useRender,
   type HasDisplayName,
@@ -188,9 +189,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
       (ref) => {
         internalDisclosureRef.current = ref
       },
-      props.as === undefined ||
-        // @ts-expect-error The `as` prop _can_ be a Fragment
-        props.as === Fragment
+      props.as === undefined || isFragment(props.as)
     )
   )
 
