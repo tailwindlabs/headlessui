@@ -185,7 +185,8 @@ function _render<TTag extends ElementType, TSlot>(
     if (Object.keys(compact(rest)).length > 0 || Object.keys(compact(dataAttributes)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
-        (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
+        (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) ||
+        isFragmentInstance(resolvedChildren)
       ) {
         if (Object.keys(compact(rest)).length > 0) {
           throw new Error(
