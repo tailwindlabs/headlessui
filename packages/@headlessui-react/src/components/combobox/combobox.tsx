@@ -39,6 +39,7 @@ import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-q
 import { useRefocusableInput } from '../../hooks/use-refocusable-input'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
@@ -369,17 +370,20 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       onClose,
     }),
     [
+      __demoMode,
+      immediate,
+      optionsPropsRef,
       value,
       defaultValue,
       disabled,
       invalid,
       multiple,
-      theirOnChange,
-      isSelected,
-      __demoMode,
-      machine,
       virtual,
       virtualSlice,
+      theirOnChange,
+      isSelected,
+      calculateIndex,
+      compare,
       onClose,
     ]
   )
@@ -418,16 +422,14 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let activeOptionIndex = useSlice(machine, machine.selectors.activeOptionIndex)
   let activeOption = useSlice(machine, machine.selectors.activeOption)
 
-  let slot = useMemo(() => {
-    return {
-      open: comboboxState === ComboboxState.Open,
-      disabled,
-      invalid,
-      activeIndex: activeOptionIndex,
-      activeOption,
-      value,
-    } satisfies ComboboxRenderPropArg<unknown>
-  }, [data, disabled, value, invalid, activeOption, comboboxState])
+  let slot = useSlot<ComboboxRenderPropArg<unknown>>({
+    open: comboboxState === ComboboxState.Open,
+    disabled,
+    invalid,
+    activeIndex: activeOptionIndex,
+    activeOption,
+    value,
+  })
 
   let [labelledby, LabelProvider] = useLabels()
 
@@ -903,12 +905,14 @@ function InputFn<
 
   let optionsElement = useSlice(machine, (state) => state.optionsElement)
 
-  let open = comboboxState === ComboboxState.Open
-  let invalid = data.invalid
-  let autofocus = autoFocus
-  let slot = useMemo(() => {
-    return { open, disabled, invalid, hover, focus, autofocus } satisfies InputRenderPropArg
-  }, [open, disabled, invalid, hover, focus, autofocus])
+  let slot = useSlot<InputRenderPropArg>({
+    open: comboboxState === ComboboxState.Open,
+    disabled,
+    invalid: data.invalid,
+    hover,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let ourProps = mergeProps(
     {
@@ -1116,17 +1120,15 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      open: comboboxState === ComboboxState.Open,
-      active: active || comboboxState === ComboboxState.Open,
-      disabled,
-      invalid: data.invalid,
-      value: data.value,
-      hover,
-      focus,
-    } satisfies ButtonRenderPropArg
-  }, [data, hover, focus, active, disabled, comboboxState])
+  let slot = useSlot<ButtonRenderPropArg>({
+    open: comboboxState === ComboboxState.Open,
+    active: active || comboboxState === ComboboxState.Open,
+    disabled,
+    invalid: data.invalid,
+    value: data.value,
+    hover,
+    focus,
+  })
   let ourProps = mergeProps(
     {
       ref: buttonRef,
@@ -1294,12 +1296,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let labelledBy = useLabelledBy([buttonElement?.id])
 
-  let slot = useMemo(() => {
-    return {
-      open: comboboxState === ComboboxState.Open,
-      option: undefined,
-    } satisfies OptionsRenderPropArg
-  }, [comboboxState])
+  let slot = useSlot<OptionsRenderPropArg>({
+    open: comboboxState === ComboboxState.Open,
+    option: undefined,
+  })
 
   // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
   // we want to make sure that the current activation trigger is set to pointer.
@@ -1580,14 +1580,12 @@ function OptionFn<
     machine.actions.goToOption({ focus: Focus.Nothing })
   })
 
-  let slot = useMemo(() => {
-    return {
-      active,
-      focus: active,
-      selected,
-      disabled,
-    } satisfies OptionRenderPropArg
-  }, [active, selected, disabled])
+  let slot = useSlot<OptionRenderPropArg>({
+    active,
+    focus: active,
+    selected,
+    disabled,
+  })
 
   let ourProps = {
     id,

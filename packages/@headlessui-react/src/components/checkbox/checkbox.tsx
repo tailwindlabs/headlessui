@@ -4,7 +4,6 @@ import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import React, {
   useCallback,
-  useMemo,
   useState,
   type ElementType,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -17,6 +16,7 @@ import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
+import { useSlot } from '../../hooks/use-slot'
 import { useDisabled } from '../../internal/disabled'
 import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
@@ -159,18 +159,16 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     pressProps
   )
 
-  let slot = useMemo(() => {
-    return {
-      checked,
-      disabled,
-      hover,
-      focus,
-      active,
-      indeterminate,
-      changing,
-      autofocus: autoFocus,
-    } satisfies CheckboxRenderPropArg
-  }, [checked, indeterminate, disabled, hover, focus, active, changing, autoFocus])
+  let slot = useSlot<CheckboxRenderPropArg>({
+    checked,
+    disabled,
+    hover,
+    focus,
+    active,
+    indeterminate,
+    changing,
+    autofocus: autoFocus,
+  })
 
   let reset = useCallback(() => {
     if (defaultChecked === undefined) return

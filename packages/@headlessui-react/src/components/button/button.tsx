@@ -2,8 +2,9 @@
 
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
-import { useMemo, type ElementType, type Ref } from 'react'
+import { type ElementType, type Ref } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
+import { useSlot } from '../../hooks/use-slot'
 import { useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
 import {
@@ -59,9 +60,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     pressProps
   )
 
-  let slot = useMemo(() => {
-    return { disabled, hover, focus, active, autofocus: autoFocus } satisfies ButtonRenderPropArg
-  }, [disabled, hover, focus, active, autoFocus])
+  let slot = useSlot<ButtonRenderPropArg>({ disabled, hover, focus, active, autofocus: autoFocus })
 
   let render = useRender()
 

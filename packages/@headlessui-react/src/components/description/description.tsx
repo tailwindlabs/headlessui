@@ -12,6 +12,7 @@ import React, {
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
@@ -117,8 +118,7 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let disabled = providedDisabled || false
-  let slot = useMemo(() => ({ ...context.slot, disabled }), [context.slot, disabled])
+  let slot = useSlot({ ...context.slot, disabled: providedDisabled || false })
   let ourProps = { ref: descriptionRef, ...context.props, id }
 
   let render = useRender()

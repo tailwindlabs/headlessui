@@ -22,6 +22,7 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { FormFields } from '../../internal/form-fields'
@@ -209,17 +210,15 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      checked,
-      disabled,
-      hover,
-      focus,
-      active,
-      autofocus: autoFocus,
-      changing,
-    } satisfies SwitchRenderPropArg
-  }, [checked, hover, focus, active, disabled, changing, autoFocus])
+  let slot = useSlot<SwitchRenderPropArg>({
+    checked,
+    disabled,
+    hover,
+    focus,
+    active,
+    autofocus: autoFocus,
+    changing,
+  })
 
   let ourProps = mergeProps(
     {
