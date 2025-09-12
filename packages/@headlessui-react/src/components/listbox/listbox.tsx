@@ -37,6 +37,7 @@ import { useOwnerDocument } from '../../hooks/use-owner'
 import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -212,32 +213,18 @@ function ListboxFn<
     [value]
   )
 
-  let data = useMemo<_Data>(
-    () => ({
-      value,
-      disabled,
-      invalid,
-      mode: multiple ? ValueMode.Multi : ValueMode.Single,
-      orientation,
-      onChange: theirOnChange,
-      compare,
-      isSelected,
-      optionsPropsRef,
-      listRef,
-    }),
-    [
-      value,
-      disabled,
-      invalid,
-      multiple,
-      orientation,
-      theirOnChange,
-      compare,
-      isSelected,
-      optionsPropsRef,
-      listRef,
-    ]
-  )
+  let data = useSlot<_Data>({
+    value,
+    disabled,
+    invalid,
+    mode: multiple ? ValueMode.Multi : ValueMode.Single,
+    orientation,
+    onChange: theirOnChange,
+    compare,
+    isSelected,
+    optionsPropsRef,
+    listRef,
+  })
 
   useIsoMorphicEffect(() => {
     machine.state.dataRef.current = data
@@ -266,14 +253,12 @@ function ListboxFn<
     }
   })
 
-  let slot = useMemo(() => {
-    return {
-      open: listboxState === ListboxStates.Open,
-      disabled,
-      invalid,
-      value,
-    } satisfies ListboxRenderPropArg<TType>
-  }, [listboxState, disabled, invalid, value])
+  let slot = useSlot<ListboxRenderPropArg<TType>>({
+    open: listboxState === ListboxStates.Open,
+    disabled,
+    invalid,
+    value,
+  })
 
   let [labelledby, LabelProvider] = useLabels({ inherit: true })
 
@@ -469,18 +454,16 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      open: listboxState === ListboxStates.Open,
-      active: active || listboxState === ListboxStates.Open,
-      disabled,
-      invalid: data.invalid,
-      value: data.value,
-      hover,
-      focus,
-      autofocus: autoFocus,
-    } satisfies ButtonRenderPropArg
-  }, [listboxState, data.value, disabled, hover, focus, active, data.invalid, autoFocus])
+  let slot = useSlot<ButtonRenderPropArg>({
+    open: listboxState === ListboxStates.Open,
+    active: active || listboxState === ListboxStates.Open,
+    disabled,
+    invalid: data.invalid,
+    value: data.value,
+    hover,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let open = useSlice(machine, (state) => state.listboxState === ListboxStates.Open)
   let ourProps = mergeProps(
@@ -772,11 +755,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let labelledby = useSlice(machine, (state) => state.buttonElement?.id)
 
-  let slot = useMemo(() => {
-    return {
-      open: listboxState === ListboxStates.Open,
-    } satisfies OptionsRenderPropArg
-  }, [listboxState])
+  let slot = useSlot<OptionsRenderPropArg>({
+    open: listboxState === ListboxStates.Open,
+  })
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,
@@ -953,15 +934,13 @@ function OptionFn<
     machine.actions.goToOption({ focus: Focus.Nothing })
   })
 
-  let slot = useMemo(() => {
-    return {
-      active,
-      focus: active,
-      selected,
-      disabled,
-      selectedOption: selected && usedInSelectedOption,
-    } satisfies OptionRenderPropArg
-  }, [active, selected, disabled, usedInSelectedOption])
+  let slot = useSlot<OptionRenderPropArg>({
+    active,
+    focus: active,
+    selected,
+    disabled,
+    selectedOption: selected && usedInSelectedOption,
+  })
   let ourProps = !usedInSelectedOption
     ? {
         id,
@@ -1027,7 +1006,7 @@ function SelectedFn<TTag extends ElementType = typeof DEFAULT_SELECTED_OPTION_TA
   let selectedRef = useSyncRefs(ref)
   let ourProps = { ref: selectedRef }
   let data = useData('ListboxSelectedOption')
-  let slot = useMemo(() => ({}) satisfies SelectedOptionRenderPropArg, [])
+  let slot = useSlot<SelectedOptionRenderPropArg>({})
 
   let shouldShowPlaceholder =
     data.value === undefined ||

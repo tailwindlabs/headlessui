@@ -36,6 +36,7 @@ import {
   useRootContainers,
 } from '../../hooks/use-root-containers'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
+import { useSlot } from '../../hooks/use-slot'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
@@ -233,12 +234,10 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     }
   })
 
-  let slot = useMemo(() => {
-    return {
-      open: popoverState === PopoverStates.Open,
-      close: machine.actions.refocusableClose,
-    } satisfies PopoverRenderPropArg
-  }, [popoverState, machine])
+  let slot = useSlot<PopoverRenderPropArg>({
+    open: popoverState === PopoverStates.Open,
+    close: machine.actions.refocusableClose,
+  })
 
   let openClosedState = useSlice(
     machine,
@@ -480,16 +479,14 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let visible = popoverState === PopoverStates.Open
-  let slot = useMemo(() => {
-    return {
-      open: visible,
-      active: active || visible,
-      disabled,
-      hover,
-      focus,
-      autofocus: autoFocus,
-    } satisfies ButtonRenderPropArg
-  }, [visible, hover, focus, active, disabled, autoFocus])
+  let slot = useSlot<ButtonRenderPropArg>({
+    open: visible,
+    active: active || visible,
+    disabled,
+    hover,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let type = useResolveButtonType(props, button)
   let ourProps = isWithinPanel
@@ -640,11 +637,9 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     machine.actions.close()
   })
 
-  let slot = useMemo(() => {
-    return {
-      open: popoverState === PopoverStates.Open,
-    } satisfies BackdropRenderPropArg
-  }, [popoverState])
+  let slot = useSlot<BackdropRenderPropArg>({
+    open: popoverState === PopoverStates.Open,
+  })
 
   let ourProps = {
     ref: backdropRef,
@@ -818,12 +813,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     focusIn(internalPanelRef.current, Focus.First)
   }, [__demoMode, focus, internalPanelRef.current, popoverState])
 
-  let slot = useMemo(() => {
-    return {
-      open: popoverState === PopoverStates.Open,
-      close: machine.actions.refocusableClose,
-    } satisfies PanelRenderPropArg
-  }, [popoverState, machine])
+  let slot = useSlot<PanelRenderPropArg>({
+    open: popoverState === PopoverStates.Open,
+    close: machine.actions.refocusableClose,
+  })
 
   let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,
@@ -1053,7 +1046,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     [registerPopover, unregisterPopover, isFocusWithinPopoverGroup, closeOthers]
   )
 
-  let slot = useMemo(() => ({}) satisfies GroupRenderPropArg, [])
+  let slot = useSlot<GroupRenderPropArg>({})
 
   let theirProps = props
   let ourProps = { ref: groupRef }

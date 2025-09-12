@@ -34,6 +34,7 @@ import {
 } from '../../hooks/use-root-containers'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
 import { ResetOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
@@ -274,13 +275,10 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
 
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
     () => [{ dialogState, close, setTitleId, unmount }, state],
-    [dialogState, state, close, setTitleId, unmount]
+    [dialogState, close, setTitleId, unmount, state]
   )
 
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies DialogRenderPropArg,
-    [dialogState]
-  )
+  let slot = useSlot<DialogRenderPropArg>({ open: dialogState === DialogStates.Open })
 
   let ourProps = {
     ref: dialogRef,
@@ -455,10 +453,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let [{ dialogState, unmount }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
 
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies PanelRenderPropArg,
-    [dialogState]
-  )
+  let slot = useSlot<PanelRenderPropArg>({ open: dialogState === DialogStates.Open })
 
   // Prevent the click events inside the Dialog.Panel from bubbling through the React Tree which
   // could submit wrapping <form> elements even if we portalled the Dialog.
@@ -511,10 +506,7 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   let { transition = false, ...theirProps } = props
   let [{ dialogState, unmount }] = useDialogContext('Dialog.Backdrop')
 
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies BackdropRenderPropArg,
-    [dialogState]
-  )
+  let slot = useSlot<BackdropRenderPropArg>({ open: dialogState === DialogStates.Open })
 
   let ourProps = { ref, 'aria-hidden': true }
 
@@ -563,10 +555,7 @@ function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     return () => setTitleId(null)
   }, [id, setTitleId])
 
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies TitleRenderPropArg,
-    [dialogState]
-  )
+  let slot = useSlot<TitleRenderPropArg>({ open: dialogState === DialogStates.Open })
 
   let ourProps = { ref: titleRef, id }
 

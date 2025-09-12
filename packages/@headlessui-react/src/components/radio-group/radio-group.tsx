@@ -22,6 +22,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { FormFields } from '../../internal/form-fields'
@@ -304,7 +305,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     onKeyDown: handleKeyDown,
   }
 
-  let slot = useMemo(() => ({ value }) satisfies RadioGroupRenderPropArg<TType>, [value])
+  let slot = useSlot<RadioGroupRenderPropArg<TType>>({ value })
 
   let reset = useCallback(() => {
     if (defaultValue === undefined) return
@@ -437,16 +438,14 @@ function OptionFn<
     hoverProps
   )
 
-  let slot = useMemo(() => {
-    return {
-      checked,
-      disabled,
-      active: focus,
-      hover,
-      focus,
-      autofocus: autoFocus,
-    } satisfies OptionRenderPropArg
-  }, [checked, disabled, hover, focus, autoFocus])
+  let slot = useSlot<OptionRenderPropArg>({
+    checked,
+    disabled,
+    active: focus,
+    hover,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let render = useRender()
 
@@ -559,9 +558,7 @@ function RadioFn<
     focusProps,
     hoverProps
   )
-  let slot = useMemo(() => {
-    return { checked, disabled, hover, focus, autofocus: autoFocus } satisfies RadioRenderPropArg
-  }, [checked, disabled, hover, focus, autoFocus])
+  let slot = useSlot<RadioRenderPropArg>({ checked, disabled, hover, focus, autofocus: autoFocus })
 
   let render = useRender()
 

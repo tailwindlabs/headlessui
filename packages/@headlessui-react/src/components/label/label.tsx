@@ -13,6 +13,7 @@ import React, {
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
@@ -203,7 +204,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   })
 
   let disabled = providedDisabled || false
-  let slot = useMemo(() => ({ ...context.slot, disabled }), [context.slot, disabled])
+  let slot = useSlot({ ...context.slot, disabled })
 
   let ourProps = {
     ref: labelRef,

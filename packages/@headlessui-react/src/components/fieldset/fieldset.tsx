@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useMemo, type ElementType, type Ref } from 'react'
+import React, { type ElementType, type Ref } from 'react'
 import { useResolvedTag } from '../../hooks/use-resolved-tag'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { DisabledProvider, useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
@@ -34,7 +35,7 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
 
   let [labelledBy, LabelProvider] = useLabels()
 
-  let slot = useMemo(() => ({ disabled }) satisfies FieldsetRenderPropArg, [disabled])
+  let slot = useSlot<FieldsetRenderPropArg>({ disabled })
 
   let ourProps =
     tag === 'fieldset'

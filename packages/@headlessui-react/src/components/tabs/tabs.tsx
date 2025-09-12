@@ -21,6 +21,7 @@ import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
@@ -265,10 +266,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     tabs: [],
     panels: [],
   })
-  let slot = useMemo(
-    () => ({ selectedIndex: state.selectedIndex }) satisfies TabsRenderPropArg,
-    [state.selectedIndex]
-  )
+  let slot = useSlot<TabsRenderPropArg>({ selectedIndex: state.selectedIndex })
   let onChangeRef = useLatestValue(onChange || (() => {}))
   let stableTabsRef = useLatestValue(state.tabs)
 
@@ -377,7 +375,7 @@ function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   let { orientation, selectedIndex } = useData('Tab.List')
   let listRef = useSyncRefs(ref)
 
-  let slot = useMemo(() => ({ selectedIndex }) satisfies ListRenderPropArg, [selectedIndex])
+  let slot = useSlot<ListRenderPropArg>({ selectedIndex })
 
   let theirProps = props
   let ourProps = {
@@ -529,16 +527,14 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      selected,
-      hover,
-      active,
-      focus,
-      autofocus: autoFocus,
-      disabled,
-    } satisfies TabRenderPropArg
-  }, [selected, hover, focus, active, autoFocus, disabled])
+  let slot = useSlot<TabRenderPropArg>({
+    selected,
+    hover,
+    active,
+    focus,
+    autofocus: autoFocus,
+    disabled,
+  })
 
   let ourProps = mergeProps(
     {
@@ -590,7 +586,7 @@ function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   let { selectedIndex } = useData('Tab.Panels')
   let panelsRef = useSyncRefs(ref)
 
-  let slot = useMemo(() => ({ selectedIndex }) satisfies PanelsRenderPropArg, [selectedIndex])
+  let slot = useSlot<PanelsRenderPropArg>({ selectedIndex })
 
   let theirProps = props
   let ourProps = { ref: panelsRef }
@@ -645,7 +641,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let selected = myIndex === selectedIndex
 
   let { isFocusVisible: focus, focusProps } = useFocusRing()
-  let slot = useMemo(() => ({ selected, focus }) satisfies PanelRenderPropArg, [selected, focus])
+  let slot = useSlot<PanelRenderPropArg>({ selected, focus })
 
   let ourProps = mergeProps(
     {

@@ -24,6 +24,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSlot } from '../../hooks/use-slot'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
@@ -225,12 +226,10 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 
-  let slot = useMemo(() => {
-    return {
-      open: disclosureState === DisclosureStates.Open,
-      close,
-    } satisfies DisclosureRenderPropArg
-  }, [disclosureState, close])
+  let slot = useSlot<DisclosureRenderPropArg>({
+    open: disclosureState === DisclosureStates.Open,
+    close,
+  })
 
   let ourProps = {
     ref: disclosureRef,
@@ -371,16 +370,14 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      open: state.disclosureState === DisclosureStates.Open,
-      hover,
-      active,
-      disabled,
-      focus,
-      autofocus: autoFocus,
-    } satisfies ButtonRenderPropArg
-  }, [state, hover, active, focus, disabled, autoFocus])
+  let slot = useSlot<ButtonRenderPropArg>({
+    open: state.disclosureState === DisclosureStates.Open,
+    hover,
+    active,
+    disabled,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let type = useResolveButtonType(props, state.buttonElement)
   let ourProps = isWithinPanel
@@ -487,12 +484,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
       : state.disclosureState === DisclosureStates.Open
   )
 
-  let slot = useMemo(() => {
-    return {
-      open: state.disclosureState === DisclosureStates.Open,
-      close,
-    } satisfies PanelRenderPropArg
-  }, [state.disclosureState, close])
+  let slot = useSlot<PanelRenderPropArg>({
+    open: state.disclosureState === DisclosureStates.Open,
+    close,
+  })
 
   let ourProps = {
     ref: panelRef,

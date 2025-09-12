@@ -2,8 +2,9 @@
 
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
-import { Fragment, useMemo, type ElementType, type Ref } from 'react'
+import { Fragment, type ElementType, type Ref } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
+import { useSlot } from '../../hooks/use-slot'
 import type { Props } from '../../types'
 import {
   forwardRefWithAs,
@@ -42,10 +43,7 @@ function DataInteractiveFn<TTag extends ElementType = typeof DEFAULT_DATA_INTERA
 
   let ourProps = mergeProps({ ref }, focusProps, hoverProps, pressProps)
 
-  let slot = useMemo(
-    () => ({ hover, focus, active }) satisfies DataInteractiveRenderPropArg,
-    [hover, focus, active]
-  )
+  let slot = useSlot<DataInteractiveRenderPropArg>({ hover, focus, active })
 
   let render = useRender()
 

@@ -18,6 +18,7 @@ import React, {
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import {
   FloatingProvider,
@@ -272,7 +273,7 @@ function TooltipFn<TTag extends ElementType = typeof DEFAULT_TOOLTIP_TAG>(
 
   let ourProps = { ref: tooltipRef }
 
-  let slot = useMemo(() => ({}) satisfies TooltipRenderPropArg, [])
+  let slot = useSlot<TooltipRenderPropArg>({})
 
   let data = useMemo<_Data>(
     () => ({
@@ -377,10 +378,7 @@ function TriggerFn<TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
     }
   })
 
-  let slot = useMemo(
-    () => ({ hover, focus, autofocus: autoFocus }) satisfies TriggerRenderPropArg,
-    [hover, focus, autoFocus]
-  )
+  let slot = useSlot<TriggerRenderPropArg>({ hover, focus, autofocus: autoFocus })
   let ourProps = mergeProps(
     {
       ref: triggerRef,
@@ -450,7 +448,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     ...(style ? { style } : {}),
   }
 
-  let slot = useMemo(() => ({}) satisfies PanelRenderPropArg, [])
+  let slot = useSlot<PanelRenderPropArg>({})
 
   let render = useRender()
 

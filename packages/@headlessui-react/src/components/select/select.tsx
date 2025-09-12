@@ -2,9 +2,10 @@
 
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
-import { useMemo, type ElementType, type Ref } from 'react'
+import { type ElementType, type Ref } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useId } from '../../hooks/use-id'
+import { useSlot } from '../../hooks/use-slot'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
@@ -78,16 +79,14 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
     pressProps
   )
 
-  let slot = useMemo(() => {
-    return {
-      disabled,
-      invalid,
-      hover,
-      focus,
-      active,
-      autofocus: autoFocus,
-    } satisfies SelectRenderPropArg
-  }, [disabled, invalid, hover, focus, active, autoFocus])
+  let slot = useSlot<SelectRenderPropArg>({
+    disabled,
+    invalid,
+    hover,
+    focus,
+    active,
+    autofocus: autoFocus,
+  })
 
   let render = useRender()
 

@@ -2,8 +2,9 @@
 
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
-import { useMemo, type ElementType, type Ref } from 'react'
+import { type ElementType, type Ref } from 'react'
 import { useId } from '../../hooks/use-id'
+import { useSlot } from '../../hooks/use-slot'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
@@ -74,9 +75,7 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
     hoverProps
   )
 
-  let slot = useMemo(() => {
-    return { disabled, invalid, hover, focus, autofocus: autoFocus } satisfies InputRenderPropArg
-  }, [disabled, invalid, hover, focus, autoFocus])
+  let slot = useSlot<InputRenderPropArg>({ disabled, invalid, hover, focus, autofocus: autoFocus })
 
   let render = useRender()
 

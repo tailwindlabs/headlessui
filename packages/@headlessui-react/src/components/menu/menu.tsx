@@ -7,7 +7,6 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -30,6 +29,7 @@ import { useOwnerDocument } from '../../hooks/use-owner'
 import { Action as QuickReleaseAction, useQuickRelease } from '../../hooks/use-quick-release'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
+import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -127,10 +127,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     machine.send({ type: ActionTypes.CloseMenu })
   })
 
-  let slot = useMemo(
-    () => ({ open: menuState === MenuState.Open, close }) satisfies MenuRenderPropArg,
-    [menuState, close]
-  )
+  let slot = useSlot<MenuRenderPropArg>({ open: menuState === MenuState.Open, close })
 
   let ourProps = { ref: menuRef }
 
@@ -298,16 +295,14 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(() => {
-    return {
-      open: menuState === MenuState.Open,
-      active: active || menuState === MenuState.Open,
-      disabled,
-      hover,
-      focus,
-      autofocus: autoFocus,
-    } satisfies ButtonRenderPropArg
-  }, [menuState, hover, focus, active, disabled, autoFocus])
+  let slot = useSlot<ButtonRenderPropArg>({
+    open: menuState === MenuState.Open,
+    active: active || menuState === MenuState.Open,
+    disabled,
+    hover,
+    focus,
+    autofocus: autoFocus,
+  })
 
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
@@ -560,11 +555,9 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     }
   })
 
-  let slot = useMemo(() => {
-    return {
-      open: menuState === MenuState.Open,
-    } satisfies ItemsRenderPropArg
-  }, [menuState])
+  let slot = useSlot<ItemsRenderPropArg>({
+    open: menuState === MenuState.Open,
+  })
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant': useSlice(machine, machine.selectors.activeDescendantId),
@@ -722,10 +715,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
 
-  let slot = useMemo(
-    () => ({ active, focus: active, disabled, close }) satisfies ItemRenderPropArg,
-    [active, disabled, close]
-  )
+  let slot = useSlot<ItemRenderPropArg>({ active, focus: active, disabled, close })
   let ourProps = {
     id,
     ref: itemRef,

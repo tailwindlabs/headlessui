@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useMemo, type ElementType, type Ref } from 'react'
+import React, { type ElementType, type Ref } from 'react'
 import { useId } from '../../hooks/use-id'
+import { useSlot } from '../../hooks/use-slot'
 import { DisabledProvider, useDisabled } from '../../internal/disabled'
 import { FormFieldsProvider } from '../../internal/form-fields'
 import { IdProvider } from '../../internal/id'
@@ -36,7 +37,7 @@ function FieldFn<TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(
   let providedDisabled = useDisabled()
   let { disabled = providedDisabled || false, ...theirProps } = props
 
-  let slot = useMemo(() => ({ disabled }) satisfies FieldRenderPropArg, [disabled])
+  let slot = useSlot<FieldRenderPropArg>({ disabled })
 
   let ourProps = {
     ref,
