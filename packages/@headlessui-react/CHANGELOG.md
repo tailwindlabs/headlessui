@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix 'Invalid prop `data-headlessui-state` supplied to `React.Fragment`' warning ([#3788](https://github.com/tailwindlabs/headlessui/pull/3788))
 - Ensure `element` in `ref` callback is always connected when rendering in a `Portal` ([#3789](https://github.com/tailwindlabs/headlessui/pull/3789))
 - Ensure form state is up to date when using uncontrolled components ([#3790](https://github.com/tailwindlabs/headlessui/pull/3790))
+- Ensure `data-open` on `ComboboxInput` is up to date ([#3791](https://github.com/tailwindlabs/headlessui/pull/3791))
 
 ## [2.2.7] - 2025-07-30
 

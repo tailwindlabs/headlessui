@@ -903,16 +903,12 @@ function InputFn<
 
   let optionsElement = useSlice(machine, (state) => state.optionsElement)
 
+  let open = comboboxState === ComboboxState.Open
+  let invalid = data.invalid
+  let autofocus = autoFocus
   let slot = useMemo(() => {
-    return {
-      open: comboboxState === ComboboxState.Open,
-      disabled,
-      invalid: data.invalid,
-      hover,
-      focus,
-      autofocus: autoFocus,
-    } satisfies InputRenderPropArg
-  }, [data, hover, focus, autoFocus, disabled, data.invalid])
+    return { open, disabled, invalid, hover, focus, autofocus } satisfies InputRenderPropArg
+  }, [open, disabled, invalid, hover, focus, autofocus])
 
   let ourProps = mergeProps(
     {
