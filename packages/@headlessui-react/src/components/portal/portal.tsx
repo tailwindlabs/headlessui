@@ -14,15 +14,13 @@ import React, {
   type Ref,
 } from 'react'
 import { createPortal } from 'react-dom'
+import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
-import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
-import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
-import * as DOM from '../../utils/dom'
 import { env } from '../../utils/env'
 import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
@@ -94,58 +92,43 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
   let defaultOwnerDocument = useOwnerDocument(internalPortalRootRef)
   let ownerDocument = incomingOwnerDocument ?? defaultOwnerDocument
   let target = usePortalTarget(ownerDocument)
-  let [element] = useState<HTMLDivElement | null>(() =>
-    env.isServer ? null : ownerDocument?.createElement('div') ?? null
-  )
   let parent = useContext(PortalParentContext)
-  let ready = useServerHandoffComplete()
-
-  useIsoMorphicEffect(() => {
-    if (!target || !element) return
-
-    // Element already exists in target, always calling target.appendChild(element) will cause a
-    // brief unmount/remount.
-    if (!target.contains(element)) {
-      element.setAttribute('data-headlessui-portal', '')
-      target.appendChild(element)
-    }
-  }, [target, element])
-
-  useIsoMorphicEffect(() => {
-    if (!element) return
-    if (!parent) return
-
-    return parent.register(element)
-  }, [parent, element])
+  let d = useDisposables()
+  let render = useRender()
 
   useOnUnmount(() => {
-    if (!target || !element) return
+    if (!target) return
 
-    if (DOM.isNode(element) && target.contains(element)) {
-      target.removeChild(element)
-    }
-
+    // Cleanup the portal root when all portals are unmounted
     if (target.childNodes.length <= 0) {
       target.parentElement?.removeChild(target)
     }
   })
 
-  let render = useRender()
-  if (!ready) return null
-
   let ourProps = { ref: portalRef }
 
-  return !target || !element
+  return !target
     ? null
     : createPortal(
-        render({
-          ourProps,
-          theirProps,
-          slot: {},
-          defaultTag: DEFAULT_PORTAL_TAG,
-          name: 'Portal',
-        }),
-        element
+        <div
+          data-headlessui-portal=""
+          ref={(el) => {
+            d.dispose()
+
+            if (parent && el) {
+              d.add(parent.register(el))
+            }
+          }}
+        >
+          {render({
+            ourProps,
+            theirProps,
+            slot: {},
+            defaultTag: DEFAULT_PORTAL_TAG,
+            name: 'Portal',
+          })}
+        </div>,
+        target
       )
 })
 
