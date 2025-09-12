@@ -118,8 +118,7 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let disabled = providedDisabled || false
-  let slot = useSlot({ ...context.slot, disabled })
+  let slot = useSlot({ ...context.slot, disabled: providedDisabled || false })
   let ourProps = { ref: descriptionRef, ...context.props, id }
 
   let render = useRender()

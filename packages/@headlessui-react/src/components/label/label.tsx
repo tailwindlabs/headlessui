@@ -203,8 +203,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     }
   })
 
-  let disabled = providedDisabled || false
-  let slot = useSlot({ ...context.slot, disabled })
+  let slot = useSlot({ ...context.slot, disabled: providedDisabled || false })
 
   let ourProps = {
     ref: labelRef,
