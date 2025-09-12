@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useEvent } from './use-event'
 
 export function useControllable<T>(
@@ -33,7 +34,11 @@ export function useControllable<T>(
       if (isControlled) {
         return onChange?.(value)
       } else {
-        setInternalValue(value)
+        // Ensure internal state is up to date with the value, before calling
+        // onChange. This allows you to submit forms as part of the `onChange`
+        // and gives enough time to update the form field value(s).
+        flushSync(() => setInternalValue(value))
+
         return onChange?.(value)
       }
     }),
