@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.2.8] - 2025-09-12
+
 ### Fixed
 
 - Ensure we are not freezing data when the `static` prop is used ([#3779](https://github.com/tailwindlabs/headlessui/pull/3779))
@@ -883,7 +887,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.7...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.8...HEAD
+[2.2.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.7...@headlessui/react@v2.2.8
 [2.2.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.6...@headlessui/react@v2.2.7
 [2.2.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.5...@headlessui/react@v2.2.6
 [2.2.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.4...@headlessui/react@v2.2.5
