@@ -143,12 +143,12 @@ export class PopoverMachine extends Machine<State, Actions> {
       if (!state.button) return false
       if (!state.panel) return false
 
-      let body = getOwnerDocument(state.button)?.body ?? document.body
+      let ownerDocument = getOwnerDocument(state.button) ?? document
 
       // We are part of a different "root" tree, so therefore we can consider it portalled. This is a
       // heuristic because 3rd party tools could use some form of portal, typically rendered at the
       // end of the body but we don't have an actual reference to that.
-      for (let root of body.querySelectorAll('body > *')) {
+      for (let root of ownerDocument.querySelectorAll('body > *')) {
         if (Number(root?.contains(state.button)) ^ Number(root?.contains(state.panel))) {
           return true
         }
@@ -160,7 +160,7 @@ export class PopoverMachine extends Machine<State, Actions> {
       // portalled or not because we can follow the default tab order. But if they
       // are not, then we can consider it being portalled so that we can ensure
       // that tab and shift+tab (hopefully) go to the correct spot.
-      let elements = getFocusableElements(body)
+      let elements = getFocusableElements(ownerDocument)
       let buttonIdx = elements.indexOf(state.button)
 
       let beforeIdx = (buttonIdx + elements.length - 1) % elements.length
