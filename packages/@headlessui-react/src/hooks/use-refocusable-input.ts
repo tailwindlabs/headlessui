@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import * as DOM from '../utils/dom'
+import { isActiveElement } from '../utils/owner'
 import { useEvent } from './use-event'
 import { useEventListener } from './use-event-listener'
 
@@ -30,7 +31,7 @@ export function useRefocusableInput(input: HTMLInputElement | null) {
 
   return useEvent(() => {
     // If the input is already focused, we don't need to do anything
-    if (document.activeElement === input) return
+    if (isActiveElement(input)) return
 
     if (!DOM.isHTMLInputElement(input)) return
     if (!input.isConnected) return

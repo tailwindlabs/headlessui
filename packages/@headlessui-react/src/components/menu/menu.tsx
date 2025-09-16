@@ -60,6 +60,7 @@ import {
   restoreFocusIfNecessary,
 } from '../../utils/focus-management'
 import { match } from '../../utils/match'
+import { isActiveElement } from '../../utils/owner'
 import {
   RenderFeatures,
   forwardRefWithAs,
@@ -453,7 +454,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     let container = localItemsElement
     if (!container) return
     if (menuState !== MenuState.Open) return
-    if (container === ownerDocument?.activeElement) return
+    if (isActiveElement(container)) return
 
     container.focus({ preventScroll: true })
   }, [menuState, localItemsElement, ownerDocument])

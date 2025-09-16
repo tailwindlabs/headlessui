@@ -2,7 +2,7 @@ import type { MutableRefObject } from 'react'
 import { disposables } from './disposables'
 import * as DOM from './dom'
 import { match } from './match'
-import { getOwnerDocument } from './owner'
+import { getActiveElement, getOwnerDocument, getRootNode } from './owner'
 
 // Credit:
 //  - https://stackoverflow.com/a/30753870
@@ -136,12 +136,13 @@ export function isFocusableElement(
 }
 
 export function restoreFocusIfNecessary(element: HTMLElement | null) {
-  let ownerDocument = getOwnerDocument(element)
   disposables().nextFrame(() => {
+    let activeElement = getActiveElement(element)
+
     if (
-      ownerDocument &&
-      DOM.isHTMLorSVGElement(ownerDocument.activeElement) &&
-      !isFocusableElement(ownerDocument.activeElement, FocusableMode.Strict)
+      activeElement &&
+      DOM.isHTMLorSVGElement(activeElement) &&
+      !isFocusableElement(activeElement, FocusableMode.Strict)
     ) {
       focusElement(element)
     }
@@ -236,11 +237,11 @@ export function focusIn(
     skipElements: (HTMLElement | MutableRefObject<HTMLElement | null>)[]
   }> = {}
 ) {
-  let ownerDocument = Array.isArray(container)
+  let root = Array.isArray(container)
     ? container.length > 0
-      ? container[0].ownerDocument
+      ? getRootNode(container[0])
       : document
-    : container.ownerDocument
+    : getRootNode(container)
 
   let elements = Array.isArray(container)
     ? sorted
@@ -262,7 +263,7 @@ export function focusIn(
     )
   }
 
-  relativeTo = relativeTo ?? (ownerDocument.activeElement as HTMLElement)
+  relativeTo = relativeTo ?? (root?.activeElement as HTMLElement)
 
   let direction = (() => {
     if (focus & (Focus.First | Focus.Next)) return Direction.Next
@@ -305,7 +306,7 @@ export function focusIn(
 
     // Try the next one in line
     offset += direction
-  } while (next !== ownerDocument.activeElement)
+  } while (next !== getActiveElement(next))
 
   // By default if you <Tab> to a text input or a textarea, the browser will
   // select all the text once the focus is inside these DOM Nodes. However,

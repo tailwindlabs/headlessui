@@ -71,7 +71,7 @@ import {
 } from '../../utils/focus-management'
 import { attemptSubmit } from '../../utils/form'
 import { match } from '../../utils/match'
-import { getOwnerDocument } from '../../utils/owner'
+import { isActiveElement } from '../../utils/owner'
 import {
   RenderFeatures,
   forwardRefWithAs,
@@ -666,7 +666,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     let container = optionsElement
     if (!container) return
     if (listboxState !== ListboxStates.Open) return
-    if (container === getOwnerDocument(container)?.activeElement) return
+    if (isActiveElement(container)) return
 
     container?.focus({ preventScroll: true })
   }, [listboxState, optionsElement])

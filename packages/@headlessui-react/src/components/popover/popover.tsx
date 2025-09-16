@@ -70,7 +70,7 @@ import {
 } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { getOwnerDocument } from '../../utils/owner'
+import { getActiveElement, getRootNode } from '../../utils/owner'
 import {
   RenderFeatures,
   forwardRefWithAs,
@@ -173,11 +173,11 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   let groupContext = usePopoverGroupContext()
   let registerPopover = groupContext?.registerPopover
   let isFocusWithinPopoverGroup = useEvent(() => {
+    let activeElement = getActiveElement(internalPopoverRef.current ?? button)
+
     return (
       groupContext?.isFocusWithinPopoverGroup() ??
-      (ownerDocument?.activeElement &&
-        (button?.contains(ownerDocument.activeElement) ||
-          panel?.contains(ownerDocument.activeElement)))
+      (activeElement && (button?.contains(activeElement) || panel?.contains(activeElement)))
     )
   })
 
@@ -392,7 +392,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
-  let ownerDocument = useOwnerDocument(internalButtonRef)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (isWithinPanel) {
@@ -426,10 +425,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
             return closeOthers?.(machine.state.buttonId!)
           }
           if (!internalButtonRef.current) return
-          if (
-            ownerDocument?.activeElement &&
-            !internalButtonRef.current.contains(ownerDocument.activeElement)
-          ) {
+          let activeElement = getActiveElement(internalButtonRef.current)
+          if (activeElement && !internalButtonRef.current.contains(activeElement)) {
             return
           }
           event.preventDefault()
@@ -535,7 +532,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
       if (result === FocusResult.Error) {
         focusIn(
-          getFocusableElements().filter((el) => el.dataset.headlessuiFocusGuard !== 'true'),
+          getFocusableElements(getRootNode(machine.state.button)).filter(
+            (el) => el.dataset.headlessuiFocusGuard !== 'true'
+          ),
           match(direction.current, {
             [TabDirection.Forwards]: Focus.Next,
             [TabDirection.Backwards]: Focus.Previous,
@@ -777,10 +776,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
       case Keys.Escape:
         if (machine.state.popoverState !== PopoverStates.Open) return
         if (!internalPanelRef.current) return
-        if (
-          ownerDocument?.activeElement &&
-          !internalPanelRef.current.contains(ownerDocument.activeElement)
-        ) {
+        let activeElement = getActiveElement(internalPanelRef.current)
+        if (activeElement && !internalPanelRef.current.contains(activeElement)) {
           return
         }
         event.preventDefault()
@@ -807,7 +804,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
 
-    let activeElement = ownerDocument?.activeElement as HTMLElement
+    let activeElement = getActiveElement(internalPanelRef.current)
     if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
 
     focusIn(internalPanelRef.current, Focus.First)
@@ -889,7 +886,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         [TabDirection.Forwards]: () => {
           if (!machine.state.button) return
 
-          let elements = getFocusableElements()
+          let root = getRootNode(machine.state.button) ?? document.body
+          let elements = getFocusableElements(root)
 
           let idx = elements.indexOf(machine.state.button)
           let before = elements.slice(0, idx + 1)
@@ -1015,17 +1013,17 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   })
 
   let isFocusWithinPopoverGroup = useEvent(() => {
-    let ownerDocument = getOwnerDocument(internalGroupRef)
-    if (!ownerDocument) return false
-    let element = ownerDocument.activeElement
+    let root = getRootNode(internalGroupRef.current)
+    if (!root) return false
+    let activeElement = getActiveElement(internalGroupRef.current)
 
-    if (internalGroupRef.current?.contains(element)) return true
+    if (internalGroupRef.current?.contains(activeElement)) return true
 
     // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
     return popovers.some((bag) => {
       return (
-        ownerDocument!.getElementById(bag.buttonId.current!)?.contains(element) ||
-        ownerDocument!.getElementById(bag.panelId.current!)?.contains(element)
+        root!.getElementById(bag.buttonId.current!)?.contains(activeElement) ||
+        root!.getElementById(bag.panelId.current!)?.contains(activeElement)
       )
     })
   })

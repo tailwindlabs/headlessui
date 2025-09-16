@@ -67,6 +67,7 @@ import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import * as DOM from '../../utils/dom'
 import { match } from '../../utils/match'
+import { isActiveElement } from '../../utils/owner'
 import { isMobile } from '../../utils/platform'
 import {
   RenderFeatures,
@@ -628,7 +629,7 @@ function InputFn<
         // Bail when the input is not the currently focused element. When it is not the focused
         // element, and we call the `setSelectionRange`, then it will become the focused
         // element which may be unwanted.
-        if (ownerDocument?.activeElement !== input) return
+        if (isActiveElement(input)) return
 
         let { selectionStart, selectionEnd } = input
 
