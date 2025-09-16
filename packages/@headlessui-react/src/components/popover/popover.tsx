@@ -28,7 +28,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useOwnerDocument } from '../../hooks/use-owner'
+import { useOwnerDocument, useRootDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import {
   MainTreeProvider,
@@ -156,7 +156,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     }, [])
   )
 
-  let ownerDocument = useOwnerDocument(internalPopoverRef.current ?? button)
+  let rootDocument = useRootDocument(internalPopoverRef.current ?? button)
 
   let buttonIdRef = useLatestValue(buttonId)
   let panelIdRef = useLatestValue(panelId)
@@ -204,7 +204,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   // Handle focus out
   useEventListener(
-    ownerDocument?.defaultView,
+    rootDocument,
     'focus',
     (event) => {
       if (event.target === window) return
