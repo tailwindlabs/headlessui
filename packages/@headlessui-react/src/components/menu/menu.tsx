@@ -457,7 +457,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     if (isActiveElement(container)) return
 
     container.focus({ preventScroll: true })
-  }, [menuState, localItemsElement, ownerDocument])
+  }, [menuState, localItemsElement])
 
   useTreeWalker(menuState === MenuState.Open, {
     container: localItemsElement,

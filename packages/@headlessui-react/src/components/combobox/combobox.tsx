@@ -553,7 +553,6 @@ function InputFn<
     useFloatingReference(),
     machine.actions.setInputElement
   )
-  let ownerDocument = useOwnerDocument(inputElement)
 
   let [comboboxState, isTyping] = useSlice(machine, (state) => [
     state.comboboxState,
@@ -643,7 +642,7 @@ function InputFn<
         input.setSelectionRange(input.value.length, input.value.length)
       })
     },
-    [currentDisplayValue, comboboxState, ownerDocument, isTyping]
+    [currentDisplayValue, comboboxState, isTyping]
   )
 
   // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes VoiceOver
