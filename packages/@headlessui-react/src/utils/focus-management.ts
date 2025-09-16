@@ -220,8 +220,12 @@ export function sortByDomNode<T>(
   })
 }
 
-export function focusFrom(current: HTMLElement | null, focus: Focus) {
-  return focusIn(getFocusableElements(), focus, { relativeTo: current })
+export function focusFrom(
+  current: HTMLElement | null,
+  focus: Focus,
+  container = current === null ? document.body : getRootNode(current)
+) {
+  return focusIn(getFocusableElements(container), focus, { relativeTo: current })
 }
 
 export function focusIn(
