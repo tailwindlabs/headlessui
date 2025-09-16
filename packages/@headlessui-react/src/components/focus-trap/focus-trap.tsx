@@ -109,7 +109,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     features = FocusTrapFeatures.None
   }
 
-  let ownerDocument = useOwnerDocument(container)
+  let ownerDocument = useOwnerDocument(container.current)
 
   useRestoreFocus(features, { ownerDocument })
   let previousActiveElement = useInitialFocus(features, {

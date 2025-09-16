@@ -748,7 +748,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     setLocalPanelElement
   )
   let portalOwnerDocument = useOwnerDocument(button)
-  let ownerDocument = useOwnerDocument(internalPanelRef)
+  let ownerDocument = useOwnerDocument(internalPanelRef.current)
 
   useIsoMorphicEffect(() => {
     machine.actions.setPanelId(id)

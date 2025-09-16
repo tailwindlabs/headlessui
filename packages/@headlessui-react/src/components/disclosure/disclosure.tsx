@@ -206,7 +206,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   let close = useEvent(
     (focusableElement?: HTMLOrSVGElement | MutableRefObject<HTMLOrSVGElement | null>) => {
       dispatch({ type: ActionTypes.CloseDisclosure })
-      let ownerDocument = getOwnerDocument(internalDisclosureRef)
+      let ownerDocument = getOwnerDocument(internalDisclosureRef.current)
       if (!ownerDocument) return
       if (!buttonId) return
 
