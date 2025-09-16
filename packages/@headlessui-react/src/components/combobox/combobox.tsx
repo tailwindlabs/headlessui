@@ -544,8 +544,6 @@ function InputFn<
     ...theirProps
   } = props
 
-  let [inputElement] = useSlice(machine, (state) => [state.inputElement])
-
   let internalInputRef = useRef<HTMLInputElement | null>(null)
   let inputRef = useSyncRefs(
     internalInputRef,
