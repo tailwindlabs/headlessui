@@ -89,7 +89,7 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
     }),
     ref
   )
-  let defaultOwnerDocument = useOwnerDocument(internalPortalRootRef)
+  let defaultOwnerDocument = useOwnerDocument(internalPortalRootRef.current)
   let ownerDocument = incomingOwnerDocument ?? defaultOwnerDocument
   let target = usePortalTarget(ownerDocument)
   let parent = useContext(PortalParentContext)

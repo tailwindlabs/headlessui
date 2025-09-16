@@ -67,6 +67,7 @@ import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import * as DOM from '../../utils/dom'
 import { match } from '../../utils/match'
+import { isActiveElement } from '../../utils/owner'
 import { isMobile } from '../../utils/platform'
 import {
   RenderFeatures,
@@ -543,8 +544,6 @@ function InputFn<
     ...theirProps
   } = props
 
-  let [inputElement] = useSlice(machine, (state) => [state.inputElement])
-
   let internalInputRef = useRef<HTMLInputElement | null>(null)
   let inputRef = useSyncRefs(
     internalInputRef,
@@ -552,7 +551,6 @@ function InputFn<
     useFloatingReference(),
     machine.actions.setInputElement
   )
-  let ownerDocument = useOwnerDocument(inputElement)
 
   let [comboboxState, isTyping] = useSlice(machine, (state) => [
     state.comboboxState,
@@ -628,7 +626,7 @@ function InputFn<
         // Bail when the input is not the currently focused element. When it is not the focused
         // element, and we call the `setSelectionRange`, then it will become the focused
         // element which may be unwanted.
-        if (ownerDocument?.activeElement !== input) return
+        if (isActiveElement(input)) return
 
         let { selectionStart, selectionEnd } = input
 
@@ -642,7 +640,7 @@ function InputFn<
         input.setSelectionRange(input.value.length, input.value.length)
       })
     },
-    [currentDisplayValue, comboboxState, ownerDocument, isTyping]
+    [currentDisplayValue, comboboxState, isTyping]
   )
 
   // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes VoiceOver

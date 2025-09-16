@@ -25,6 +25,7 @@ import * as DOM from '../../utils/dom'
 import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
+import { isActiveElement } from '../../utils/owner'
 import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
 type Containers =
@@ -108,7 +109,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     features = FocusTrapFeatures.None
   }
 
-  let ownerDocument = useOwnerDocument(container)
+  let ownerDocument = useOwnerDocument(container.current)
 
   useRestoreFocus(features, { ownerDocument })
   let previousActiveElement = useInitialFocus(features, {
@@ -288,7 +289,7 @@ function useRestoreFocus(
   useWatch(() => {
     if (enabled) return
 
-    if (ownerDocument?.activeElement === ownerDocument?.body) {
+    if (isActiveElement(ownerDocument?.body)) {
       focusElement(getRestoreElement())
     }
   }, [enabled])

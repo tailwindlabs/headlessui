@@ -3,7 +3,6 @@ import { Hidden, HiddenFeatures } from '../internal/hidden'
 import * as DOM from '../utils/dom'
 import { getOwnerDocument } from '../utils/owner'
 import { useEvent } from './use-event'
-import { useOwnerDocument } from './use-owner'
 
 export function useRootContainers({
   defaultContainers = [],
@@ -16,9 +15,8 @@ export function useRootContainers({
   portals?: MutableRefObject<Element[]>
   mainTreeNode?: Element | null
 } = {}) {
-  let ownerDocument = useOwnerDocument(mainTreeNode)
-
   let resolveContainers = useEvent(() => {
+    let ownerDocument = getOwnerDocument(mainTreeNode)
     let containers: Element[] = []
 
     // Resolve default containers

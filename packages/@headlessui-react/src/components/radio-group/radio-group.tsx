@@ -32,7 +32,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit } from '../../utils/form'
 import { match } from '../../utils/match'
-import { getOwnerDocument } from '../../utils/owner'
+import { isActiveElement } from '../../utils/owner'
 import {
   forwardRefWithAs,
   mergeProps,
@@ -224,8 +224,6 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     let container = internalRadioGroupRef.current
     if (!container) return
 
-    let ownerDocument = getOwnerDocument(container)
-
     let all = options
       .filter((option) => option.propsRef.current.disabled === false)
       .map((radio) => radio.element.current) as HTMLElement[]
@@ -243,9 +241,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
           let result = focusIn(all, Focus.Previous | Focus.WrapAround)
 
           if (result === FocusResult.Success) {
-            let activeOption = options.find(
-              (option) => option.element.current === ownerDocument?.activeElement
-            )
+            let activeOption = options.find((option) => isActiveElement(option.element.current))
             if (activeOption) triggerChange(activeOption.propsRef.current.value)
           }
         }
@@ -260,9 +256,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
           let result = focusIn(all, Focus.Next | Focus.WrapAround)
 
           if (result === FocusResult.Success) {
-            let activeOption = options.find(
-              (option) => option.element.current === ownerDocument?.activeElement
-            )
+            let activeOption = options.find((option) => isActiveElement(option.element.current))
             if (activeOption) triggerChange(activeOption.propsRef.current.value)
           }
         }
@@ -273,9 +267,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
           event.preventDefault()
           event.stopPropagation()
 
-          let activeOption = options.find(
-            (option) => option.element.current === ownerDocument?.activeElement
-          )
+          let activeOption = options.find((option) => isActiveElement(option.element.current))
           if (activeOption) triggerChange(activeOption.propsRef.current.value)
         }
         break

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Improve focus management in shadow DOM roots ([#3794](https://github.com/tailwindlabs/headlessui/pull/3794))
 
 ## [2.2.8] - 2025-09-12
 

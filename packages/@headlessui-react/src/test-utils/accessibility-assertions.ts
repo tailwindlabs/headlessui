@@ -1,4 +1,5 @@
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
+import { getActiveElement } from '../utils/owner'
 
 function assertNever(x: never): never {
   throw new Error('Unexpected object: ' + x)
@@ -1814,9 +1815,9 @@ export function assertActiveElement(element: HTMLElement | null) {
       //   "Cannot assign to read only property 'Symbol(impl)' of object '[object DOMImplementation]'"
       // when this assertion fails.
       // Therefore we will catch it when something goes wrong, and just look at the outerHTML string.
-      expect(document.activeElement).toBe(element)
+      expect(getActiveElement(element)).toBe(element)
     } catch (err) {
-      expect(document.activeElement?.outerHTML).toBe(element.outerHTML)
+      expect(getActiveElement(element)?.outerHTML).toBe(element.outerHTML)
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertActiveElement)
@@ -1827,7 +1828,7 @@ export function assertActiveElement(element: HTMLElement | null) {
 export function assertContainsActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-    expect(element.contains(document.activeElement)).toBe(true)
+    expect(element.contains(getActiveElement(element))).toBe(true)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertContainsActiveElement)
     throw err

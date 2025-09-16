@@ -160,7 +160,7 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
   let internalDialogRef = useRef<HTMLElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
-  let ownerDocument = useOwnerDocument(internalDialogRef)
+  let ownerDocument = useOwnerDocument(internalDialogRef.current)
 
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
 
