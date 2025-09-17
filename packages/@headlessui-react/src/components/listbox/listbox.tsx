@@ -15,8 +15,6 @@ import React, {
   type ElementType,
   type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
-  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -27,6 +25,7 @@ import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
+import { useHandleToggle } from '../../hooks/use-handle-toggle'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -59,7 +58,6 @@ import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-cl
 import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import * as DOM from '../../utils/dom'
@@ -84,7 +82,6 @@ import {
 import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
-import { MouseButton } from '../mouse'
 import { Portal } from '../portal/portal'
 import { ActionTypes, ActivationTrigger, ListboxStates, ValueMode } from './listbox-machine'
 import { ListboxContext, useListboxMachine, useListboxMachineContext } from './listbox-machine-glue'
@@ -420,9 +417,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let toggle = useEvent((event: ReactPointerEvent | ReactMouseEvent) => {
-    if (event.button !== MouseButton.Left) return // Only handle left clicks
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+  let toggleProps = useHandleToggle((event) => {
     if (machine.state.listboxState === ListboxStates.Open) {
       flushSync(() => machine.actions.closeListbox())
       machine.state.buttonElement?.focus({ preventScroll: true })
@@ -430,18 +425,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       event.preventDefault()
       machine.actions.openListbox({ focus: Focus.Nothing })
     }
-  })
-
-  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
-  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
-    pointerTypeRef.current = event.pointerType
-    if (event.pointerType !== 'mouse') return
-    toggle(event)
-  })
-
-  let handleClick = useEvent((event: ReactMouseEvent) => {
-    if (pointerTypeRef.current === 'mouse') return
-    toggle(event)
   })
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
@@ -482,9 +465,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
-      onPointerDown: handlePointerDown,
-      onClick: handleClick,
     },
+    toggleProps,
     focusProps,
     hoverProps,
     pressProps
