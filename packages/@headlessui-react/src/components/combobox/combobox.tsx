@@ -17,7 +17,6 @@ import React, {
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -28,6 +27,7 @@ import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
+import { useHandleToggle } from '../../hooks/use-handle-toggle'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -62,7 +62,6 @@ import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import * as DOM from '../../utils/dom'
@@ -1088,24 +1087,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handlePointerDown = useEvent((event: ReactPointerEvent<HTMLButtonElement>) => {
-    // We use the `pointerdown` event here since it fires before the focus
-    // event, allowing us to cancel the event before focus is moved from the
-    // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
-    // preserving the cursor position and any text selection.
-    event.preventDefault()
-
-    if (isDisabledReactIssue7711(event.currentTarget)) return
-
-    // Since we're using the `mousedown` event instead of a `click` event here
-    // to preserve the focus of the `ComboboxInput`, we need to also check
-    // that the `left` mouse button was clicked.
-    if (event.button === MouseButton.Left) {
-      if (machine.state.comboboxState === ComboboxState.Open) {
-        machine.actions.closeCombobox()
-      } else {
-        machine.actions.openCombobox()
-      }
+  let toggleProps = useHandleToggle(() => {
+    if (machine.state.comboboxState === ComboboxState.Open) {
+      machine.actions.closeCombobox()
+    } else {
+      machine.actions.openCombobox()
     }
 
     // Ensure we focus the input
@@ -1139,9 +1125,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-labelledby': labelledBy,
       disabled: disabled || undefined,
       autoFocus,
-      onPointerDown: handlePointerDown,
       onKeyDown: handleKeyDown,
     },
+    toggleProps,
     focusProps,
     hoverProps,
     pressProps

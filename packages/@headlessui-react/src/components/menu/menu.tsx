@@ -12,7 +12,6 @@ import React, {
   type CSSProperties,
   type ElementType,
   type KeyboardEvent as ReactKeyboardEvent,
-  type PointerEvent as ReactPointerEvent,
   type Ref,
 } from 'react'
 import { flushSync } from 'react-dom'
@@ -20,6 +19,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
+import { useHandleToggle } from '../../hooks/use-handle-toggle'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -48,7 +48,6 @@ import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-cl
 import { stackMachines } from '../../machines/stack-machine'
 import { useSlice } from '../../react-glue'
 import type { Props } from '../../types'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import * as DOM from '../../utils/dom'
@@ -72,7 +71,6 @@ import {
 import { useDescriptions } from '../description/description'
 import { Keys } from '../keyboard'
 import { useLabelContext, useLabels } from '../label/label'
-import { MouseButton } from '../mouse'
 import { Portal } from '../portal/portal'
 import { ActionTypes, ActivationTrigger, MenuState, type MenuItemDataRef } from './menu-machine'
 import { MenuContext, useMenuMachine, useMenuMachineContext } from './menu-machine-glue'
@@ -263,9 +261,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     select: useCallback((target) => target.click(), []),
   })
 
-  let toggle = useEvent((event: ReactPointerEvent) => {
-    if (event.button !== MouseButton.Left) return // Only handle left clicks
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+  let toggleProps = useHandleToggle((event) => {
     if (disabled) return
     if (menuState === MenuState.Open) {
       flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
@@ -278,18 +274,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         trigger: ActivationTrigger.Pointer,
       })
     }
-  })
-
-  let pointerTypeRef = useRef<'touch' | 'mouse' | 'pen' | null>(null)
-  let handlePointerDown = useEvent((event: ReactPointerEvent) => {
-    pointerTypeRef.current = event.pointerType
-    if (event.pointerType !== 'mouse') return
-    toggle(event)
-  })
-
-  let handleClick = useEvent((event: ReactPointerEvent) => {
-    if (pointerTypeRef.current === 'mouse') return
-    toggle(event)
   })
 
   let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
@@ -318,9 +302,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
-      onPointerDown: handlePointerDown,
-      onClick: handleClick,
     },
+    toggleProps,
     focusProps,
     hoverProps,
     pressProps
