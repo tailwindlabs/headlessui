@@ -24,7 +24,7 @@ export type MetaFn = (meta: Record<string, any>) => Record<string, any>
 export interface Context<MetaType extends Record<string, any> = any> {
   doc: Document
   d: Disposables
-  meta: MetaType
+  meta: () => MetaType
 }
 
 export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
@@ -62,7 +62,17 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     let ctx = {
       doc,
       d,
-      meta: buildMeta(meta),
+
+      // The moment we `PUSH`, we also `SCROLL_PREVENT`. But a later `PUSH` will
+      // not re-trigger a `SCROLL_PREVENT` because we are already in a locked
+      // state.
+      //
+      // This `meta()` function is called lazily such that a `PUSH` or `POP`
+      // that happens later can update the meta information. Otherwise we would
+      // use stale meta information.
+      meta() {
+        return buildMeta(meta)
+      },
     }
 
     let steps: ScrollLockStep<any>[] = [

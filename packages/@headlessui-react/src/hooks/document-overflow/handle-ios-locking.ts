@@ -15,8 +15,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
   return {
     before({ doc, d, meta }) {
       function inAllowedContainer(el: Element) {
-        return meta.containers
-          .flatMap((resolve) => resolve())
+        return meta()
+          .containers.flatMap((resolve) => resolve())
           .some((container) => container.contains(el))
       }
 
