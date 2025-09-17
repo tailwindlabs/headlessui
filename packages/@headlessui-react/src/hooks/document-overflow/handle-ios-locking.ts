@@ -15,9 +15,15 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
   return {
     before({ doc, d, meta }) {
       function inAllowedContainer(el: Element) {
-        return meta.containers
-          .flatMap((resolve) => resolve())
-          .some((container) => container.contains(el))
+        for (let resolve of meta().containers) {
+          for (let element of resolve()) {
+            if (element.contains(el)) {
+              return true
+            }
+          }
+        }
+
+        return false
       }
 
       d.microTask(() => {
