@@ -9,6 +9,7 @@ interface DocEntry {
   count: number
   d: Disposables
   meta: Set<MetaFn>
+  computedMeta: Record<string, any>
 }
 
 function buildMeta(fns: Iterable<MetaFn>) {
@@ -39,10 +40,12 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
       count: 0,
       d: disposables(),
       meta: new Set(),
+      computedMeta: {},
     }
 
     entry.count++
     entry.meta.add(meta)
+    entry.computedMeta = buildMeta(entry.meta)
     this.set(doc, entry)
 
     return this
@@ -53,15 +56,16 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     if (entry) {
       entry.count--
       entry.meta.delete(meta)
+      entry.computedMeta = buildMeta(entry.meta)
     }
 
     return this
   },
 
-  SCROLL_PREVENT({ doc, d, meta }: DocEntry) {
+  SCROLL_PREVENT(entry: DocEntry) {
     let ctx = {
-      doc,
-      d,
+      doc: entry.doc,
+      d: entry.d,
 
       // The moment we `PUSH`, we also `SCROLL_PREVENT`. But a later `PUSH` will
       // not re-trigger a `SCROLL_PREVENT` because we are already in a locked
@@ -71,7 +75,7 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
       // that happens later can update the meta information. Otherwise we would
       // use stale meta information.
       meta() {
-        return buildMeta(meta)
+        return entry.computedMeta
       },
     }
 
