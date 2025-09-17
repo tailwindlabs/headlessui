@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve focus management in shadow DOM roots ([#3794](https://github.com/tailwindlabs/headlessui/pull/3794))
 - Don't accidentally open the `Combobox` when touching the `ComboboxButton` while dragging on mobile ([#3795](https://github.com/tailwindlabs/headlessui/pull/3795))
+- Ensure sibling `Dialog` components are scrollable on mobile ([#3796](https://github.com/tailwindlabs/headlessui/pull/3796))
 
 ## [2.2.8] - 2025-09-12
 
