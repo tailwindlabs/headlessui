@@ -734,6 +734,10 @@ function InputFn<
         })
 
       case Keys.Home:
+        if (machine.state.comboboxState === ComboboxState.Closed) {
+          break
+        }
+
         if (event.shiftKey) {
           break
         }
@@ -748,6 +752,10 @@ function InputFn<
         return machine.actions.goToOption({ focus: Focus.First })
 
       case Keys.End:
+        if (machine.state.comboboxState === ComboboxState.Closed) {
+          break
+        }
+
         if (event.shiftKey) {
           break
         }
