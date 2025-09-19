@@ -76,23 +76,27 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         )
 
         // Rely on overscrollBehavior to prevent scrolling outside of the Dialog.
-        d.addEventListener(doc, 'touchstart', (e) => {
-          if (DOM.isHTMLorSVGElement(e.target) && DOM.hasInlineStyle(e.target)) {
-            if (inAllowedContainer(e.target)) {
-              // Find the root of the allowed containers
-              let rootContainer = e.target
-              while (
-                rootContainer.parentElement &&
-                inAllowedContainer(rootContainer.parentElement)
-              ) {
-                rootContainer = rootContainer.parentElement!
-              }
+        d.group((_d) => {
+          d.addEventListener(doc, 'touchstart', (e) => {
+            _d.dispose()
 
-              d.style(rootContainer, 'overscrollBehavior', 'contain')
-            } else {
-              d.style(e.target, 'touchAction', 'none')
+            if (DOM.isHTMLorSVGElement(e.target) && DOM.hasInlineStyle(e.target)) {
+              if (inAllowedContainer(e.target)) {
+                // Find the root of the allowed containers
+                let rootContainer = e.target
+                while (
+                  rootContainer.parentElement &&
+                  inAllowedContainer(rootContainer.parentElement)
+                ) {
+                  rootContainer = rootContainer.parentElement!
+                }
+
+                _d.style(rootContainer, 'overscrollBehavior', 'contain')
+              } else {
+                _d.style(e.target, 'touchAction', 'none')
+              }
             }
-          }
+          })
         })
 
         d.addEventListener(
