@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Infer `Combobox` type based on `onChange` handler ([#3798](https://github.com/tailwindlabs/headlessui/pull/3798))
 - Allow home/end key default behavior inside `ComboboxInput` when `Combobox` is closed ([#3798](https://github.com/tailwindlabs/headlessui/pull/3798))
 - Ensure interacting with a `Dialog` on iOS works after interacting with a disallowed area ([#3801](https://github.com/tailwindlabs/headlessui/pull/3801))
-- Freeze Listbox values as soon as possible when closing ([#3802](https://github.com/tailwindlabs/headlessui/pull/3802))
+- Freeze Listbox values as soon as a value is selected ([#3802](https://github.com/tailwindlabs/headlessui/pull/3802))
 - Ensure refs are forwarded when freezing data ([#3390](https://github.com/tailwindlabs/headlessui/pull/3390))
 - Do not serialize React components into form fields ([49e9e8e](https://github.com/tailwindlabs/headlessui/commit/49e9e8e54d71b50971af7bc064a62827190e8b36))
 
