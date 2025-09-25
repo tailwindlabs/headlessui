@@ -1,3 +1,5 @@
+import { isValidElement } from 'react'
+
 type Entries = [string, string][]
 
 export function objectToFormEntries(
@@ -31,7 +33,7 @@ function append(entries: Entries, key: string, value: any): void {
     entries.push([key, `${value}`])
   } else if (value === null || value === undefined) {
     entries.push([key, ''])
-  } else {
+  } else if (isPlainObject(value) && !isValidElement(value)) {
     objectToFormEntries(value, key, entries)
   }
 }
@@ -61,4 +63,13 @@ export function attemptSubmit(elementInForm: HTMLElement) {
   // `form.requestSubmit()` function to submit the form instead. We cannot use `form.submit()`
   // because then the `submit` event won't be fired and `onSubmit` listeners won't be fired.
   form.requestSubmit?.()
+}
+
+function isPlainObject<T>(value: T): value is T & Record<keyof T, unknown> {
+  if (Object.prototype.toString.call(value) !== '[object Object]') {
+    return false
+  }
+
+  let prototype = Object.getPrototypeOf(value)
+  return prototype === null || Object.getPrototypeOf(prototype) === null
 }
