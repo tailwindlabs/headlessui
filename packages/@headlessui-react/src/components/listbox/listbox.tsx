@@ -589,13 +589,18 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // the panel whenever necessary.
   let panelEnabled = didButtonMove ? false : visible
 
+  // The moment we picked a value in single value mode, the value should be
+  // frozen immediately.
+  let hasFrozenValue = useSlice(machine, machine.selectors.hasFrozenValue) && transition
+
   // We should freeze when the listbox is visible but "closed". This means that
   // a transition is currently happening and the component is still visible (for
   // the transition) but closed from a functionality perspective.
   //
   // When the `static` prop is used, we should never freeze, because rendering
   // is up to the user.
-  let shouldFreeze = visible && listboxState === ListboxStates.Closed && !props.static
+  let shouldFreeze =
+    (hasFrozenValue || (visible && listboxState === ListboxStates.Closed)) && !props.static
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
@@ -671,14 +676,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         event.preventDefault()
         event.stopPropagation()
 
-        if (machine.state.activeOptionIndex !== null) {
-          let { dataRef } = machine.state.options[machine.state.activeOptionIndex]
-          machine.actions.onChange(dataRef.current.value)
-        }
-        if (data.mode === ValueMode.Single) {
-          flushSync(() => machine.actions.closeListbox())
-          machine.state.buttonElement?.focus({ preventScroll: true })
-        }
+        machine.actions.selectActiveOption()
         break
 
       case match(data.orientation, {
@@ -872,11 +870,7 @@ function OptionFn<
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
     if (disabled) return event.preventDefault()
-    machine.actions.onChange(value)
-    if (data.mode === ValueMode.Single) {
-      flushSync(() => machine.actions.closeListbox())
-      machine.state.buttonElement?.focus({ preventScroll: true })
-    }
+    machine.actions.selectOption(value)
   })
 
   let handleFocus = useEvent(() => {

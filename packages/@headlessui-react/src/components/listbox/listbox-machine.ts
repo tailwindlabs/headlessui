@@ -65,6 +65,8 @@ interface State<T> {
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
 
+  frozenValue: boolean
+
   buttonElement: HTMLButtonElement | null
   optionsElement: HTMLElement | null
 
@@ -82,6 +84,7 @@ export enum ActionTypes {
   GoToOption,
   Search,
   ClearSearch,
+  SelectOption,
 
   RegisterOptions,
   UnregisterOptions,
@@ -137,6 +140,7 @@ type Actions<T> =
     }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
+  | { type: ActionTypes.SelectOption; value: T }
   | {
       type: ActionTypes.RegisterOptions
       options: { id: string; dataRef: ListboxOptionDataRef<T> }[]
@@ -181,6 +185,7 @@ let reducers: {
 
     return {
       ...state,
+      frozenValue: false,
       pendingFocus: action.focus,
       listboxState: ListboxStates.Open,
       activeOptionIndex,
@@ -338,6 +343,22 @@ let reducers: {
     if (state.searchQuery === '') return state
     return { ...state, searchQuery: '' }
   },
+  [ActionTypes.SelectOption](state) {
+    if (state.dataRef.current.mode === ValueMode.Single) {
+      // The moment you select a value in single value mode, we want to close
+      // the listbox and freeze the value to prevent UI flicker.
+      return { ...state, frozenValue: true }
+    }
+
+    // We have an event listener for `SelectOption`, but that will only be
+    // called when the state changed. In multi-value mode we don't have a state
+    // change but we still want to trigger the event listener. Therefore we
+    // return a new object to trigger that event.
+    //
+    // Not the cleanest, but that's why we have this, instead of just returning
+    // `state`.
+    return { ...state }
+  },
   [ActionTypes.RegisterOptions]: (state, action) => {
     let options = state.options.concat(action.options)
 
@@ -436,6 +457,7 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       optionsElement: null,
       pendingShouldSort: false,
       pendingFocus: { focus: Focus.Nothing },
+      frozenValue: false,
       __demoMode,
       buttonPositionState: ElementPositionState.Idle,
     })
@@ -486,6 +508,15 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
           })
         )
       })
+    })
+
+    this.on(ActionTypes.SelectOption, (_, action) => {
+      this.actions.onChange(action.value)
+
+      if (this.state.dataRef.current.mode === ValueMode.Single) {
+        this.actions.closeListbox()
+        this.state.buttonElement?.focus({ preventScroll: true })
+      }
     })
   }
 
@@ -556,22 +587,23 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
     ) => {
       this.send({ type: ActionTypes.OpenListbox, focus })
     },
+
     selectActiveOption: () => {
       if (this.state.activeOptionIndex !== null) {
-        let { dataRef, id } = this.state.options[this.state.activeOptionIndex]
-        this.actions.onChange(dataRef.current.value)
-
-        // It could happen that the `activeOptionIndex` stored in state is actually null,
-        // but we are getting the fallback active option back instead.
-        this.send({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+        let { dataRef } = this.state.options[this.state.activeOptionIndex]
+        this.actions.selectOption(dataRef.current.value)
+      } else {
+        if (this.state.dataRef.current.mode === ValueMode.Single) {
+          this.actions.closeListbox()
+          this.state.buttonElement?.focus({ preventScroll: true })
+        }
       }
     },
-    selectOption: (id: string) => {
-      let option = this.state.options.find((item) => item.id === id)
-      if (!option) return
 
-      this.actions.onChange(option.dataRef.current.value)
+    selectOption: (value: T) => {
+      this.send({ type: ActionTypes.SelectOption, value })
     },
+
     search: (value: string) => {
       this.send({ type: ActionTypes.Search, value })
     },
@@ -598,6 +630,10 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       let options = state.options
 
       return activeOptionIndex !== null ? options[activeOptionIndex]?.id === id : false
+    },
+
+    hasFrozenValue(state: State<T>) {
+      return state.frozenValue
     },
 
     shouldScrollIntoView(state: State<T>, id: string) {
