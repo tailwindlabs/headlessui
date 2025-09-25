@@ -592,11 +592,9 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       if (this.state.activeOptionIndex !== null) {
         let { dataRef } = this.state.options[this.state.activeOptionIndex]
         this.actions.selectOption(dataRef.current.value)
-      } else {
-        if (this.state.dataRef.current.mode === ValueMode.Single) {
-          this.actions.closeListbox()
-          this.state.buttonElement?.focus({ preventScroll: true })
-        }
+      } else if (this.state.dataRef.current.mode === ValueMode.Single) {
+        this.actions.closeListbox()
+        this.state.buttonElement?.focus({ preventScroll: true })
       }
     },
 
