@@ -595,7 +595,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   //
   // When the `static` prop is used, we should never freeze, because rendering
   // is up to the user.
-  let shouldFreeze = visible && listboxState === ListboxStates.Closed && !props.static
+  let shouldFreeze = useSlice(machine, machine.selectors.hasFrozenValue) && !props.static
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
@@ -671,14 +671,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         event.preventDefault()
         event.stopPropagation()
 
-        if (machine.state.activeOptionIndex !== null) {
-          let { dataRef } = machine.state.options[machine.state.activeOptionIndex]
-          machine.actions.onChange(dataRef.current.value)
-        }
-        if (data.mode === ValueMode.Single) {
-          flushSync(() => machine.actions.closeListbox())
-          machine.state.buttonElement?.focus({ preventScroll: true })
-        }
+        machine.actions.selectActiveOption()
         break
 
       case match(data.orientation, {
@@ -872,11 +865,7 @@ function OptionFn<
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
     if (disabled) return event.preventDefault()
-    machine.actions.onChange(value)
-    if (data.mode === ValueMode.Single) {
-      flushSync(() => machine.actions.closeListbox())
-      machine.state.buttonElement?.focus({ preventScroll: true })
-    }
+    machine.actions.selectOption(value)
   })
 
   let handleFocus = useEvent(() => {
