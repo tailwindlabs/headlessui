@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow home/end key default behavior inside `ComboboxInput` when `Combobox` is closed ([#3798](https://github.com/tailwindlabs/headlessui/pull/3798))
 - Ensure interacting with a `Dialog` on iOS works after interacting with a disallowed area ([#3801](https://github.com/tailwindlabs/headlessui/pull/3801))
 - Freeze Listbox values as soon as possible when closing ([#3802](https://github.com/tailwindlabs/headlessui/pull/3802))
+- Ensure refs are forwarded when freezing data ([#3390](https://github.com/tailwindlabs/headlessui/pull/3390))
 
 ## [2.2.8] - 2025-09-12
 
