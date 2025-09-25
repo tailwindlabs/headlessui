@@ -165,7 +165,7 @@ export function useTransition(
       },
       done() {
         if (cancelledRef.current) {
-          if (typeof element.getAnimations === 'function' && element.getAnimations().length > 0) {
+          if (hasPendingTransitions(element)) {
             return
           }
         }
@@ -303,4 +303,12 @@ function prepareTransition(
 
   // Reset the transition to what it was before
   node.style.transition = previous
+}
+
+function hasPendingTransitions(node: HTMLElement) {
+  let animations = node.getAnimations?.() ?? []
+
+  return animations.some((animation) => {
+    return animation instanceof CSSTransition && animation.playState !== 'finished'
+  })
 }
