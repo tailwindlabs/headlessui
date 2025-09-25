@@ -351,7 +351,7 @@ let reducers: {
     }
 
     // We have an event listener for `SelectOption`, but that will only be
-    // called when the state changed. In multi-value mode we don't have a state
+    // called when the state changes. In multi-value mode we don't have a state
     // change but we still want to trigger the event listener. Therefore we
     // return a new object to trigger that event.
     //
