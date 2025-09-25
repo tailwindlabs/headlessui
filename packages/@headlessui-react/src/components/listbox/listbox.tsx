@@ -591,7 +591,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // The moment we picked a value in single value mode, the value should be
   // frozen immediately.
-  let hasFrozenValue = useSlice(machine, machine.selectors.hasFrozenValue) && transition
+  let hasFrozenValue = useSlice(machine, machine.selectors.hasFrozenValue)
 
   // We should freeze when the listbox is visible but "closed". This means that
   // a transition is currently happening and the component is still visible (for
@@ -599,8 +599,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   //
   // When the `static` prop is used, we should never freeze, because rendering
   // is up to the user.
-  let shouldFreeze =
-    (hasFrozenValue || (visible && listboxState === ListboxStates.Closed)) && !props.static
+  let shouldFreeze = hasFrozenValue && !props.static
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
