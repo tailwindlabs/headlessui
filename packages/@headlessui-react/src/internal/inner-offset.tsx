@@ -233,7 +233,7 @@ export function useInnerOffset(
   const initialOverflowRef = React.useRef<SideObject | null>(null)
 
   React.useEffect(() => {
-    if (!enabled) return
+    if (!enabled) return () => {}
 
     function onWheel(e: WheelEvent) {
       if (e.ctrlKey || !el || overflowRef.current == null) {
@@ -283,6 +283,8 @@ export function useInnerOffset(
         el.removeEventListener('wheel', onWheel)
       }
     }
+
+    return () => {}
   }, [enabled, open, elements.floating, overflowRef, scrollRef, onChange])
 
   const floating: ElementProps['floating'] = React.useMemo(
