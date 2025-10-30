@@ -266,7 +266,7 @@ export function useInnerOffset(
     const el = scrollRef?.current || elements.floating
 
     if (open && el) {
-      el.addEventListener('wheel', onWheel)
+      el.addEventListener('wheel', onWheel, { passive: true })
 
       // Wait for the position to be ready.
       requestAnimationFrame(() => {
