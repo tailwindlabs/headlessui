@@ -1,12 +1,10 @@
 import {
   autoUpdate,
   flip as flipMiddleware,
-  inner as innerMiddleware,
   offset as offsetMiddleware,
   shift as shiftMiddleware,
   size as sizeMiddleware,
   useFloating,
-  useInnerOffset,
   useInteractions,
   type InnerProps,
   type UseFloatingReturn,
@@ -17,6 +15,7 @@ import { useDisposables } from '../hooks/use-disposables'
 import { useEvent } from '../hooks/use-event'
 import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
 import * as DOM from '../utils/dom'
+import { inner as innerMiddleware, useInnerOffset } from './inner-offset'
 
 type Align = 'start' | 'end'
 type Placement = 'top' | 'right' | 'bottom' | 'left'
