@@ -2059,7 +2059,7 @@ describe.each([{ virtual: false }, { virtual: false }])(
           return typeof option === 'string'
             ? false
             : typeof option === 'object' && option !== null && 'disabled' in option
-              ? option?.disabled ?? false
+              ? (option?.disabled ?? false)
               : false
         }
 
@@ -4786,7 +4786,7 @@ describe.each([{ virtual: false }, { virtual: false }])('Mouse interactions %s',
         return typeof option === 'string'
           ? false
           : typeof option === 'object' && option !== null && 'disabled' in option
-            ? option?.disabled ?? false
+            ? (option?.disabled ?? false)
             : false
       }
 

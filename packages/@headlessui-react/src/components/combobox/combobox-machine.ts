@@ -660,7 +660,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
         ? null
         : state.virtual
           ? state.virtual.options[activeOptionIndex ?? 0]
-          : state.options[activeOptionIndex]?.dataRef.current.value ?? null
+          : (state.options[activeOptionIndex]?.dataRef.current.value ?? null)
     },
 
     isActive: (state: State<T>, value: T, id: string) => {

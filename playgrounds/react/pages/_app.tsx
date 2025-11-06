@@ -108,8 +108,8 @@ function KeyCaster() {
     function handler(event: KeyboardEvent) {
       setKeys((current) => [
         event.shiftKey && event.key !== 'Shift'
-          ? KeyDisplay[`Shift${event.key}`] ?? event.key
-          : KeyDisplay[event.key] ?? event.key,
+          ? (KeyDisplay[`Shift${event.key}`] ?? event.key)
+          : (KeyDisplay[event.key] ?? event.key),
         ...current,
       ])
       d.setTimeout(() => setKeys((current) => tap(current.slice(), (clone) => clone.pop())), 2000)

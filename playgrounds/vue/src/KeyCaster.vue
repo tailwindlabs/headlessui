@@ -57,8 +57,8 @@ export default defineComponent({
     window.addEventListener('keydown', (event) => {
       keys.value.unshift(
         event.shiftKey && event.key !== 'Shift'
-          ? KeyDisplay[`Shift${event.key}`] ?? event.key
-          : KeyDisplay[event.key] ?? event.key
+          ? (KeyDisplay[`Shift${event.key}`] ?? event.key)
+          : (KeyDisplay[event.key] ?? event.key)
       )
       setTimeout(() => keys.value.pop(), 2000)
     })

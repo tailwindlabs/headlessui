@@ -33,7 +33,7 @@ function getTextContents(element: HTMLElement): string {
   }
 
   // Now that the elements are removed, we can get the innerText such that we can strip the emojis.
-  let value = dropped ? copy.innerText ?? '' : currentInnerText
+  let value = dropped ? (copy.innerText ?? '') : currentInnerText
 
   // Check if it contains some emojis or not, if so, we need to remove them
   // because ideally we work with simple text values.

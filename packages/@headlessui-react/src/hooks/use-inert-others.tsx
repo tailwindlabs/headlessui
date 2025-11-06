@@ -30,7 +30,8 @@ function markInert(element: HTMLElement) {
 function markNotInert(element: HTMLElement) {
   // Decrease counts
   let count = counts.get(element) ?? 1 // Should always exist
-  if (count === 1) counts.delete(element) // We are the last one, so we can delete the count
+  if (count === 1)
+    counts.delete(element) // We are the last one, so we can delete the count
   else counts.set(element, count - 1) // We are not the last one
 
   // Not the last one, so we don't restore the original values (yet)

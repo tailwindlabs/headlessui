@@ -327,7 +327,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let transitionRef = useSyncRefs(
     ...(requiresRef ? [container, ref, setLocalContainerElement] : ref === null ? [] : [ref])
   )
-  let strategy = theirProps.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
+  let strategy = (theirProps.unmount ?? true) ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
 

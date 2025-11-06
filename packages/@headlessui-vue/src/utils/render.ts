@@ -55,7 +55,7 @@ export function render({
   }
 
   if (features & Features.RenderStrategy) {
-    let strategy = props.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
+    let strategy = (props.unmount ?? true) ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
     return match(strategy, {
       [RenderStrategy.Unmount]() {

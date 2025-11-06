@@ -226,7 +226,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
       ref: switchRef,
       role: 'switch',
       type: useResolveButtonType(props, switchElement),
-      tabIndex: props.tabIndex === -1 ? 0 : props.tabIndex ?? 0,
+      tabIndex: props.tabIndex === -1 ? 0 : (props.tabIndex ?? 0),
       'aria-checked': checked,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,

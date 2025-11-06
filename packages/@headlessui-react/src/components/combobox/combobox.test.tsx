@@ -1791,7 +1791,7 @@ describe('Rendering', () => {
               option !== null &&
               'disabled' in option &&
               typeof option.disabled === 'boolean'
-            ? option?.disabled ?? false
+            ? (option?.disabled ?? false)
             : false
       }
       if (virtual) {
@@ -2113,7 +2113,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
               option !== null &&
               'disabled' in option &&
               typeof option.disabled === 'boolean'
-            ? option?.disabled ?? false
+            ? (option?.disabled ?? false)
             : false
       }
       if (virtual) {
@@ -4450,7 +4450,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       return typeof option === 'string'
         ? false
         : typeof option === 'object' && option !== null && 'disabled' in option
-          ? (option?.disabled as boolean | undefined) ?? false
+          ? ((option?.disabled as boolean | undefined) ?? false)
           : false
     }
     if (virtual) {
