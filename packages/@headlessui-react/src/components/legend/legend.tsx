@@ -2,7 +2,7 @@
 
 import React, { type ElementType, type Ref } from 'react'
 import type { Props } from '../../types'
-import { forwardRefWithAs, type HasDisplayName } from '../../utils/render'
+import { forwardRefWithAs, type HasDisplayName, type RefProp } from '../../utils/render'
 import { Label } from '../label/label'
 
 let DEFAULT_LEGEND_TAG = Label
@@ -29,7 +29,7 @@ function LegendFn<TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(
 
 export interface _internal_ComponentLegend extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(
-    props: LegendProps<TTag>
+    props: LegendProps<TTag> & RefProp<typeof LegendFn>
   ): React.JSX.Element
 }
 
