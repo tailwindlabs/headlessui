@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Don’t render `<Portal>` while hydrating ([#3825](https://github.com/tailwindlabs/headlessui/pull/3825))
 
 ## [2.2.9] - 2025-09-25
 
