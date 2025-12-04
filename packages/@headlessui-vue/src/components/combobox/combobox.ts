@@ -1215,38 +1215,35 @@ export let ComboboxInput = defineComponent({
     function handleBlur(event: FocusEvent) {
       let relatedTarget =
         (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
+
       isTyping.value = false
 
-      // Focus is moved into the list, we don't want to close yet.
-      if (dom(api.optionsRef)?.contains(relatedTarget)) {
-        return
-      }
-
-      if (dom(api.buttonRef)?.contains(relatedTarget)) {
-        return
-      }
+      // Preserve dropdown if focus moved within combobox (e.g., to options or button).
+      if (dom(api.optionsRef)?.contains(relatedTarget)) return
+      if (dom(api.buttonRef)?.contains(relatedTarget)) return
 
       if (api.comboboxState.value !== ComboboxStates.Open) return
       event.preventDefault()
 
       if (api.mode.value === ValueMode.Single) {
-        // We want to clear the value when the user presses escape if and only if the current
-        // value is not set (aka, they didn't select anything yet, or they cleared the input which
-        // caused the value to be set to `null`). If the current value is set, then we want to
-        // fallback to that value when we press escape (this part is handled in the watcher that
-        // syncs the value with the input field again).
+        // If nullable and user cleared the input, ensure value is cleared explicitly.
         if (api.nullable.value && api.value.value === null) {
           clear()
         }
 
-        // We do have a value, so let's select the active option, unless we were just going through
-        // the form and we opened it due to the focus event.
+        // Avoid unintended auto-selection when combobox opened on focus (e.g., on page load or tab focus).
+        // Only select active option if the user typed something and triggered it intentionally.
         else if (api.activationTrigger.value !== ActivationTrigger.Focus) {
-          api.selectActiveOption()
+          const inputValue = dom(api.inputRef)?.value || ''
+          const hasUserInput = inputValue.trim().length > 0
+
+          if (hasUserInput) {
+            api.selectActiveOption()
+          }
         }
       }
 
-      return api.closeCombobox()
+      api.closeCombobox()
     }
 
     function handleFocus(event: FocusEvent) {
