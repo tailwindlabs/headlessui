@@ -18,6 +18,7 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
@@ -94,6 +95,7 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
   let target = usePortalTarget(ownerDocument)
   let parent = useContext(PortalParentContext)
   let d = useDisposables()
+  let ready = useServerHandoffComplete()
   let render = useRender()
 
   useOnUnmount(() => {
@@ -107,7 +109,7 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
 
   let ourProps = { ref: portalRef }
 
-  return !target
+  return !target || !ready
     ? null
     : createPortal(
         <div
