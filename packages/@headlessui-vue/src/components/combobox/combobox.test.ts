@@ -1796,6 +1796,104 @@ describe('Rendering', () => {
       await click(getComboboxButton())
     })
   )
+
+  it(
+    'should not auto-select when input was focused and blurred without typing',
+    // Prevents console warnings during test execution
+    suppressConsoleLogs(async () => {
+      const handleChange = jest.fn()
+      const data = [
+        { id: 1, name: 'alice', label: 'Alice' },
+        { id: 2, name: 'bob', label: 'Bob' },
+      ]
+
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" name="assignee" by="id" @update:modelValue="handleChange">
+            <ComboboxInput />
+            <ComboboxButton />
+            <ComboboxOptions>
+              <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                {{ person.label }}
+              </ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ data, value: ref(null), handleChange }),
+      })
+
+      const input = getComboboxInput()
+      expect(input).not.toBeNull()
+
+      // Simulate user focusing the input but not typing or selecting anything
+      await focus(input!)
+
+      // Then immediately blurring (e.g., clicking away or tabbing out)
+      await blur(input!)
+
+      // Assert that no value was selected on blur
+      // Regression check: ensures we don't auto-select the first option
+      expect(handleChange).not.toHaveBeenCalled()
+    })
+  )
+
+  it(
+    'should not auto-select the active option when the combobox input is blurred',
+    suppressConsoleLogs(async () => {
+      let handleChange = jest.fn()
+      let data = [
+        { id: 1, name: 'alice', label: 'Alice' },
+        { id: 2, name: 'bob', label: 'Bob' },
+        { id: 3, name: 'charlie', label: 'Charlie' },
+      ]
+
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" name="assignee" by="id" @update:modelValue="handleChange">
+            <ComboboxInput />
+            <ComboboxButton />
+            <ComboboxOptions>
+              <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                {{ person.label }}
+              </ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({
+          data,
+          value: ref(null),
+          handleChange,
+        }),
+      })
+
+      // Verify initial state - no selection
+      expect(handleChange).not.toHaveBeenCalled()
+
+      // Open the combobox
+      await click(getComboboxButton())
+
+      // Verify it is open and first option is active
+      assertComboboxList({ state: ComboboxState.Visible })
+      let options = getComboboxOptions()
+      assertActiveComboboxOption(options[0])
+
+      // Verify no option is selected yet
+      assertNoSelectedComboboxOption()
+
+      // Blur the combobox input (this is where the bug occurs)
+      await blur(getComboboxInput())
+
+      // Verify it is closed
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      // The value should still be null and handleChange should not have been called
+      expect(handleChange).not.toHaveBeenCalled()
+
+      // If we open the combobox again, there should still be no selected option
+      await click(getComboboxButton())
+      assertNoSelectedComboboxOption()
+    })
+  )
 })
 
 describe('Rendering composition', () => {
