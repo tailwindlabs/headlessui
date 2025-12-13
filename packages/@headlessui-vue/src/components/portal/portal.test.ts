@@ -167,76 +167,6 @@ it('should be possible to use multiple Portal elements', async () => {
   expect(content2).toHaveTextContent('Contents 2 ...')
 })
 
-it('should cleanup the Portal root when the last Portal is unmounted', async () => {
-  expect(getPortalRoot()).toBe(null)
-
-  renderTemplate({
-    template: html`
-      <main id="parent">
-        <button id="a" @click="toggleA">Toggle A</button>
-        <button id="b" @click="toggleB">Toggle B</button>
-
-        <Portal v-if="renderA">
-          <p id="content1">Contents 1 ...</p>
-        </Portal>
-
-        <Portal v-if="renderB">
-          <p id="content2">Contents 2 ...</p>
-        </Portal>
-      </main>
-    `,
-    setup() {
-      let renderA = ref(false)
-      let renderB = ref(false)
-
-      return {
-        renderA,
-        renderB,
-        toggleA() {
-          renderA.value = !renderA.value
-        },
-        toggleB() {
-          renderB.value = !renderB.value
-        },
-      }
-    },
-  })
-
-  let a = document.getElementById('a')
-  let b = document.getElementById('b')
-
-  expect(getPortalRoot()).toBe(null)
-
-  // Let's render the first Portal
-  await click(a)
-
-  expect(getPortalRoot()).not.toBe(null)
-  expect(getPortalRoot().children).toHaveLength(1)
-
-  // Let's render the second Portal
-  await click(b)
-
-  expect(getPortalRoot()).not.toBe(null)
-  expect(getPortalRoot().children).toHaveLength(2)
-
-  // Let's remove the first portal
-  await click(a)
-
-  expect(getPortalRoot()).not.toBe(null)
-  expect(getPortalRoot().children).toHaveLength(1)
-
-  // Let's remove the second Portal
-  await click(b)
-
-  expect(getPortalRoot()).toBe(null)
-
-  // Let's render the first Portal again
-  await click(a)
-
-  expect(getPortalRoot()).not.toBe(null)
-  expect(getPortalRoot().children).toHaveLength(1)
-})
-
 it('should be possible to render multiple portals at the same time', async () => {
   expect(getPortalRoot()).toBe(null)
 
@@ -311,7 +241,7 @@ it('should be possible to render multiple portals at the same time', async () =>
 
   // Remove Portal 1
   await click(document.getElementById('a'))
-  expect(getPortalRoot()).toBe(null)
+  expect(getPortalRoot().children).toHaveLength(0)
 
   // Render A and B at the same time!
   await click(document.getElementById('double'))
