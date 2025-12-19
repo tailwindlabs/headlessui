@@ -1,4 +1,13 @@
-import { Combobox, Field, Input, Label, Listbox, RadioGroup, Switch } from '@headlessui/react'
+import {
+  Checkbox,
+  Combobox,
+  Field,
+  Input,
+  Label,
+  Listbox,
+  RadioGroup,
+  Switch,
+} from '@headlessui/react'
 import { useState } from 'react'
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
@@ -111,6 +120,12 @@ export default function App() {
                 </Switch>
               </Switch.Group>
             </Section>
+          </Section>
+          <Section title="Checkbox">
+            <Field className="flex items-center gap-2 p-1">
+              <Checkbox className="data-checked:bg-blue-600 size-4 border bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" />
+              <Label>Label for {'<Checkbox />'}</Label>
+            </Field>
           </Section>
           <Section title="Radio Group">
             <RadioGroup defaultValue="sm" name="size">
