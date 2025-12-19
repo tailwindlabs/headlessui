@@ -13,6 +13,7 @@ import React, {
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSlot } from '../../hooks/use-slot'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
@@ -126,6 +127,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     passive = false,
     ...theirProps
   } = props
+  let isLabelableElement = useIsLabelableElementById(htmlFor)
   let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
@@ -209,7 +211,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     ref: labelRef,
     ...context.props,
     id,
-    htmlFor,
+    htmlFor: isLabelableElement ? htmlFor : undefined,
     onClick: handleClick,
   }
 
@@ -230,7 +232,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     ourProps,
     theirProps,
     slot,
-    defaultTag: htmlFor ? DEFAULT_LABEL_TAG : 'div',
+    defaultTag: htmlFor ? (isLabelableElement ? DEFAULT_LABEL_TAG : 'span') : 'div',
     name: context.name || 'Label',
   })
 }
@@ -248,3 +250,33 @@ let LabelRoot = forwardRefWithAs(LabelFn) as _internal_ComponentLabel
 export let Label = Object.assign(LabelRoot, {
   //
 })
+
+function useIsLabelableElementById(id: string | undefined): boolean {
+  let ready = useServerHandoffComplete()
+  return ready && isLabelableElementById(id)
+}
+
+// See: https://html.spec.whatwg.org/multipage/forms.html#category-label
+function isLabelableElementById(id: string | undefined): boolean {
+  if (id === undefined) return false
+  if (typeof window === 'undefined') return false
+
+  let element = document.getElementById(id)
+  if (!element) return false
+
+  if (element.tagName === 'BUTTON') return true
+  if (DOM.isHTMLInputElement(element) && element.type !== 'hidden') return true
+  if (element.tagName === 'METER') return true
+  if (element.tagName === 'OUTPUT') return true
+  if (element.tagName === 'PROGRESS') return true
+  if (element.tagName === 'SELECT') return true
+  if (element.tagName === 'TEXTAREA') return true
+
+  // @ts-expect-error If a custom element exist and is form associated, it will
+  // have a static property `formAssociated` on its class definition.
+  if (window.customElements.get(element.tagName.toLowerCase())?.formAssociated) {
+    return true
+  }
+
+  return false
+}
