@@ -181,12 +181,13 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
         // Ensure we click the element this label is bound to. This is necessary for elements that
         // immediately require state changes, e.g.: Radio & Checkbox inputs need to be checked (or
         // unchecked).
+        let role = target.role || target.getAttribute('role')
         if (
           (DOM.isHTMLInputElement(target) &&
             (target.type === 'file' || target.type === 'radio' || target.type === 'checkbox')) ||
-          target.role === 'radio' ||
-          target.role === 'checkbox' ||
-          target.role === 'switch'
+          role === 'radio' ||
+          role === 'checkbox' ||
+          role === 'switch'
         ) {
           target.click()
         }
