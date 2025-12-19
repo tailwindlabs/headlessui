@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Don’t render `<Portal>` while hydrating ([#3825](https://github.com/tailwindlabs/headlessui/pull/3825))
+- Ensure a `span` is used for non-labelable elements when using `Label` component ([#3831](https://github.com/tailwindlabs/headlessui/pull/3831))
 
 ## [2.2.9] - 2025-09-25
 
