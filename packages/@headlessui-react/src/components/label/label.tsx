@@ -155,13 +155,6 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
       return
     }
 
-    // Labels connected to 'real' controls will already click the element. But we don't know that
-    // ahead of time. This will prevent the default click, such that only a single click happens
-    // instead of two. Otherwise this results in a visual no-op.
-    if (DOM.isHTMLLabelElement(current)) {
-      e.preventDefault()
-    }
-
     // Ensure `onClick` from context is called
     if (
       context.props &&
@@ -171,8 +164,8 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
       context.props.onClick(e)
     }
 
-    if (DOM.isHTMLLabelElement(current)) {
-      let target = document.getElementById(current.htmlFor)
+    if (!DOM.isHTMLLabelElement(current)) {
+      let target = document.getElementById(htmlFor)
       if (target) {
         // Bail if the target element is disabled
         let actuallyDisabled = target.getAttribute('disabled')
