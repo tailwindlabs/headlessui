@@ -4,9 +4,9 @@ import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
 
 export default function Home() {
-  let [isOpen, setIsOpen] = useState(false)
-  let [transitionBackdrop, setTransitionBackdrop] = useState(true)
-  let [transitionPanel, setTransitionPanel] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
+  const [transitionBackdrop, setTransitionBackdrop] = useState(true)
+  const [transitionPanel, setTransitionPanel] = useState(true)
 
   return (
     <>
