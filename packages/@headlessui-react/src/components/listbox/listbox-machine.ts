@@ -390,28 +390,14 @@ let reducers: {
     }
   },
   [ActionTypes.UnregisterOptions]: (state, action) => {
-    let options = state.options
-
-    let idxs = []
     let ids = new Set(action.options)
-    for (let [idx, option] of options.entries()) {
-      if (ids.has(option.id)) {
-        idxs.push(idx)
-        ids.delete(option.id)
-        if (ids.size === 0) break
-      }
-    }
-
-    if (idxs.length > 0) {
-      options = options.slice()
-      for (let idx of idxs.reverse()) {
-        options.splice(idx, 1)
-      }
-    }
+    let adjustedState = adjustOrderedState(state, (options) => {
+      return options.filter((option) => !ids.has(option.id))
+    })
 
     return {
       ...state,
-      options,
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
   },
@@ -590,7 +576,9 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
 
     selectActiveOption: () => {
       if (this.state.activeOptionIndex !== null) {
-        let { dataRef } = this.state.options[this.state.activeOptionIndex]
+        let activeOption = this.state.options[this.state.activeOptionIndex]
+        if (!activeOption) return
+        let { dataRef } = activeOption
         this.actions.selectOption(dataRef.current.value)
       } else if (this.state.dataRef.current.mode === ValueMode.Single) {
         this.actions.closeListbox()

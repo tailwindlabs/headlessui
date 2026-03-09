@@ -4705,3 +4705,78 @@ describe('transitions', () => {
     })
   )
 })
+
+describe('Dynamic option removal', () => {
+  it(
+    'should not crash when the active option is removed',
+    suppressConsoleLogs(async () => {
+      function Example({ hide = false }) {
+        return (
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">alice</Listbox.Option>
+              {!hide && <Listbox.Option value="b">bob</Listbox.Option>}
+              {!hide && <Listbox.Option value="c">charlie</Listbox.Option>}
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      let { rerender } = render(<Example />)
+
+      // Open the listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+
+      // Navigate to the last option
+      await press(Keys.End)
+      let options = getListboxOptions()
+      assertActiveListboxOption(options[2])
+
+      // Remove options while the listbox is open
+      rerender(<Example hide={true} />)
+
+      // Press Enter — should not crash, should close the listbox gracefully
+      await press(Keys.Enter)
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should adjust activeOptionIndex when options before the active option are removed',
+    suppressConsoleLogs(async () => {
+      function Example({ hide = false }) {
+        return (
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              {!hide && <Listbox.Option value="a">alice</Listbox.Option>}
+              <Listbox.Option value="b">bob</Listbox.Option>
+              <Listbox.Option value="c">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      let { rerender } = render(<Example />)
+
+      // Open the listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+
+      // Navigate to the last option ("charlie")
+      await press(Keys.End)
+      let options = getListboxOptions()
+      assertActiveListboxOption(options[2])
+
+      // Remove the first option ("alice") while "charlie" is active
+      rerender(<Example hide={true} />)
+
+      // "charlie" should still be the active option (now at index 1)
+      options = getListboxOptions()
+      expect(options).toHaveLength(2)
+      assertActiveListboxOption(options[1])
+    })
+  )
+})

@@ -305,28 +305,14 @@ let reducers: {
     }
   },
   [ActionTypes.UnregisterItems]: (state, action) => {
-    let items = state.items
-
-    let idxs = []
     let ids = new Set(action.items)
-    for (let [idx, item] of items.entries()) {
-      if (ids.has(item.id)) {
-        idxs.push(idx)
-        ids.delete(item.id)
-        if (ids.size === 0) break
-      }
-    }
-
-    if (idxs.length > 0) {
-      items = items.slice()
-      for (let idx of idxs.reverse()) {
-        items.splice(idx, 1)
-      }
-    }
+    let adjustedState = adjustOrderedState(state, (items) => {
+      return items.filter((item) => !ids.has(item.id))
+    })
 
     return {
       ...state,
-      items,
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
   },
