@@ -1100,7 +1100,8 @@ export let ComboboxInput = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           return match(api.comboboxState.value, {
-            [ComboboxStates.Open]: () => api.goToOption(Focus.Next),
+            [ComboboxStates.Open]: () =>
+              api.goToOption(api.activeOptionIndex.value === null ? Focus.First : Focus.Next),
             [ComboboxStates.Closed]: () => api.openCombobox(),
           })
 
