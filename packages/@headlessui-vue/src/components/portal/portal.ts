@@ -18,6 +18,7 @@ import {
 } from 'vue'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { dom } from '../../utils/dom'
+import { env } from '../../utils/env'
 import { getOwnerDocument } from '../../utils/owner'
 import { render } from '../../utils/render'
 
@@ -89,7 +90,17 @@ export let Portal = defineComponent({
       setCount(myTarget.value, (val) => val + 1)
     }
 
-    let ready = ref(false)
+    // Start ready on the client so that the portal renders synchronously
+    // with the component tree. Deferring to `onMounted` causes a one-tick
+    // delay that races against Vue 3.5+'s Transition lifecycle — the
+    // enter-from classes never get applied because the element appears
+    // after the transition's enter phase has already started.
+    //
+    // On the server we must remain `false` to avoid SSR hydration
+    // mismatches (portals can't render server-side).
+    //
+    // Fixes: https://github.com/tailwindlabs/headlessui/issues/3456
+    let ready = ref(env.isClient)
     onMounted(() => {
       ready.value = true
     })
