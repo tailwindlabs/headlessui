@@ -3,6 +3,7 @@ import { renderToString } from 'vue/server-renderer'
 import { html } from '../../test-utils/html'
 import { click } from '../../test-utils/interactions'
 import { createRenderTemplate } from '../../test-utils/vue-testing-library'
+import { TransitionRoot } from '../transitions/transition'
 import { Portal, PortalGroup } from './portal'
 
 function getPortalRoot() {
@@ -22,7 +23,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-const renderTemplate = createRenderTemplate({ Portal, PortalGroup })
+const renderTemplate = createRenderTemplate({ Portal, PortalGroup, TransitionRoot })
 
 async function ssrRenderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Portal, PortalGroup }
@@ -435,4 +436,41 @@ it('the root shared by multiple portals should not unmount when they change in t
 
   // The portal root is gone because there are no visible portals
   expect(root()).toBe(null)
+})
+
+it('should render portal content synchronously so that transitions can apply enter classes', async () => {
+  // Regression test for https://github.com/tailwindlabs/headlessui/issues/3456
+  //
+  // When the portal defers rendering to `onMounted`, the Teleport content
+  // appears one tick after the Transition's enter phase has started. The
+  // enter-from classes never get applied, so the transition is invisible.
+  renderTemplate({
+    template: html`
+      <TransitionRoot :show="show" enter="enter" enterFrom="enter-from" enterTo="enter-to">
+        <Portal>
+          <div id="transitioned">Hello</div>
+        </Portal>
+      </TransitionRoot>
+
+      <button id="toggle" @click="show = !show">Toggle</button>
+    `,
+    setup() {
+      let show = ref(false)
+      return { show }
+    },
+  })
+
+  // Portal root shouldn't exist yet (nothing shown)
+  expect(getPortalRoot()).toBe(null)
+
+  // Toggle show to true — the portal content should render and the
+  // transition should apply enter-from classes in the same tick
+  await click(document.getElementById('toggle'))
+
+  // The portal should have rendered
+  let content = document.getElementById('transitioned')
+  expect(content).not.toBe(null)
+
+  // The portal root should exist
+  expect(getPortalRoot()).not.toBe(null)
 })
