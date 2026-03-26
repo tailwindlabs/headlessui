@@ -5,6 +5,7 @@ import {
   assertNotFocusable,
   assertRadioGroupLabel,
   getByText,
+  getRadioGroupLabel,
   getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
@@ -72,6 +73,26 @@ describe('Safe guards', () => {
       assertRadioGroupLabel({ textContent: 'Pizza Delivery' })
     })
   )
+
+  it('should not mark the RadioGroupLabel as presentation', async () => {
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="deliveryMethod">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+          <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        return { deliveryMethod }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    expect(getRadioGroupLabel()).not.toHaveAttribute('role')
+  })
 
   it('should be possible to render a RadioGroup without options and without crashing', () => {
     renderTemplate({
