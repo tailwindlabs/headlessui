@@ -2,9 +2,9 @@ import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { useEvent } from './use-event'
 
-export function useControllable<T>(
+export function useControllable<T, TValue extends T = T>(
   controlledValue: T | undefined,
-  onChange?: (value: T) => void,
+  onChange?: (value: TValue) => void,
   defaultValue?: T
 ) {
   let [internalValue, setInternalValue] = useState(defaultValue)
@@ -30,7 +30,7 @@ export function useControllable<T>(
 
   return [
     (isControlled ? controlledValue : internalValue)!,
-    useEvent((value) => {
+    useEvent((value: TValue) => {
       if (isControlled) {
         return onChange?.(value)
       } else {

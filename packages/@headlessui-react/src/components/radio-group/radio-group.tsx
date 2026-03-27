@@ -152,12 +152,12 @@ export type RadioGroupProps<
   TType = string,
 > = Props<
   TTag,
-  RadioGroupRenderPropArg<TType>,
+  RadioGroupRenderPropArg<TType | null>,
   RadioGroupPropsWeControl,
   {
-    value?: TType
+    value?: TType | null
     defaultValue?: TType
-    onChange?: (value: TType) => void
+    onChange?: (value: NoInfer<TType>) => void
     by?: ByComparator<TType>
     disabled?: boolean
     form?: string
@@ -192,7 +192,11 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let radioGroupRef = useSyncRefs(internalRadioGroupRef, ref)
 
   let defaultValue = useDefaultValue(_defaultValue)
-  let [value, onChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
+  let [value, onChange] = useControllable<TType | null, TType>(
+    controlledValue,
+    controlledOnChange,
+    defaultValue
+  )
 
   let firstOption = useMemo(
     () =>
