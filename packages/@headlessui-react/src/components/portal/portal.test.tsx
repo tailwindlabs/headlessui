@@ -272,6 +272,42 @@ it('should be possible to tamper with the modal root and restore correctly', asy
   expect(getPortalRoot().childNodes).toHaveLength(2)
 })
 
+it('should restore the portal root to the end of the body after external reordering', async () => {
+  expect(getPortalRoot()).toBe(null)
+
+  function Example() {
+    let [tick, setTick] = useState(0)
+
+    return (
+      <main id="parent">
+        <button id="rerender" onClick={() => setTick((value) => value + 1)}>
+          {tick}
+        </button>
+
+        <Portal>
+          <p id="content">Contents...</p>
+        </Portal>
+      </main>
+    )
+  }
+
+  let { container } = render(<Example />)
+
+  let rerender = document.getElementById('rerender')
+
+  expect(document.body.lastElementChild).toBe(getPortalRoot())
+
+  document.body.insertBefore(getPortalRoot(), container)
+
+  expect(document.body.firstElementChild).toBe(getPortalRoot())
+  expect(document.body.lastElementChild).toBe(container)
+
+  await click(rerender)
+
+  expect(document.body.firstElementChild).toBe(container)
+  expect(document.body.lastElementChild).toBe(getPortalRoot())
+})
+
 it('should be possible to force the Portal into a specific element using Portal.Group', async () => {
   function Example() {
     let container = useRef(null)
