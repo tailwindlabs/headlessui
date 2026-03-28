@@ -182,20 +182,47 @@ function _render<TTag extends ElementType, TSlot>(
   }
 
   if (isFragment(Component)) {
-    if (Object.keys(compact(rest)).length > 0 || Object.keys(compact(dataAttributes)).length > 0) {
+    let passthroughProps = compact(rest)
+    let passthroughDataAttributes = mergeDataAttributeProps(
+      compact(dataAttributes),
+      pickDataAttributes(passthroughProps)
+    )
+    let passthroughNonDataProps = omit(
+      passthroughProps,
+      Object.keys(pickDataAttributes(passthroughProps))
+    )
+
+    if (Object.keys(passthroughDataAttributes).length > 0) {
+      let childrenWithDataAttributes = cloneChildrenWithDataAttributes(
+        resolvedChildren,
+        passthroughDataAttributes
+      )
+
+      if (
+        childrenWithDataAttributes !== null &&
+        Object.keys(passthroughNonDataProps).length === 0
+      ) {
+        return childrenWithDataAttributes
+      }
+    }
+
+    if (
+      Object.keys(passthroughProps).length > 0 ||
+      Object.keys(compact(dataAttributes)).length > 0
+    ) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) ||
         isFragmentInstance(resolvedChildren)
       ) {
-        if (Object.keys(compact(rest)).length > 0) {
+        if (Object.keys(passthroughProps).length > 0) {
           throw new Error(
             [
               'Passing props on "Fragment"!',
               '',
               `The current component <${name} /> is rendering a "Fragment".`,
               `However we need to passthrough the following props:`,
-              Object.keys(compact(rest))
+              Object.keys(passthroughProps)
                 .concat(Object.keys(compact(dataAttributes)))
                 .map((line) => `  - ${line}`)
                 .join('\n'),
@@ -460,6 +487,62 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
     if (key in clone) delete clone[key]
   }
   return clone
+}
+
+function pickDataAttributes<T extends Record<string, any>>(object: T) {
+  return Object.fromEntries(Object.entries(object).filter(([key]) => key.startsWith('data-')))
+}
+
+function mergeDataAttributeProps<T extends Record<string, any>, U extends Record<string, any>>(
+  primaryDataAttributes: T,
+  secondaryDataAttributes: U
+) {
+  return Object.assign({}, primaryDataAttributes, secondaryDataAttributes)
+}
+
+function cloneChildrenWithDataAttributes(
+  children: ReactElement | ReactElement[],
+  dataAttributes: Record<string, any>
+): ReactElement | ReactElement[] | null {
+  if (Array.isArray(children)) {
+    let clonedChildren = children.map((child) =>
+      cloneChildWithDataAttributes(child, dataAttributes)
+    )
+
+    return clonedChildren.every((child) => child !== null)
+      ? (clonedChildren as ReactElement[])
+      : null
+  }
+
+  return cloneChildWithDataAttributes(children, dataAttributes)
+}
+
+function cloneChildWithDataAttributes(
+  child: ReactElement,
+  dataAttributes: Record<string, any>
+): ReactElement | null {
+  if (!isValidElement(child)) return null
+
+  if (isFragmentInstance(child)) {
+    let clonedChildren = React.Children.map(child.props.children, (nestedChild) => {
+      if (!isValidElement(nestedChild)) return null
+
+      return cloneChildWithDataAttributes(nestedChild, dataAttributes)
+    })
+
+    if (clonedChildren?.some((nestedChild) => nestedChild === null)) return null
+
+    return cloneElement(child, undefined, clonedChildren)
+  }
+
+  let childDataAttributes = {}
+
+  for (let key in dataAttributes) {
+    if (key in child.props) continue
+    childDataAttributes[key] = dataAttributes[key]
+  }
+
+  return cloneElement(child, childDataAttributes)
 }
 
 function getElementRef(element: React.ReactElement) {
