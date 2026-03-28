@@ -9,6 +9,7 @@ import {
   useInnerOffset,
   useInteractions,
   type InnerProps,
+  type ReferenceType,
   type UseFloatingReturn,
 } from '@floating-ui/react'
 import * as React from 'react'
@@ -73,9 +74,11 @@ export type InternalFloatingPanelProps = Partial<{
   }
 }>
 
+type FloatingReference = (node: ReferenceType | null) => void
+
 let FloatingContext = createContext<{
   styles?: UseFloatingReturn<any>['floatingStyles']
-  setReference: UseFloatingReturn<any>['refs']['setReference']
+  setReference: FloatingReference
   setFloating: UseFloatingReturn<any>['refs']['setFloating']
   getReferenceProps: ReturnType<typeof useInteractions>['getReferenceProps']
   getFloatingProps: ReturnType<typeof useInteractions>['getFloatingProps']
@@ -106,7 +109,7 @@ export function useResolvedAnchor<T extends AnchorProps | AnchorPropsWithSelecti
   }, [anchor])
 }
 
-export function useFloatingReference() {
+export function useFloatingReference(): FloatingReference {
   return useContext(FloatingContext).setReference
 }
 
