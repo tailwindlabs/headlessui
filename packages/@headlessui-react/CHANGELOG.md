@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Don’t render `<Portal>` while hydrating ([#3825](https://github.com/tailwindlabs/headlessui/pull/3825))
+- Fix passing props on `Fragment` error due to `Symbol(react.lazy)` ([#3873](https://github.com/tailwindlabs/headlessui/pull/3873))
 
 ## [2.2.9] - 2025-09-25
 
