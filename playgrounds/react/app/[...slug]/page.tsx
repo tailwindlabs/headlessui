@@ -1,6 +1,6 @@
 import fs from 'fs'
-import path from 'path'
 import { notFound } from 'next/navigation'
+import path from 'path'
 import { PageLoader } from './page-loader'
 
 export default async function CatchAllPage({ params }: { params: Promise<{ slug: string[] }> }) {
