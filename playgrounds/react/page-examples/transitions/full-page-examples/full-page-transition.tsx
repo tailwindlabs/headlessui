@@ -1,5 +1,4 @@
 import { Transition } from '@headlessui/react'
-import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 
 import { classNames } from '../../../utils/class-names'
@@ -8,9 +7,7 @@ import { match } from '../../../utils/match'
 export default function Shell() {
   return (
     <>
-      <Head>
-        <title>Transition Component - Full Page Transition</title>
-      </Head>
+      <title>Transition Component - Full Page Transition</title>
       <div className="h-full bg-gray-50 p-12">
         <div className="flex h-full flex-1 flex-col overflow-hidden rounded-lg shadow-lg">
           <FullPageTransition />

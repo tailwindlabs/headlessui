@@ -21,8 +21,13 @@ export async function resolveAllExamples(...paths: string[]) {
       continue
     }
 
-    // Skip reserved filenames from Next. E.g.: _app.tsx, _error.tsx
+    // Skip reserved/internal files
     if (file.name.startsWith('_')) {
+      continue
+    }
+
+    // Skip non-page files
+    if (file.name === 'styles.css') {
       continue
     }
 
@@ -30,7 +35,7 @@ export async function resolveAllExamples(...paths: string[]) {
       name: file.name.replace(/-/g, ' ').replace(/\.tsx?/g, ''),
       path: [...paths, file.name]
         .join('/')
-        .replace(/^pages/, '')
+        .replace(/^page-examples/, '')
         .replace(/\.tsx?/g, '')
         .replace(/\/+/g, '/'),
     }

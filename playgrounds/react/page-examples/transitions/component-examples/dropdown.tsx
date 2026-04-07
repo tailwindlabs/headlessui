@@ -1,13 +1,10 @@
 import { Transition } from '@headlessui/react'
-import Head from 'next/head'
-import { useState } from 'react'
+import { useState} from 'react'
 
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Transition Component - Playground</title>
-      </Head>
+      <title>Transition Component - Playground</title>
 
       <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
         <Dropdown />

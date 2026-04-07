@@ -1,8 +1,8 @@
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+'use client'
 
-import { useRouter } from 'next/router'
-import './styles.css'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 function disposables() {
   let disposables: Function[] = []
@@ -38,8 +38,7 @@ function disposables() {
   return api
 }
 
-export function useDisposables() {
-  // Using useState instead of useRef so that we can use the initializer function.
+function useDisposables() {
   let [d] = useState(disposables)
   useEffect(() => () => d.dispose(), [d])
   return d
@@ -128,33 +127,7 @@ function KeyCaster() {
   )
 }
 
-function MyApp({ Component, pageProps }) {
-  let router = useRouter()
-  if (router.query.raw !== undefined) {
-    return <Component {...pageProps} />
-  }
-
-  return (
-    <>
-      <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
-        <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/">
-            <Logo className="h-6" />
-          </Link>
-          <span className="font-bold text-white">(React)</span>
-        </header>
-
-        <KeyCaster />
-
-        <main className="flex-1 overflow-auto bg-gray-50">
-          <Component {...pageProps} />
-        </main>
-      </div>
-    </>
-  )
-}
-
-function Logo({ className }) {
+function Logo({ className }: { className?: string }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 243 42">
       <path
@@ -211,4 +184,26 @@ function Logo({ className }) {
   )
 }
 
-export default MyApp
+export function LayoutChrome({ children }: { children: React.ReactNode }) {
+  let searchParams = useSearchParams()
+  let raw = searchParams.get('raw') !== null
+
+  if (raw) {
+    return <>{children}</>
+  }
+
+  return (
+    <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
+      <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
+        <Link href="/">
+          <Logo className="h-6" />
+        </Link>
+        <span className="font-bold text-white">(React)</span>
+      </header>
+
+      <KeyCaster />
+
+      <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
+    </div>
+  )
+}
