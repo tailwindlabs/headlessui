@@ -1,9 +1,11 @@
-import { Head, Html, Main, NextScript } from 'next/document'
+import { Suspense } from 'react'
+import '../page-examples/styles.css'
+import { LayoutChrome } from './layout-chrome'
 
-export default function Document() {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Html>
-      <Head>
+    <html>
+      <head>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -21,11 +23,12 @@ export default function Document() {
           sizes="16x16"
           href="https://headlessui.dev/favicon-16x16.png"
         />
-      </Head>
+      </head>
       <body>
-        <Main />
-        <NextScript />
+        <Suspense>
+          <LayoutChrome>{children}</LayoutChrome>
+        </Suspense>
       </body>
-    </Html>
+    </html>
   )
 }

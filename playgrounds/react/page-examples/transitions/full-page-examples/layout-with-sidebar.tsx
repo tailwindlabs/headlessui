@@ -1,5 +1,4 @@
 import { Transition } from '@headlessui/react'
-import Head from 'next/head'
 import { useEffect, useState } from 'react'
 
 export default function App() {
@@ -20,9 +19,7 @@ export default function App() {
 
   return (
     <>
-      <Head>
-        <title>Transition Component - Layout with sidebar</title>
-      </Head>
+      <title>Transition Component - Layout with sidebar</title>
 
       <div className="bg-cool-gray-100 flex h-screen overflow-hidden">
         {/* Off-canvas menu for mobile */}

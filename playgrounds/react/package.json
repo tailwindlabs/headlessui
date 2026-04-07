@@ -23,10 +23,10 @@
     "@tailwindcss/postcss": "^4.1.6",
     "@tailwindcss/typography": "^0.5.2",
     "framer-motion": "^6.0.0",
-    "next": "^15.4.4",
+    "next": "16.2.2",
     "postcss": "^8.4.14",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-flatpickr": "^3.10.9",
     "react-hot-toast": "2.3.0",
     "tailwindcss": "^4.1.6"
