@@ -148,6 +148,11 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement
     | ReactElement[]
 
+  // Unwrap `react.lazy` wrappers when the payload has already been fulfilled.
+  // This can happen with e.g. Next.js client-side navigations where the child
+  // element is wrapped in a lazy boundary from React Server Components.
+  resolvedChildren = resolveLazyElement(resolvedChildren)
+
   // Allow for className to be a function with the slot as the contents
   if ('className' in rest && rest.className && typeof rest.className === 'function') {
     rest.className = rest.className(slot)
@@ -465,6 +470,23 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
 function getElementRef(element: React.ReactElement) {
   // @ts-expect-error
   return React.version.split('.')[0] >= '19' ? element.props.ref : element.ref
+}
+
+/**
+ * Resolve a `react.lazy` wrapper to the underlying element when the lazy
+ * payload has already been fulfilled. This handles the case where frameworks
+ * like Next.js wrap elements in lazy boundaries (e.g. during client-side
+ * navigation with React Server Components). If the payload isn't resolved
+ * yet, the original value is returned as-is.
+ */
+function resolveLazyElement(element: any): any {
+  if (element != null && element.$$typeof === Symbol.for('react.lazy')) {
+    let payload = element._payload
+    if (payload != null && payload.status === 'fulfilled') {
+      return resolveLazyElement(payload.value)
+    }
+  }
+  return element
 }
 
 export function isFragment(element: any): element is typeof Fragment {
