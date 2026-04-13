@@ -1,6 +1,8 @@
 name: Release
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
 
@@ -15,22 +17,19 @@ permissions:
 
 env:
   CI: true
+  NODE_VERSION: 24
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18]
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
 
       - name: Use cached node_modules
@@ -44,22 +43,32 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        env:
-          CI: true
 
       - name: Test
         run: |
           npm run test || npm run test || npm run test || exit 1
-        env:
-          CI: true
 
-      - name: Calculate environment variables
+      - name: Calculate release variables
+        id: release
         run: |
-          echo "TAG_NAME=${{ github.event.tag_name }}" >> $GITHUB_ENV
-          echo "RELEASE_CHANNEL=$(npm run release-channel $TAG_NAME --silent)" >> $GITHUB_ENV
-          echo "PACKAGE_PATH=$(npm run package-path $TAG_NAME --silent)" >> $GITHUB_ENV
+          if [ "${GITHUB_EVENT_NAME}" = "release" ]; then
+            echo "kind=tag" >> "$GITHUB_OUTPUT"
+            echo "TAG_NAME=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
+            echo "RELEASE_CHANNEL=$(npm run --silent release-channel -- \"${{ github.event.release.tag_name }}\")" >> "$GITHUB_ENV"
+            echo "PACKAGE_PATH=$(npm run --silent package-path -- \"${{ github.event.release.tag_name }}\")" >> "$GITHUB_ENV"
+          else
+            echo "kind=insiders" >> "$GITHUB_OUTPUT"
+            echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          fi
 
-      - name: Publish
+      - name: Version insiders packages
+        if: steps.release.outputs.kind == 'insiders'
+        run: npm version -w packages 0.0.0-insiders.${{ env.SHA_SHORT }} --force --no-git-tag-version
+
+      - name: Publish insiders
+        if: steps.release.outputs.kind == 'insiders'
+        run: npm publish -w packages --provenance --tag insiders
+
+      - name: Publish tagged release
+        if: steps.release.outputs.kind == 'tag'
         run: npm publish ${{ env.PACKAGE_PATH }} --provenance --tag ${{ env.RELEASE_CHANNEL }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
