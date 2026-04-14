@@ -8,6 +8,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -94,6 +95,10 @@ import {
   useComboboxMachine,
   useComboboxMachineContext,
 } from './combobox-machine-glue'
+
+export type ComboboxHandle = {
+  close: () => void
+}
 
 let ComboboxDataContext = createContext<{
   value: unknown
@@ -319,6 +324,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let machine = useComboboxMachine({ id, virtual, __demoMode })
 
+  useImperativeHandle(ref, () => ({ close: () => machine.actions.closeCombobox() }), [machine])
+
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
   type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
@@ -431,7 +438,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let [labelledby, LabelProvider] = useLabels()
 
-  let ourProps = ref === null ? {} : { ref }
+  let ourProps = {}
 
   let reset = useCallback(() => {
     if (defaultValue === undefined) return
@@ -1617,7 +1624,7 @@ export interface _internal_ComponentCombobox extends HasDisplayName {
     TMultiple extends boolean | undefined = false,
     TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   >(
-    props: ComboboxProps<TValue, TMultiple, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, TMultiple, TTag> & { ref?: Ref<ComboboxHandle> }
   ): React.JSX.Element
 }
 
