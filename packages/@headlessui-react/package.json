@@ -42,8 +42,14 @@
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {
+    "@types/react": "*",
     "react": "^18 || ^19 || ^19.0.0-rc",
     "react-dom": "^18 || ^19 || ^19.0.0-rc"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@testing-library/react": "^15.0.7",

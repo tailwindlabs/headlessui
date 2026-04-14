@@ -106,7 +106,7 @@ export function useResolvedAnchor<T extends AnchorProps | AnchorPropsWithSelecti
   }, [anchor])
 }
 
-export function useFloatingReference() {
+export function useFloatingReference(): UseFloatingReturn<any>['refs']['setReference'] {
   return useContext(FloatingContext).setReference
 }
 
