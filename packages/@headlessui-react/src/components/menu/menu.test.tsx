@@ -3604,3 +3604,78 @@ describe('transitions', () => {
     })
   )
 })
+
+describe('Dynamic item removal', () => {
+  it(
+    'should not crash when the active item is removed',
+    suppressConsoleLogs(async () => {
+      function Example({ hide = false }) {
+        return (
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="button">alice</Menu.Item>
+              {!hide && <Menu.Item as="button">bob</Menu.Item>}
+              {!hide && <Menu.Item as="button">charlie</Menu.Item>}
+            </Menu.Items>
+          </Menu>
+        )
+      }
+
+      let { rerender } = render(<Example />)
+
+      // Open the menu
+      await click(getMenuButton())
+      assertMenu({ state: MenuState.Visible })
+
+      // Navigate to the last item
+      await press(Keys.End)
+      let items = getMenuItems()
+      assertMenuLinkedWithMenuItem(items[2])
+
+      // Remove items while the menu is open
+      rerender(<Example hide={true} />)
+
+      // Press Enter — should not crash, should close the menu gracefully
+      await press(Keys.Enter)
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should adjust activeItemIndex when items before the active item are removed',
+    suppressConsoleLogs(async () => {
+      function Example({ hide = false }) {
+        return (
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              {!hide && <Menu.Item as="button">alice</Menu.Item>}
+              <Menu.Item as="button">bob</Menu.Item>
+              <Menu.Item as="button">charlie</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+      }
+
+      let { rerender } = render(<Example />)
+
+      // Open the menu
+      await click(getMenuButton())
+      assertMenu({ state: MenuState.Visible })
+
+      // Navigate to the last item ("charlie")
+      await press(Keys.End)
+      let items = getMenuItems()
+      assertMenuLinkedWithMenuItem(items[2])
+
+      // Remove the first item ("alice") while "charlie" is active
+      rerender(<Example hide={true} />)
+
+      // "charlie" should still be the active item (now at index 1)
+      items = getMenuItems()
+      expect(items).toHaveLength(2)
+      assertMenuLinkedWithMenuItem(items[1])
+    })
+  )
+})

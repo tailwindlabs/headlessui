@@ -473,7 +473,9 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.preventDefault()
         event.stopPropagation()
         if (machine.state.activeItemIndex !== null) {
-          let { dataRef } = machine.state.items[machine.state.activeItemIndex]
+          let activeItem = machine.state.items[machine.state.activeItemIndex]
+          if (!activeItem) break
+          let { dataRef } = activeItem
           dataRef.current?.domRef.current?.click()
         }
         machine.send({ type: ActionTypes.CloseMenu })
