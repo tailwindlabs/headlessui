@@ -52,6 +52,7 @@ interface StateDefinition {
   panelId: Ref<string | null>
 
   isPortalled: Ref<boolean>
+  shouldRestoreFocus: Ref<boolean>
 
   beforePanelSentinel: Ref<HTMLElement | null>
   afterPanelSentinel: Ref<HTMLElement | null>
@@ -61,7 +62,8 @@ interface StateDefinition {
   closePopover(): void
 
   // Exposed functions
-  close(focusableElement: HTMLElement | Ref<HTMLElement | null>): void
+  close(focusableElement?: HTMLElement | Ref<HTMLElement | null>): void
+  focusButton(): void
 }
 
 let PopoverContext = Symbol('PopoverContext') as InjectionKey<StateDefinition>
@@ -105,6 +107,7 @@ export let Popover = defineComponent({
   inheritAttrs: false,
   props: {
     as: { type: [Object, String], default: 'div' },
+    restoreFocus: { type: Boolean, default: true },
   },
   setup(props, { slots, attrs, expose }) {
     let internalPopoverRef = ref<HTMLElement | null>(null)
@@ -159,6 +162,7 @@ export let Popover = defineComponent({
       panel,
       button,
       isPortalled,
+      shouldRestoreFocus: computed(() => props.restoreFocus),
       beforePanelSentinel,
       afterPanelSentinel,
       togglePopover() {
@@ -171,11 +175,16 @@ export let Popover = defineComponent({
         if (popoverState.value === PopoverStates.Closed) return
         popoverState.value = PopoverStates.Closed
       },
-      close(focusableElement: HTMLElement | Ref<HTMLElement | null>) {
+      focusButton() {
+        if (!api.shouldRestoreFocus.value) return
+        dom(api.button)?.focus()
+      },
+      close(focusableElement?: HTMLElement | Ref<HTMLElement | null>) {
         api.closePopover()
+        if (focusableElement === undefined && !api.shouldRestoreFocus.value) return
 
         let restoreElement = (() => {
-          if (!focusableElement) return dom(api.button)
+          if (focusableElement === undefined) return dom(api.button)
           if (focusableElement instanceof HTMLElement) return focusableElement
           if (focusableElement.value instanceof HTMLElement) return dom(focusableElement)
 
@@ -251,9 +260,9 @@ export let Popover = defineComponent({
       (event, target) => {
         api.closePopover()
 
-        if (!isFocusableElement(target, FocusableMode.Loose)) {
+        if (api.shouldRestoreFocus.value && !isFocusableElement(target, FocusableMode.Loose)) {
           event.preventDefault()
-          dom(button)?.focus()
+          api.focusButton()
         }
       },
       computed(() => popoverState.value === PopoverStates.Open)
@@ -339,7 +348,7 @@ export let PopoverButton = defineComponent({
             // @ts-expect-error
             event.target.click?.()
             api.closePopover()
-            dom(api.button)?.focus() // Re-focus the original opening Button
+            api.focusButton() // Re-focus the original opening Button
             break
         }
       } else {
@@ -383,7 +392,7 @@ export let PopoverButton = defineComponent({
       if (props.disabled) return
       if (isWithinPanel.value) {
         api.closePopover()
-        dom(api.button)?.focus() // Re-focus the original opening Button
+        api.focusButton() // Re-focus the original opening Button
       } else {
         event.preventDefault()
         event.stopPropagation()
@@ -589,7 +598,7 @@ export let PopoverPanel = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           api.closePopover()
-          dom(api.button)?.focus()
+          api.focusButton()
           break
       }
     }

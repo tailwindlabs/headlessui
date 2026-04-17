@@ -181,6 +181,32 @@ describe('Rendering', () => {
     )
 
     it(
+      'should expose a close function that closes the popover and does not restore focus when restoreFocus is false',
+      suppressConsoleLogs(async () => {
+        renderTemplate(html`
+          <Popover :restoreFocus="false" v-slot="{ close }">
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>
+              <button @click="close()">Close me</button>
+            </PopoverPanel>
+          </Popover>
+        `)
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure focus did not get restored to the trigger
+        expect(document.activeElement).not.toBe(getPopoverButton())
+      })
+    )
+
+    it(
       'should expose a close function that closes the popover and restores to a specific element',
       suppressConsoleLogs(async () => {
         renderTemplate({
@@ -2185,6 +2211,63 @@ describe('Mouse interactions', () => {
 
       // Verify the button is focused
       assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
+    'should be possible to close the popover without restoring focus when we click outside on the body element and restoreFocus is false',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover :restoreFocus="false">
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
+
+      // Open popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverButton({ state: PopoverState.Visible })
+
+      // Click the body to close
+      await click(document.body)
+
+      // Verify it is closed
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+
+      // Verify focus was not restored to the trigger
+      expect(document.activeElement).not.toBe(getPopoverButton())
+    })
+  )
+
+  it(
+    'should not restore focus to an input trigger when we click outside and restoreFocus is false',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover :restoreFocus="false">
+          <PopoverButton as="input" type="text" value="Trigger" data-trigger />
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
+
+      let input = document.querySelector('[data-trigger]') as HTMLInputElement
+      expect(input).not.toBeNull()
+
+      // Open popover from the input trigger
+      await click(input)
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Click outside to close
+      await click(document.body)
+
+      // Verify it is closed
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Verify focus was not restored to the input trigger
+      expect(document.activeElement).not.toBe(input)
     })
   )
 
