@@ -68,6 +68,7 @@ it('should expose the correct components', () => {
     'PopoverPanel',
 
     'Portal',
+    'PortalGroup',
 
     'Radio',
     'RadioGroup',
