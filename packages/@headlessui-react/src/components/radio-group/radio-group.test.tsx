@@ -9,7 +9,7 @@ import {
   getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
 import { Keys, click, focus, press, shift } from '../../test-utils/interactions'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { RadioGroup } from './radio-group'
 
 beforeAll(() => {
@@ -87,6 +87,38 @@ describe('Rendering', () => {
 
       assertFocusable(getByText('Pickup'))
       assertNotFocusable(getByText('Home delivery'))
+      assertNotFocusable(getByText('Dine in'))
+    })
+  )
+
+  it(
+    'should allow a controlled RadioGroup to use null as the empty value',
+    mockingConsoleLogs(async (spy) => {
+      function Example() {
+        let [value, setValue] = useState<string | null>(null)
+
+        return (
+          <RadioGroup value={value} onChange={setValue}>
+            <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+            <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
+            <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
+            <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
+          </RadioGroup>
+        )
+      }
+
+      render(<Example />)
+
+      expect(getRadioGroupOptions()).toHaveLength(3)
+
+      assertFocusable(getByText('Pickup'))
+
+      await click(getByText('Home delivery'))
+
+      expect(spy).not.toHaveBeenCalled()
+
+      assertNotFocusable(getByText('Pickup'))
+      assertFocusable(getByText('Home delivery'))
       assertNotFocusable(getByText('Dine in'))
     })
   )

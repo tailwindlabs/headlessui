@@ -143,7 +143,7 @@ function stateReducer<T>(state: StateDefinition<T>, action: Actions) {
 
 let DEFAULT_RADIO_GROUP_TAG = 'div' as const
 type RadioGroupRenderPropArg<TType> = {
-  value: TType
+  value: TType | null
 }
 type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 
@@ -155,7 +155,7 @@ export type RadioGroupProps<
   RadioGroupRenderPropArg<TType>,
   RadioGroupPropsWeControl,
   {
-    value?: TType
+    value?: TType | null
     defaultValue?: TType
     onChange?: (value: TType) => void
     by?: ByComparator<TType>
@@ -192,7 +192,11 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let radioGroupRef = useSyncRefs(internalRadioGroupRef, ref)
 
   let defaultValue = useDefaultValue(_defaultValue)
-  let [value, onChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
+  let [value, onChange] = useControllable<TType | null, TType>(
+    controlledValue,
+    controlledOnChange,
+    defaultValue ?? null
+  )
 
   let firstOption = useMemo(
     () =>
@@ -203,13 +207,15 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     [options]
   )
   let containsCheckedOption = useMemo(
-    () => options.some((option) => compare(option.propsRef.current.value as TType, value)),
+    () =>
+      value !== null &&
+      options.some((option) => compare(option.propsRef.current.value as TType, value)),
     [options, value]
   )
 
   let triggerChange = useEvent((nextValue: TType) => {
     if (disabled) return false
-    if (compare(nextValue, value)) return false
+    if (value !== null && compare(nextValue, value)) return false
     let nextOption = options.find((option) =>
       compare(option.propsRef.current.value as TType, nextValue)
     )?.propsRef.current
