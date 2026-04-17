@@ -88,6 +88,7 @@ export let RadioGroup = defineComponent({
     let options = ref<StateDefinition['options']['value']>([])
     let labelledby = useLabels({ name: 'RadioGroupLabel' })
     let describedby = useDescriptions({ name: 'RadioGroupDescription' })
+    let groupLabelIds = computed(() => new Set((labelledby.value ?? '').split(' ').filter(Boolean)))
 
     expose({ el: radioGroupRef, $el: radioGroupRef })
 
@@ -148,6 +149,7 @@ export let RadioGroup = defineComponent({
       accept(node) {
         if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
         if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+        if (node.id && groupLabelIds.value.has(node.id)) return NodeFilter.FILTER_SKIP
         return NodeFilter.FILTER_ACCEPT
       },
       walk(node) {
