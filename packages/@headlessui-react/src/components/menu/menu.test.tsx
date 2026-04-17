@@ -77,6 +77,30 @@ describe('Safe guards', () => {
 describe('Rendering', () => {
   describe('Menu', () => {
     it(
+      'should not crash when Menu renders as a Fragment with multiple children and data attributes from router tooling',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu data-tsd-source="src/routes/index.tsx:1:1">
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getMenuButton())
+
+        assertMenuButton({ state: MenuState.Visible })
+        assertMenu({ state: MenuState.Visible })
+      })
+    )
+
+    it(
       'should be possible to render a Menu using a render prop',
       suppressConsoleLogs(async () => {
         render(

@@ -244,6 +244,25 @@ describe('Default functionality', () => {
     expect(contents()).toMatchSnapshot()
   })
 
+  it('should forward data attributes to multiple children when rendering a Fragment', () => {
+    testRender(
+      <Dummy as={Fragment} data-tsd-source="src/routes/index.tsx:1:1">
+        <span key="a" data-testid="child-a">
+          Contents A
+        </span>
+        <span key="b" data-testid="child-b" data-tsd-source="child-owned">
+          Contents B
+        </span>
+      </Dummy>
+    )
+
+    expect(getByTestId(document.body, 'child-a')).toHaveAttribute(
+      'data-tsd-source',
+      'src/routes/index.tsx:1:1'
+    )
+    expect(getByTestId(document.body, 'child-b')).toHaveAttribute('data-tsd-source', 'child-owned')
+  })
+
   it(
     'should error when we are applying props to a Fragment when we do not have a dedicated element',
     suppressConsoleLogs(() => {
