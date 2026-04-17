@@ -16,6 +16,7 @@ import React, {
 import { createPortal } from 'react-dom'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
@@ -45,14 +46,20 @@ function usePortalTarget(ownerDocument: Document | null): HTMLElement | null {
     return ownerDocument.body.appendChild(root)
   })
 
-  // Ensure the portal root is always in the DOM
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     if (target === null) return
+    if (ownerDocument === null) return
+    if (!forceInRoot && groupTarget !== null) return
 
-    if (!ownerDocument?.body.contains(target)) {
-      ownerDocument?.body.appendChild(target)
+    // Keep the shared portal root as the last element in the body so external
+    // DOM updates can't leave future dialogs behind newly rendered page content.
+    if (
+      target.parentElement !== ownerDocument.body ||
+      target !== ownerDocument.body.lastElementChild
+    ) {
+      ownerDocument.body.appendChild(target)
     }
-  }, [target, ownerDocument])
+  })
 
   useEffect(() => {
     if (forceInRoot) return
