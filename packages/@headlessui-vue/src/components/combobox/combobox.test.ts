@@ -3540,6 +3540,30 @@ describe.each([{ virtual: false }, { virtual: false }])(
         )
 
         it(
+          'should focus the first option when pressing ArrowDown after no option is active',
+          suppressConsoleLogs(async () => {
+            renderTemplate({
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
+            })
+
+            await click(getComboboxButton())
+
+            let options = getComboboxOptions()
+            expect(options).toHaveLength(3)
+
+            await mouseMove(options[0])
+            assertActiveComboboxOption(options[0])
+
+            await mouseLeave(options[0])
+            assertNoActiveComboboxOption()
+
+            await press(Keys.ArrowDown)
+            assertActiveComboboxOption(options[0])
+          })
+        )
+
+        it(
           'should be possible to go to the next item if no value is set',
           suppressConsoleLogs(async () => {
             renderTemplate({
