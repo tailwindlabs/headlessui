@@ -63,7 +63,7 @@ Please ensure that the tests are passing when submitting a pull request. If you'
 
 ## Running playgrounds
 
-Currently the `React` playground (located in `packages/playground-react`) is a Next.js app that contains some examples which you can find in the `pages` directory. The `Vue` playground (located in `packages/playground-vue`) is a Vite app that contains some examples which you can find in the `src/components` directory.
+Currently the `React` playground (located in `playgrounds/react`) is a Next.js app that contains some examples which you can find in the `pages` directory. The `Vue` playground (located in `playgrounds/vue`) is a Vite app that contains some examples which you can find in the `src/components` directory.
 
 You can launch them by running:
 
@@ -103,7 +103,7 @@ Scripts per package:
   - `npm run react watch`: start a watcher for the react esm build
     - **Note**: this will be executed for you when using the `npm run react playground`
     - **Note**: this is not required for jest. You will probably never need this
-  - `npm run react playground`: (alias) start a development server in the `playground-react` package
+  - `npm run react playground`: (alias) start a development server in the `playgrounds/react` package
     - **Note**: this will also run `npm run react watch` for you, which means that you only need to execute `npm run react playground`
   - `npm run react clean`: this will remove `dist` files
 - `npm run vue`: Prefix to run anything in the `@headlessui/vue` package
@@ -116,6 +116,6 @@ Scripts per package:
   - `npm run vue watch`: start a watcher for the vue esm build
     - **Note**: this will be executed for you when using the `npm run vue playground`
     - **Note**: this is not required for jest. You will probably never need this
-  - `npm run vue playground`: (alias) start a development server in the `playground-vue` package
-    - **Note**: this will also run `npm run vue watch` for you, which means that you only need to execute `npm run react playground`
+  - `npm run vue playground`: (alias) start a development server in the `playgrounds/vue` package
+    - **Note**: this will also run `npm run vue watch` for you, which means that you only need to execute `npm run vue playground`
   - `npm run vue clean`: this will remove `dist` files
