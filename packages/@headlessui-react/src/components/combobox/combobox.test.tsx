@@ -4155,7 +4155,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Backspace)
             expect(getComboboxInput()?.value).toBe('')
 
-            // Verify that we don't have an selected option anymore
+            // Verify that we don't have a selected option anymore
             assertNotActiveComboboxOption(options[1])
 
             // Verify that we saw the `null` change coming in
@@ -5324,10 +5324,10 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
         )
       }
 
-      // Render a uncontrolled combobox
+      // Render an uncontrolled combobox
       render(<Example />)
 
-      // Change to an controlled combobox
+      // Change to a controlled combobox
       await click(getByText('to controlled'))
 
       // Make sure we get a warning
@@ -5339,7 +5339,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       // Render a fresh uncontrolled combobox
       render(<Example />)
 
-      // Change to an controlled combobox
+      // Change to a controlled combobox
       await click(getByText('to controlled'))
 
       // We shouldn't have gotten another warning as we do not want to warn on every render

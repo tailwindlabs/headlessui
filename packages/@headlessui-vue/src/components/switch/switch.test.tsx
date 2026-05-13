@@ -848,7 +848,7 @@ describe('Form compatibility', () => {
     expect(submits).toHaveBeenLastCalledWith([['notifications', 'on']])
   })
 
-  it('should be possible to submit a form with an boolean value', async () => {
+  it('should be possible to submit a form with a boolean value', async () => {
     let submits = jest.fn()
 
     renderTemplate({
