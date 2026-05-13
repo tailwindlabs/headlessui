@@ -20,6 +20,6 @@ it.each([
       ['name[nickname][preferred]', 'JDoe'],
     ],
   ],
-])('should encode an input of %j to an form data output', (input, output) => {
+])('should encode an input of %j to a form data output', (input, output) => {
   expect(objectToFormEntries(input)).toEqual(output)
 })

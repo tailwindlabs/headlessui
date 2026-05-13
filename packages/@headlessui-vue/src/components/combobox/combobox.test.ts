@@ -4352,7 +4352,7 @@ describe.each([{ virtual: false }, { virtual: false }])(
             await press(Keys.Backspace)
             expect(getComboboxInput()?.value).toBe('')
 
-            // Verify that we don't have an selected option anymore since we are in `nullable` mode
+            // Verify that we don't have a selected option anymore since we are in `nullable` mode
             assertNotActiveComboboxOption(options[1])
             assertNoSelectedComboboxOption()
 
