@@ -51,6 +51,13 @@ export function isHTMLLabelElement(element: unknown): element is HTMLLabelElemen
   return isHTMLElement(element) && element.nodeName === 'LABEL'
 }
 
+// https://html.spec.whatwg.org/multipage/forms.html#category-label
+export function isLabelableElement(element: unknown): element is Element {
+  if (!isElement(element)) return false
+
+  return element.matches('button,input:not([type="hidden"]),meter,output,progress,select,textarea')
+}
+
 export function isHTMLFieldSetElement(element: unknown): element is HTMLFieldSetElement {
   return isHTMLElement(element) && element.nodeName === 'FIELDSET'
 }

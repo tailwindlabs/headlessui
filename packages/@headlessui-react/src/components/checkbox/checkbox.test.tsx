@@ -12,6 +12,8 @@ import {
   commonRenderingScenarios,
 } from '../../test-utils/scenarios'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Field } from '../field/field'
+import { Label } from '../label/label'
 import { Checkbox, type CheckboxProps } from './checkbox'
 
 commonRenderingScenarios(Checkbox, { getElement: getCheckbox })
@@ -121,6 +123,31 @@ describe.each([
 })
 
 describe('Form submissions', () => {
+  it('should omit invalid label `for` attributes in a Field while preserving label interaction', async () => {
+    let { container, getByText } = render(
+      <form>
+        <Field>
+          <Label>Accept terms</Label>
+          <Checkbox name="terms" />
+        </Field>
+      </form>
+    )
+
+    let label = getByText('Accept terms')
+    let checkbox = getCheckbox()
+
+    expect(label).not.toHaveAttribute('for')
+    expect(checkbox).toHaveAttribute('aria-labelledby', label.id)
+
+    await click(label)
+
+    assertCheckbox({ state: CheckboxState.Checked })
+    expect(document.activeElement).toBe(checkbox)
+    expect(Object.fromEntries(new FormData(container.querySelector('form')!))).toEqual({
+      terms: 'on',
+    })
+  })
+
   it('should be possible to use in an uncontrolled way', async () => {
     let handleSubmission = jest.fn()
 

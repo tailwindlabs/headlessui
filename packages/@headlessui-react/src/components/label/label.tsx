@@ -122,13 +122,24 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   let providedDisabled = useDisabled()
   let {
     id = `headlessui-label-${internalId}`,
-    htmlFor = providedHtmlFor ?? context.props?.htmlFor,
+    htmlFor: theirHtmlFor,
     passive = false,
     ...theirProps
   } = props
+  let htmlFor = theirHtmlFor ?? providedHtmlFor ?? context.props?.htmlFor
+  let [targetIsLabelable, setTargetIsLabelable] = useState(false)
   let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
+
+  useIsoMorphicEffect(() => {
+    if (theirHtmlFor != null) return
+
+    let target = htmlFor ? document.getElementById(htmlFor) : null
+    let isLabelable = target ? DOM.isLabelableElement(target) : false
+
+    setTargetIsLabelable((current) => (current === isLabelable ? current : isLabelable))
+  }, [htmlFor, theirHtmlFor])
 
   let handleClick = useEvent((e: ReactMouseEvent) => {
     let current = e.currentTarget
@@ -170,7 +181,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     }
 
     if (DOM.isHTMLLabelElement(current)) {
-      let target = document.getElementById(current.htmlFor)
+      let target = htmlFor ? document.getElementById(htmlFor) : null
       if (target) {
         // Bail if the target element is disabled
         let actuallyDisabled = target.getAttribute('disabled')
@@ -183,15 +194,17 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
           return
         }
 
+        let targetRole = target.getAttribute('role')
+
         // Ensure we click the element this label is bound to. This is necessary for elements that
         // immediately require state changes, e.g.: Radio & Checkbox inputs need to be checked (or
         // unchecked).
         if (
           (DOM.isHTMLInputElement(target) &&
             (target.type === 'file' || target.type === 'radio' || target.type === 'checkbox')) ||
-          target.role === 'radio' ||
-          target.role === 'checkbox' ||
-          target.role === 'switch'
+          targetRole === 'radio' ||
+          targetRole === 'checkbox' ||
+          targetRole === 'switch'
         ) {
           target.click()
         }
@@ -204,12 +217,13 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   })
 
   let slot = useSlot({ ...context.slot, disabled: providedDisabled || false })
+  let shouldRenderHtmlFor = theirHtmlFor != null || targetIsLabelable
 
   let ourProps = {
     ref: labelRef,
     ...context.props,
     id,
-    htmlFor,
+    htmlFor: shouldRenderHtmlFor ? htmlFor : undefined,
     onClick: handleClick,
   }
 
