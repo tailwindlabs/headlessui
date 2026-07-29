@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo } from 'react'
-import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { createContext, useContext } from 'react'
+import { useMachine } from '../../hooks/use-machine'
 import { ListboxMachine } from './listbox-machine'
 
 export const ListboxContext = createContext<ListboxMachine<unknown> | null>(null)
@@ -20,7 +20,5 @@ export function useListboxMachine({
   id: string
   __demoMode?: boolean
 }) {
-  let machine = useMemo(() => ListboxMachine.new({ id, __demoMode }), [])
-  useOnUnmount(() => machine.dispose())
-  return machine
+  return useMachine(() => ListboxMachine.new({ id, __demoMode }))
 }
