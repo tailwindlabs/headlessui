@@ -4,6 +4,7 @@ import { env } from './utils/env'
 
 export abstract class Machine<State, Event extends { type: number | string }> {
   #state: State = {} as State
+  #disposed = false
   #eventSubscribers = new DefaultMap<
     Event['type'],
     Set<(state: State, event: Extract<Event, { type: any }>) => void>
@@ -24,7 +25,12 @@ export abstract class Machine<State, Event extends { type: number | string }> {
   }
 
   dispose() {
+    this.#disposed = true
     this.disposables.dispose()
+  }
+
+  get disposed() {
+    return this.#disposed
   }
 
   get state(): Readonly<State> {

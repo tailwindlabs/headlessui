@@ -1,4 +1,4 @@
-import { act, render, waitFor } from '@testing-library/react'
+import { act, render, renderHook, waitFor } from '@testing-library/react'
 import React, { Fragment, createElement, createRef, useEffect, useState } from 'react'
 import {
   ListboxMode,
@@ -36,6 +36,7 @@ import {
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from './listbox'
+import { useListboxMachine } from './listbox-machine-glue'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
@@ -85,6 +86,19 @@ describe('safeguards', () => {
       assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
+
+  it('should recreate a disposed Listbox machine when rendered again', () => {
+    let { result, rerender } = renderHook(() =>
+      useListboxMachine({ id: 'headlessui-listbox-test' })
+    )
+    let machine = result.current
+
+    act(() => machine.dispose())
+    rerender()
+
+    expect(result.current).not.toBe(machine)
+    expect(result.current.disposed).toBe(false)
+  })
 })
 
 describe('Rendering', () => {

@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo } from 'react'
-import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { createContext, useContext } from 'react'
+import { useMachine } from '../../hooks/use-machine'
 import { ComboboxMachine } from './combobox-machine'
 
 export const ComboboxContext = createContext<ComboboxMachine<unknown> | null>(null)
@@ -18,7 +18,5 @@ export function useComboboxMachine({
   virtual = null,
   __demoMode = false,
 }: Parameters<typeof ComboboxMachine.new>[0]) {
-  let machine = useMemo(() => ComboboxMachine.new({ id, virtual, __demoMode }), [])
-  useOnUnmount(() => machine.dispose())
-  return machine
+  return useMachine(() => ComboboxMachine.new({ id, virtual, __demoMode }))
 }

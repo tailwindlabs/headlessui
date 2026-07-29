@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo } from 'react'
-import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { createContext, useContext } from 'react'
+import { useMachine } from '../../hooks/use-machine'
 import { MenuMachine } from './menu-machine'
 
 export const MenuContext = createContext<MenuMachine | null>(null)
@@ -14,7 +14,5 @@ export function useMenuMachineContext(component: string) {
 }
 
 export function useMenuMachine({ id, __demoMode = false }: { id: string; __demoMode?: boolean }) {
-  let machine = useMemo(() => MenuMachine.new({ id, __demoMode }), [])
-  useOnUnmount(() => machine.dispose())
-  return machine
+  return useMachine(() => MenuMachine.new({ id, __demoMode }))
 }

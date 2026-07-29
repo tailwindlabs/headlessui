@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo } from 'react'
-import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { createContext, useContext } from 'react'
+import { useMachine } from '../../hooks/use-machine'
 import { PopoverMachine } from './popover-machine'
 
 export const PopoverContext = createContext<PopoverMachine | null>(null)
@@ -20,7 +20,5 @@ export function usePopoverMachine({
   id: string
   __demoMode?: boolean
 }) {
-  let machine = useMemo(() => PopoverMachine.new({ id, __demoMode }), [])
-  useOnUnmount(() => machine.dispose())
-  return machine
+  return useMachine(() => PopoverMachine.new({ id, __demoMode }))
 }
