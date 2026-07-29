@@ -79,3 +79,17 @@ export function isInteractiveElement(element: unknown): element is Element {
     'a[href],audio[controls],button,details,embed,iframe,img[usemap],input:not([type="hidden"]),label,select,textarea,video[controls]'
   )
 }
+
+// https://html.spec.whatwg.org/#category-label
+// - button
+// - input (if the type attribute is not in the Hidden state)
+// - meter
+// - output
+// - progress
+// - select
+// - textarea
+export function isLabelableElement(element: unknown): element is Element {
+  if (!isElement(element)) return false
+
+  return element.matches('button,input:not([type="hidden"]),meter,output,progress,select,textarea')
+}

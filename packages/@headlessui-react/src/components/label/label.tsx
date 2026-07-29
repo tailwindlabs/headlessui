@@ -130,6 +130,22 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
+  // The `for` attribute is only valid on labelable elements
+  // (https://html.spec.whatwg.org/#category-label). Some components (e.g.:
+  // `Radio` and `Checkbox`) render a non-labelable element (e.g.: a `span`)
+  // under the hood, in which case we shouldn't render the `for` attribute at
+  // all. Once we know which element the `for` attribute points to, we can drop
+  // the attribute if that element turns out to not be labelable.
+  let [renderHtmlFor, setRenderHtmlFor] = useState(true)
+  useIsoMorphicEffect(() => {
+    if (!htmlFor) return
+
+    let target = document.getElementById(htmlFor)
+    if (!target) return
+
+    setRenderHtmlFor(DOM.isLabelableElement(target))
+  }, [htmlFor])
+
   let handleClick = useEvent((e: ReactMouseEvent) => {
     let current = e.currentTarget
 
@@ -169,8 +185,8 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
       context.props.onClick(e)
     }
 
-    if (DOM.isHTMLLabelElement(current)) {
-      let target = document.getElementById(current.htmlFor)
+    if (DOM.isHTMLLabelElement(current) && htmlFor) {
+      let target = document.getElementById(htmlFor)
       if (target) {
         // Bail if the target element is disabled
         let actuallyDisabled = target.getAttribute('disabled')
@@ -209,7 +225,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     ref: labelRef,
     ...context.props,
     id,
-    htmlFor,
+    htmlFor: renderHtmlFor ? htmlFor : undefined,
     onClick: handleClick,
   }
 
