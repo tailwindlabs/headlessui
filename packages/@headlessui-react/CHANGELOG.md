@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Don't render the `for` attribute on a `Label` when the linked control is not a labelable element (e.g.: `Radio`, `Checkbox`) ([#3883](https://github.com/tailwindlabs/headlessui/issues/3883))
 
 ## [2.2.10] - 2026-04-07
 
