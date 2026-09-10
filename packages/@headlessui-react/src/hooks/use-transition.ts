@@ -164,12 +164,6 @@ export function useTransition(
         }
       },
       done() {
-        if (cancelledRef.current) {
-          if (hasPendingTransitions(element)) {
-            return
-          }
-        }
-
         inFlight.current = false
 
         removeFlag(TransitionState.Enter | TransitionState.Leave | TransitionState.Closed)
@@ -256,26 +250,31 @@ function transition(
 function waitForTransition(node: HTMLElement | null, done: () => void) {
   let d = disposables()
   if (!node) return d.dispose
+  let element = node
 
   let cancelled = false
   d.add(() => {
     cancelled = true
   })
 
-  let transitions =
-    node.getAnimations?.().filter((animation) => animation instanceof CSSTransition) ?? []
-  // If there are no transitions, we can stop early.
-  if (transitions.length === 0) {
-    done()
-    return d.dispose
+  function waitForTransitions() {
+    if (cancelled) return
+
+    let transitions = getPendingTransitions(element)
+    // If there are no transitions, we can stop early.
+    if (transitions.length === 0) {
+      done()
+      return
+    }
+
+    // A transition can be replaced when its direction changes, so check the
+    // current transitions again after this batch has settled.
+    Promise.allSettled(transitions.map((transition) => transition.finished)).then(() =>
+      waitForTransitions()
+    )
   }
 
-  // Wait for all the transitions to complete.
-  Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
-    if (!cancelled) {
-      done()
-    }
-  })
+  waitForTransitions()
 
   return d.dispose
 }
@@ -305,10 +304,10 @@ function prepareTransition(
   node.style.transition = previous
 }
 
-function hasPendingTransitions(node: HTMLElement) {
+function getPendingTransitions(node: HTMLElement) {
   let animations = node.getAnimations?.() ?? []
 
-  return animations.some((animation) => {
+  return animations.filter((animation) => {
     return animation instanceof CSSTransition && animation.playState !== 'finished'
   })
 }
