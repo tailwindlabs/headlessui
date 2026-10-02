@@ -259,7 +259,7 @@ export type ComboboxProps<
 
     onChange?: (value: TMultiple extends true ? EnsureArray<TValue> : TValue | null) => void
     by?: ByComparator<
-      TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
+      TMultiple extends true ? NoInfer<EnsureArray<TValue>[number]> : NoInfer<TValue>
     >
 
     /** @deprecated The `<Combobox />` is now nullable default */
@@ -272,9 +272,9 @@ export type ComboboxProps<
     name?: string
     immediate?: boolean
     virtual?: {
-      options: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>[]
+      options: TMultiple extends true ? NoInfer<EnsureArray<TValue>> : NoInfer<TValue>[]
       disabled?: (
-        value: TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
+        value: TMultiple extends true ? NoInfer<EnsureArray<TValue>[number]> : NoInfer<TValue>
       ) => boolean
     } | null
 
