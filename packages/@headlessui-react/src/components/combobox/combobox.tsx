@@ -1531,6 +1531,7 @@ function OptionFn<
     if (disabled) {
       return machine.actions.goToOption({ focus: Focus.Nothing })
     }
+    machine.actions.flushOptions()
     let idx = data.calculateIndex(value)
     machine.actions.goToOption({ focus: Focus.Specific, idx })
   })
@@ -1548,6 +1549,7 @@ function OptionFn<
     // activation instead.
     if (active && machine.state.activationTrigger === ActivationTrigger.Pointer) return
 
+    machine.actions.flushOptions()
     let idx = data.calculateIndex(value)
 
     // pointermove / mousemove will only be fired when the pointer is actually

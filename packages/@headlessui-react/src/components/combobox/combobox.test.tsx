@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { act, render, waitFor } from '@testing-library/react'
 import React, { Fragment, createElement, useEffect, useState } from 'react'
 import {
   ComboboxMode,
@@ -1309,6 +1309,50 @@ describe('Rendering', () => {
         })
       })
     )
+  })
+
+  it('should preserve new virtual options after pending non-virtual cleanup', async () => {
+    let handleChange = jest.fn()
+    function Example({ virtual = false, options = ['a', 'b'] }) {
+      return (
+        <Combobox virtual={virtual ? { options } : null} onChange={handleChange}>
+          <ComboboxInput />
+          <ComboboxButton>Open</ComboboxButton>
+          <ComboboxOptions static>
+            {virtual
+              ? ({ option }) => (
+                  <ComboboxOption id={`option-${option}`} value={option}>
+                    {option}
+                  </ComboboxOption>
+                )
+              : options.map((option) => (
+                  <ComboboxOption key={option} id={`option-${option}`} value={option}>
+                    {option}
+                  </ComboboxOption>
+                ))}
+          </ComboboxOptions>
+        </Combobox>
+      )
+    }
+
+    let { rerender } = render(<Example />, { wrapper: React.StrictMode })
+    await click(getComboboxButton())
+    assertActiveComboboxOption(getComboboxOptions()[0])
+
+    rerender(<Example virtual options={[]} />)
+    rerender(<Example virtual options={['a', 'b']} />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(getComboboxOptions()).toHaveLength(2)
+    assertActiveComboboxOption(getComboboxOptions()[0])
+    await press(Keys.ArrowDown)
+    assertActiveComboboxOption(getComboboxOptions()[1])
+    await press(Keys.Enter)
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(handleChange).toHaveBeenCalledWith('b')
+    expect(getComboboxInput()).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('should guarantee the order of DOM nodes when performing actions', async () => {
@@ -4552,6 +4596,19 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       options.forEach((option) => assertComboboxOption(option))
     })
   )
+
+  it('should not select an option when tabbing away after immediate focus', async () => {
+    let handleChange = jest.fn()
+    render(<MyCombobox comboboxProps={{ immediate: true, onChange: handleChange }} />)
+
+    await focus(getComboboxInput())
+    assertComboboxList({ state: ComboboxState.Visible })
+    expect(getComboboxOptions().length).toBeGreaterThan(0)
+
+    await press(Keys.Tab)
+    expect(handleChange).not.toHaveBeenCalled()
+    assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+  })
 
   it(
     'should not be possible to open the combobox by focusing the input with immediate mode disabled',

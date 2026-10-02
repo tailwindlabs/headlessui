@@ -94,6 +94,7 @@ export enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
+  UpdateOptions,
 
   DefaultToFirstOption,
 
@@ -160,6 +161,10 @@ type Actions<T> =
       payload: { id: string; dataRef: ComboboxOptionDataRef<T> }
     }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | {
+      type: ActionTypes.UpdateOptions
+      options: Map<string, { id: string; dataRef: ComboboxOptionDataRef<T> } | null>
+    }
   | { type: ActionTypes.DefaultToFirstOption; value: boolean }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
   | {
@@ -368,6 +373,47 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
+  [ActionTypes.UpdateOptions]: (state, action) => {
+    let activeOption =
+      state.activeOptionIndex === null ? null : state.options[state.activeOptionIndex]
+    let options = new Map(state.options.map((option) => [option.id, option]))
+
+    for (let [id, option] of action.options) {
+      if (option === null) options.delete(id)
+      else options.set(id, option)
+    }
+
+    // Virtual indexes refer to the full data set, not the mounted option nodes.
+    if (state.dataRef.current?.virtual) {
+      return { ...state, options: Array.from(options.values()) }
+    }
+
+    let adjustedState = adjustOrderedState(state, () => Array.from(options.values()))
+    let activeOptionIndex = activeOption
+      ? adjustedState.options.findIndex((option) => option.id === activeOption.id)
+      : -1
+
+    if (activeOptionIndex === -1) {
+      let selected = Array.from(action.options.values()).find(
+        (option) =>
+          option !== null && state.dataRef.current.isSelected?.(option.dataRef.current.value)
+      )
+      activeOptionIndex = selected ? adjustedState.options.indexOf(selected) : -1
+    }
+
+    if (state.dataRef.current?.__demoMode && state.dataRef.current.value === undefined) {
+      activeOptionIndex = adjustedState.options.length > 0 ? 0 : -1
+    }
+
+    return {
+      ...state,
+      ...adjustedState,
+      activeOptionIndex: activeOptionIndex === -1 ? null : activeOptionIndex,
+      defaultToFirstOption:
+        activeOption && !options.has(activeOption.id) ? true : state.defaultToFirstOption,
+      activationTrigger: ActivationTrigger.Other,
+    }
+  },
   [ActionTypes.DefaultToFirstOption]: (state, action) => {
     if (state.defaultToFirstOption === action.value) return state
 
@@ -437,6 +483,31 @@ let reducers: {
 }
 
 export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
+  private pendingOptions = new Map<
+    string,
+    { id: string; dataRef: ComboboxOptionDataRef<T> } | null
+  >()
+  private cancelOptionsUpdate: (() => void) | null = null
+
+  private updateOptions(
+    id: string,
+    option: { id: string; dataRef: ComboboxOptionDataRef<T> } | null
+  ) {
+    // Coalesce mount/unmount/mount for the same id within one commit.
+    this.pendingOptions.set(id, option)
+    this.cancelOptionsUpdate ??= this.disposables.microTask(this.flushOptions)
+  }
+
+  private flushOptions = () => {
+    this.cancelOptionsUpdate?.()
+    this.cancelOptionsUpdate = null
+    if (this.pendingOptions.size === 0) return
+
+    let options = this.pendingOptions
+    this.pendingOptions = new Map()
+    this.send({ type: ActionTypes.UpdateOptions, options })
+  }
+
   static new<T, TMultiple extends boolean | undefined>({
     id,
     virtual = null,
@@ -512,6 +583,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
   }
 
   actions = {
+    flushOptions: () => this.flushOptions(),
     onChange: (newValue: T) => {
       let { onChange, compare, mode, value } = this.state.dataRef.current
 
@@ -534,8 +606,16 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       })
     },
     registerOption: (id: string, dataRef: ComboboxOptionDataRef<T>) => {
+      if (!this.state.dataRef.current?.virtual) {
+        this.updateOptions(id, { id, dataRef })
+        return () => this.updateOptions(id, null)
+      }
+
+      // Preserve registration order when switching from non-virtual options.
+      this.flushOptions()
       this.send({ type: ActionTypes.RegisterOption, payload: { id, dataRef } })
       return () => {
+        this.flushOptions()
         // When we are unregistering the currently active option, then we also have to make sure to
         // reset the `defaultToFirstOption` flag, so that visually something is selected and the next
         // time you press a key on your keyboard it will go to the proper next or previous option in
@@ -559,6 +639,7 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       focus: { focus: Focus.Specific; idx: number } | { focus: Exclude<Focus, Focus.Specific> },
       trigger?: ActivationTrigger
     ) => {
+      this.flushOptions()
       this.send({ type: ActionTypes.DefaultToFirstOption, value: false })
       return this.send({ type: ActionTypes.GoToOption, ...focus, trigger })
     },
@@ -566,18 +647,22 @@ export class ComboboxMachine<T> extends Machine<State<T>, Actions<T>> {
       this.send({ type: ActionTypes.SetTyping, isTyping })
     },
     closeCombobox: () => {
+      this.flushOptions()
       this.send({ type: ActionTypes.CloseCombobox })
       this.send({ type: ActionTypes.DefaultToFirstOption, value: false })
       this.state.dataRef.current.onClose?.()
     },
     openCombobox: () => {
+      this.flushOptions()
       this.send({ type: ActionTypes.OpenCombobox })
       this.send({ type: ActionTypes.DefaultToFirstOption, value: true })
     },
     setActivationTrigger: (trigger: ActivationTrigger) => {
+      this.flushOptions()
       this.send({ type: ActionTypes.SetActivationTrigger, trigger })
     },
     selectActiveOption: () => {
+      this.flushOptions()
       let activeOptionIndex = this.selectors.activeOptionIndex(this.state)
       if (activeOptionIndex === null) return
 
