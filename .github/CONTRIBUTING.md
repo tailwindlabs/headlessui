@@ -63,7 +63,7 @@ Please ensure that the tests are passing when submitting a pull request. If you'
 
 ## Running playgrounds
 
-Currently the `React` playground (located in `packages/playground-react`) is a Next.js app that contains some examples which you can find in the `pages` directory. The `Vue` playground (located in `packages/playground-vue`) is a Vite app that contains some examples which you can find in the `src/components` directory.
+Currently the `React` playground (located in `playgrounds/react`) is a Next.js app that contains some examples which you can find in the `pages` directory. The `Vue` playground (located in `playgrounds/vue`) is a Vite app that contains some examples which you can find in the `src/components` directory.
 
 You can launch them by running:
 
