@@ -262,20 +262,31 @@ function waitForTransition(node: HTMLElement | null, done: () => void) {
     cancelled = true
   })
 
-  let transitions =
-    node.getAnimations?.().filter((animation) => animation instanceof CSSTransition) ?? []
-  // If there are no transitions, we can stop early.
-  if (transitions.length === 0) {
-    done()
-    return d.dispose
+  let element = node
+  function wait() {
+    let transitions = getPendingTransitions(element)
+
+    // If there are no (more) running transitions, we are done.
+    if (transitions.length === 0) {
+      done()
+      return
+    }
+
+    // Wait for all the transitions to complete, then check again. The
+    // transitions we captured are not necessarily the ones that end up
+    // running: if React commits the new state after we captured them (e.g.
+    // when the main thread is busy), the captured transitions are cancelled
+    // and replaced by new ones. Calling `done()` at that point would leave the
+    // element stuck, because nothing else would call `done()` once the new
+    // transitions finish.
+    Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
+      if (!cancelled) {
+        wait()
+      }
+    })
   }
 
-  // Wait for all the transitions to complete.
-  Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
-    if (!cancelled) {
-      done()
-    }
-  })
+  wait()
 
   return d.dispose
 }
@@ -305,10 +316,14 @@ function prepareTransition(
   node.style.transition = previous
 }
 
-function hasPendingTransitions(node: HTMLElement) {
+function getPendingTransitions(node: HTMLElement) {
   let animations = node.getAnimations?.() ?? []
 
-  return animations.some((animation) => {
+  return animations.filter((animation) => {
     return animation instanceof CSSTransition && animation.playState !== 'finished'
   })
+}
+
+function hasPendingTransitions(node: HTMLElement) {
+  return getPendingTransitions(node).length > 0
 }

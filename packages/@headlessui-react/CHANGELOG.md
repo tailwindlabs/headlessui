@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Ensure `Transition` unmounts when its reversed transition starts late ([#3906](https://github.com/tailwindlabs/headlessui/pull/3906))
 
 ## [2.2.10] - 2026-04-07
 
