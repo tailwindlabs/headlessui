@@ -220,22 +220,39 @@ export function FloatingProvider({
       // element. When the panel's content grows after it was placed (e.g. results that load after
       // opening), the panel can only grow up to that stale cap, so `flip` keeps measuring a panel
       // that fits and never moves it to the side with more room. If the panel has reached its cap,
-      // we lift it back to `--anchor-max-height` and measure again before anything places it.
+      // we measure it under `--anchor-max-height` instead and hand that height to the middleware
+      // below, before anything places it.
       //
       // This only runs once per placement: `size` requests its own reset after capping the panel,
-      // which would otherwise lift the cap again until Floating UI's reset limit. A panel below
-      // its cap (`none` parses to `NaN`) is already measured at its full height.
+      // which would otherwise measure the panel again until Floating UI's reset limit. A panel
+      // below its cap (`none` parses to `NaN`) is already measured at its full height.
       to !== 'selection' && {
         name: 'measureUncapped',
-        fn({ elements, middlewareData }: MiddlewareState) {
+        fn({ elements, middlewareData, rects }: MiddlewareState) {
           let panel = elements.floating
           if (middlewareData.measureUncapped || !panel.style.maxHeight) return {}
 
           let cap = parseFloat(getComputedStyle(panel).maxHeight)
           if (!(panel.getBoundingClientRect().height >= cap - 1)) return {}
 
+          // Lifting the cap clamps the scroll position of the panel and of anything scrolling
+          // inside it, so we put those back afterwards.
+          let scrolled = [panel, ...panel.querySelectorAll('*')]
+            .filter((element) => element.scrollTop > 0)
+            .map((element) => [element, element.scrollTop] as const)
+
+          // Measuring with `position: fixed` keeps the uncapped panel out of the page's scrollable
+          // overflow. Otherwise, where scrollbars take up space, a page scrollbar appears, the
+          // viewport resize repositions the panel, and the two keep triggering each other.
+          let { maxHeight, position } = panel.style
+          panel.style.position = 'fixed'
           panel.style.maxHeight = 'var(--anchor-max-height, none)'
-          return { reset: { rects: true } }
+          let { height } = panel.getBoundingClientRect()
+          panel.style.maxHeight = maxHeight
+          panel.style.position = position
+          for (let [element, scrollTop] of scrolled) element.scrollTop = scrollTop
+
+          return { reset: { rects: { ...rects, floating: { ...rects.floating, height } } } }
         },
       },
 
