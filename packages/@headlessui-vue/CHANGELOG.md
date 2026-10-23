@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleanup `process` in Combobox component when using virtualization ([#3495](https://github.com/tailwindlabs/headlessui/pull/3495))
 - Ensure outside click properly works when clicking SVG elements ([#3777](https://github.com/tailwindlabs/headlessui/pull/3777))
 - Support `<summary>` as a focusable element inside `<details>` ([#3389](https://github.com/tailwindlabs/headlessui/pull/3389))
+- Resolve `Dialog` root containers in linear time ([#3907](https://github.com/tailwindlabs/headlessui/pull/3907))
 
 ## [1.7.22] - 2024-05-08
 

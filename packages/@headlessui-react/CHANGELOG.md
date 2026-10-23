@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Resolve `Dialog` root containers in linear time ([#3907](https://github.com/tailwindlabs/headlessui/pull/3907))
 
 ## [2.2.10] - 2026-04-07
 

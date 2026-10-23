@@ -1928,6 +1928,38 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should resolve third party containers in linear time',
+    suppressConsoleLogs(async () => {
+      // Browser extensions can add thousands of elements to `<body>`
+      let thirdPartyElements = Array.from({ length: 1000 }, () => document.createElement('span'))
+      document.body.append(...thirdPartyElements)
+
+      renderTemplate({
+        template: `
+          <Dialog :open="true" @close="() => {}">
+            <button data-inside>Inside</button>
+          </Dialog>
+        `,
+      })
+
+      await nextFrame()
+
+      let contains = jest.spyOn(Node.prototype, 'contains')
+      await click(document.querySelector('[data-inside]'))
+      let calls = contains.mock.calls.length
+      contains.mockRestore()
+      for (let element of thirdPartyElements) element.remove()
+
+      // Comparing every root container with every container resolved before it
+      // takes about 500,000 `contains` calls for 1,000 elements
+      expect(calls).toBeLessThan(50_000)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
     'should be possible to focus elements created by third party libraries',
     suppressConsoleLogs(async () => {
       let fn = jest.fn()
