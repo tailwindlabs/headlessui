@@ -36,6 +36,10 @@ export function useRootContainers({
       }
     }
 
+    // Root containers are siblings, so only these can be inside one. Checking
+    // against every resolved container makes this quadratic in `<body>` children.
+    let ownContainers = containers.slice()
+
     // Resolve third party (root) containers
     for (let container of ownerDocument?.querySelectorAll('html > *, body > *') ?? []) {
       if (container === document.body) continue // Skip `<body>`
@@ -44,7 +48,7 @@ export function useRootContainers({
       if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
       if (container.contains(dom(mainTreeNodeRef))) continue // Skip if it is the main app
       if (container.contains((dom(mainTreeNodeRef)?.getRootNode() as ShadowRoot)?.host)) continue // Skip if it is the main app (and the component is inside a shadow root)
-      if (containers.some((defaultContainer) => container.contains(defaultContainer))) continue // Skip if the current container is part of a container we've already seen (e.g.: default container / portal)
+      if (ownContainers.some((ownContainer) => container.contains(ownContainer))) continue // Skip if the current container contains a default container or portal
 
       containers.push(container)
     }
