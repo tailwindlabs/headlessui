@@ -1256,6 +1256,48 @@ describe('Rendering', () => {
       expect(getComboboxInput()).not.toBe(null)
     })
 
+    it('should preserve refs on immediate children', () => {
+      let childRef = React.createRef<HTMLDivElement>()
+
+      render(
+        <Combobox value="a" onChange={NOOP}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button>Open</Combobox.Button>
+          <Combobox.Options static modal={false}>
+            <div ref={childRef} data-example-child>
+              <Combobox.Option value="a">A</Combobox.Option>
+            </div>
+          </Combobox.Options>
+        </Combobox>
+      )
+
+      let child = document.querySelector('[data-example-child]')
+      expect(child).not.toBeNull()
+      expect(childRef.current).toBe(child)
+    })
+
+    it('should merge the Options ref with refs on immediate children', () => {
+      let optionsRef = React.createRef<HTMLElement>()
+      let childRef = React.createRef<HTMLDivElement>()
+
+      render(
+        <Combobox value="a" onChange={NOOP}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button>Open</Combobox.Button>
+          <Combobox.Options static modal={false} as={Fragment} ref={optionsRef}>
+            <div ref={childRef} data-example-child>
+              <Combobox.Option value="a">A</Combobox.Option>
+            </div>
+          </Combobox.Options>
+        </Combobox>
+      )
+
+      let child = document.querySelector('[data-example-child]')
+      expect(child).not.toBeNull()
+      expect(childRef.current).toBe(child)
+      expect(optionsRef.current).toBe(childRef.current)
+    })
+
     it('should be possible to use a different render strategy for the Combobox.Options', async () => {
       render(
         <Combobox value="test" onChange={(x) => console.log(x)}>

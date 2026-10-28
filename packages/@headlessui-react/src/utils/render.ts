@@ -467,7 +467,7 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
   return clone
 }
 
-function getElementRef(element: React.ReactElement) {
+export function getElementRef(element: React.ReactElement) {
   // @ts-expect-error
   return React.version.split('.')[0] >= '19' ? element.props.ref : element.ref
 }

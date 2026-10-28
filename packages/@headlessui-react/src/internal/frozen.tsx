@@ -1,13 +1,17 @@
 import React, { cloneElement, isValidElement, useState } from 'react'
+import { useSyncRefs } from '../hooks/use-sync-refs'
+import { getElementRef } from '../utils/render'
 
 function FrozenFn(
   { children, freeze }: { children: React.ReactNode; freeze: boolean },
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let contents = useFrozenData(freeze, children)
+  let element = isValidElement(contents) ? (contents as React.ReactElement) : null
+  let mergedRef = useSyncRefs(element ? getElementRef(element) : null, ref)
 
-  if (isValidElement(contents)) {
-    return cloneElement(contents as React.ReactElement, { ref })
+  if (element) {
+    return mergedRef ? cloneElement(element, { ref: mergedRef }) : element
   }
 
   return <>{contents}</>
