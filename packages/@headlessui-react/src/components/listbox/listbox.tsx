@@ -817,12 +817,13 @@ function OptionFn<
   let internalId = useId()
   let {
     id = `headlessui-listbox-option-${internalId}`,
-    disabled = false,
+    disabled: disabledProp = false,
     value,
     ...theirProps
   } = props
   let usedInSelectedOption = useContext(SelectedOptionContext) === true
   let data = useData('Listbox.Option')
+  let disabled = disabledProp || data.disabled
   let machine = useListboxMachineContext('Listbox.Option')
 
   let active = useSlice(machine, (state) => machine.selectors.isActive(state, id))
