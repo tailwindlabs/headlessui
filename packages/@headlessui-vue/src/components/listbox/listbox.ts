@@ -701,6 +701,7 @@ export let ListboxOption = defineComponent({
   },
   setup(props, { slots, attrs, expose }) {
     let api = useListboxContext('ListboxOption')
+    let disabled = computed(() => props.disabled || api.disabled.value)
     let internalOptionRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
@@ -737,7 +738,7 @@ export let ListboxOption = defineComponent({
 
     let getTextValue = useTextValue(internalOptionRef)
     let dataRef = computed<ListboxOptionData>(() => ({
-      disabled: props.disabled,
+      disabled: disabled.value,
       value: props.value,
       get textValue() {
         return getTextValue()
@@ -776,7 +777,7 @@ export let ListboxOption = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (props.disabled) return event.preventDefault()
+      if (disabled.value) return event.preventDefault()
       api.select(props.value)
       if (api.mode.value === ValueMode.Single) {
         api.closeListbox()
@@ -785,7 +786,7 @@ export let ListboxOption = defineComponent({
     }
 
     function handleFocus() {
-      if (props.disabled) return api.goToOption(Focus.Nothing)
+      if (disabled.value) return api.goToOption(Focus.Nothing)
       api.goToOption(Focus.Specific, props.id)
     }
 
@@ -797,28 +798,27 @@ export let ListboxOption = defineComponent({
 
     function handleMove(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled) return
+      if (disabled.value) return
       if (active.value) return
       api.goToOption(Focus.Specific, props.id, ActivationTrigger.Pointer)
     }
 
     function handleLeave(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled) return
+      if (disabled.value) return
       if (!active.value) return
       api.goToOption(Focus.Nothing)
     }
 
     return () => {
-      let { disabled } = props
-      let slot = { active: active.value, selected: selected.value, disabled }
+      let slot = { active: active.value, selected: selected.value, disabled: disabled.value }
       let { id, value: _value, disabled: _disabled, ...theirProps } = props
       let ourProps = {
         id,
         ref: internalOptionRef,
         role: 'option',
-        tabIndex: disabled === true ? undefined : -1,
-        'aria-disabled': disabled === true ? true : undefined,
+        tabIndex: disabled.value === true ? undefined : -1,
+        'aria-disabled': disabled.value === true ? true : undefined,
         // According to the WAI-ARIA best practices, we should use aria-checked for
         // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
         // both single and multi-select.

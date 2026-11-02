@@ -344,6 +344,7 @@ let reducers: {
     return { ...state, searchQuery: '' }
   },
   [ActionTypes.SelectOption](state) {
+    if (state.dataRef.current.disabled) return state
     if (state.dataRef.current.mode === ValueMode.Single) {
       // The moment you select a value in single value mode, we want to close
       // the listbox and freeze the value to prevent UI flicker.

@@ -4705,3 +4705,29 @@ describe('transitions', () => {
     })
   )
 })
+
+it('disables options when an open Listbox becomes disabled', async () => {
+  let onChange = jest.fn()
+  let ui = (disabled = false) => (
+    <Listbox value="apple" onChange={onChange} disabled={disabled}>
+      <Listbox.Button>Fruit</Listbox.Button>
+      <Listbox.Options>
+        <Listbox.Option value="apple">Apple</Listbox.Option>
+        <Listbox.Option value="orange">Orange</Listbox.Option>
+      </Listbox.Options>
+    </Listbox>
+  )
+  let { rerender } = render(ui())
+  await click(getListboxButton())
+  let orange = getByText('Orange')
+  rerender(ui(true))
+  expect(orange).toHaveAttribute('aria-disabled', 'true')
+  await rawClick(orange)
+  await press(Keys.Enter)
+  expect(onChange).not.toHaveBeenCalled()
+  expect(getListbox()).toBeInTheDocument()
+  rerender(ui())
+  expect(orange).not.toHaveAttribute('aria-disabled')
+  await click(orange)
+  expect(onChange).toHaveBeenCalledWith('orange')
+})
