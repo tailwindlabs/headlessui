@@ -5,15 +5,16 @@ import React, {
   forwardRef,
   isValidElement,
   useCallback,
+  useMemo,
   useRef,
   type ElementType,
-  type MutableRefObject,
   type ReactElement,
   type Ref,
 } from 'react'
 import type { Expand, Props } from '../types'
 import { classNames } from './class-names'
 import { match } from './match'
+import { createRefMerger, type MaybeRef } from './merge-refs'
 
 export enum RenderFeatures {
   /** No features at all */
@@ -297,15 +298,8 @@ function _render<TTag extends ElementType, TSlot>(
  * so once the ref that contains the list is updated.
  */
 function useMergeRefsFn() {
-  type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
   let currentRefs = useRef<MaybeRef<any>[]>([])
-  let mergedRef = useCallback((value: any) => {
-    for (let ref of currentRefs.current) {
-      if (ref == null) continue
-      if (typeof ref === 'function') ref(value)
-      else ref.current = value
-    }
-  }, [])
+  let mergedRef = useMemo(() => createRefMerger(() => currentRefs.current), [currentRefs])
 
   return (...refs: any[]) => {
     if (refs.every((ref) => ref == null)) {
@@ -323,15 +317,7 @@ function useMergeRefsFn() {
 // which then causes the child to re-render resulting in a render loop
 // TODO: Add tests for this somehow
 function defaultMergeRefs(...refs: any[]) {
-  return refs.every((ref) => ref == null)
-    ? undefined
-    : (value: any) => {
-        for (let ref of refs) {
-          if (ref == null) continue
-          if (typeof ref === 'function') ref(value)
-          else ref.current = value
-        }
-      }
+  return refs.every((ref) => ref == null) ? undefined : createRefMerger(() => refs)
 }
 
 // A more complex example fo the `mergeProps` function, this one also cancels subsequent event
