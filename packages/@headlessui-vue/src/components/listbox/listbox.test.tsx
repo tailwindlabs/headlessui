@@ -107,6 +107,36 @@ describe('safeguards', () => {
 })
 
 describe('Rendering', () => {
+  it('disables options when an open listbox becomes disabled', async () => {
+    let disabled = ref(false)
+    let value = ref('a')
+    renderTemplate({
+      template: html`
+        <Listbox v-model="value" :disabled="disabled">
+          <ListboxButton>Trigger</ListboxButton>
+          <ListboxOptions>
+            <ListboxOption value="a">Option A</ListboxOption>
+            <ListboxOption value="b">Option B</ListboxOption>
+          </ListboxOptions>
+        </Listbox>
+      `,
+      setup: () => ({ disabled, value }),
+    })
+
+    await click(getListboxButton())
+    disabled.value = true
+    await nextTick()
+    expect(getByText('Option B')).toHaveAttribute('aria-disabled', 'true')
+    await click(getByText('Option B'))
+    expect(value.value).toBe('a')
+    expect(getListbox()).not.toBeNull()
+
+    disabled.value = false
+    await nextTick()
+    await click(getByText('Option B'))
+    expect(value.value).toBe('b')
+  })
+
   describe('Listbox', () => {
     it(
       'should be possible to render a Listbox using a render prop',
