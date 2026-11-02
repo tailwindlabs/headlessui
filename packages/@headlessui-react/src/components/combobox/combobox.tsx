@@ -179,7 +179,7 @@ function VirtualProvider(props: {
   })
   let activeOptionIndex = useSlice(machine, machine.selectors.activeOptionIndex)
 
-  if (items.length === 0) {
+  if (options.length === 0) {
     return null
   }
 

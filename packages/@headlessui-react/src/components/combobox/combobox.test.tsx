@@ -77,6 +77,56 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
+describe('Virtual scrolling', () => {
+  it('should reserve space for options before the listbox is measured', async () => {
+    let height = jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(0)
+    let onChange = jest.fn()
+
+    try {
+      let { getByRole } = render(
+        <Combobox virtual={{ options: ['alice', 'bob', 'charlie'] }} onChange={onChange}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button>Trigger</Combobox.Button>
+          <Combobox.Options>
+            {({ option }) => <Combobox.Option value={option}>{option}</Combobox.Option>}
+          </Combobox.Options>
+        </Combobox>
+      )
+
+      await click(getComboboxButton())
+
+      let listbox = getByRole('listbox')
+      expect(getComboboxOptions()).toHaveLength(0)
+      expect(listbox.firstElementChild).toHaveStyle({ height: '120px' })
+
+      height.mockReturnValue(40)
+      await press(Keys.Escape)
+      await click(getComboboxButton())
+
+      expect(getComboboxOptions()).toHaveLength(3)
+      await click(getComboboxOptions()[1])
+      expect(onChange).toHaveBeenCalledWith('bob')
+    } finally {
+      height.mockReturnValue(40)
+    }
+  })
+
+  it('should leave the listbox empty when there are no virtual options', async () => {
+    let { getByRole } = render(
+      <Combobox virtual={{ options: [] }} onChange={NOOP}>
+        <Combobox.Input onChange={NOOP} />
+        <Combobox.Button>Trigger</Combobox.Button>
+        <Combobox.Options>
+          {({ option }) => <Combobox.Option value={option}>{option}</Combobox.Option>}
+        </Combobox.Options>
+      </Combobox>
+    )
+
+    await click(getComboboxButton())
+    expect(getByRole('listbox')).toBeEmptyDOMElement()
+  })
+})
+
 describe('safeguards', () => {
   it.each([
     ['Combobox.Button', Combobox.Button],
