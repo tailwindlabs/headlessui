@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix crash in `Menu` and `Listbox` when the active item is removed while open
 
 ## [2.2.10] - 2026-04-07
 

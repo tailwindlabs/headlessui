@@ -848,6 +848,65 @@ describe('Rendering', () => {
     )
   })
 
+  it('should reset the active option when it is removed while the Listbox is open', async () => {
+    function Example({ hide = false }) {
+      return (
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Listbox.Options>
+            <Listbox.Option value="a">Option 1</Listbox.Option>
+            {!hide && <Listbox.Option value="b">Option 2</Listbox.Option>}
+            {!hide && <Listbox.Option value="c">Option 3</Listbox.Option>}
+          </Listbox.Options>
+        </Listbox>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    await click(getListboxButton())
+
+    await press(Keys.End)
+    assertActiveListboxOption(getListboxOptions()[2])
+
+    rerender(<Example hide={true} />)
+
+    await act(async () => {})
+    assertNoActiveListboxOption()
+
+    await press(Keys.Enter)
+    assertListbox({ state: ListboxState.InvisibleUnmounted })
+  })
+
+  it('should keep the same option active when an option before it is removed', async () => {
+    function Example({ hide = false }) {
+      return (
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Listbox.Options>
+            {!hide && <Listbox.Option value="a">Option 1</Listbox.Option>}
+            <Listbox.Option value="b">Option 2</Listbox.Option>
+            <Listbox.Option value="c">Option 3</Listbox.Option>
+          </Listbox.Options>
+        </Listbox>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    await click(getListboxButton())
+
+    await press(Keys.End)
+    assertActiveListboxOption(getListboxOptions()[2])
+
+    rerender(<Example hide={true} />)
+
+    let options = getListboxOptions()
+    expect(options).toHaveLength(2)
+    await act(async () => {})
+    assertActiveListboxOption(options[1])
+  })
+
   it('should guarantee the order of DOM nodes when performing actions', async () => {
     function Example({ hide = false }) {
       return (

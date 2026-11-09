@@ -500,6 +500,65 @@ describe('Rendering', () => {
     })
   })
 
+  it('should reset the active item when it is removed while the Menu is open', async () => {
+    function Example({ hide = false }) {
+      return (
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Menu.Items>
+            <Menu.Item as="button">Item 1</Menu.Item>
+            {!hide && <Menu.Item as="button">Item 2</Menu.Item>}
+            {!hide && <Menu.Item as="button">Item 3</Menu.Item>}
+          </Menu.Items>
+        </Menu>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    await click(getMenuButton())
+
+    await press(Keys.End)
+    assertMenuLinkedWithMenuItem(getMenuItems()[2])
+
+    rerender(<Example hide={true} />)
+
+    await act(async () => {})
+    assertNoActiveMenuItem()
+
+    await press(Keys.Enter)
+    assertMenu({ state: MenuState.InvisibleUnmounted })
+  })
+
+  it('should keep the same item active when an item before it is removed', async () => {
+    function Example({ hide = false }) {
+      return (
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Menu.Items>
+            {!hide && <Menu.Item as="button">Item 1</Menu.Item>}
+            <Menu.Item as="button">Item 2</Menu.Item>
+            <Menu.Item as="button">Item 3</Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    await click(getMenuButton())
+
+    await press(Keys.End)
+    assertMenuLinkedWithMenuItem(getMenuItems()[2])
+
+    rerender(<Example hide={true} />)
+
+    let items = getMenuItems()
+    expect(items).toHaveLength(2)
+    await act(async () => {})
+    assertMenuLinkedWithMenuItem(items[1])
+  })
+
   it('should guarantee the order of DOM nodes when performing actions', async () => {
     function Example({ hide = false }) {
       return (
