@@ -1441,10 +1441,11 @@ function OptionFn<
   let {
     id = `headlessui-combobox-option-${internalId}`,
     value,
-    disabled = data.virtual?.disabled?.(value) ?? false,
+    disabled: optionDisabled = data.virtual?.disabled?.(value) ?? false,
     order = null,
     ...theirProps
   } = props
+  let disabled = data.disabled || optionDisabled
 
   let [inputElement] = useSlice(machine, (state) => [state.inputElement])
 

@@ -83,6 +83,35 @@ function getDefaultComponents() {
 
 const renderTemplate = createRenderTemplate(getDefaultComponents())
 
+it('should not select an option after disabling an open Combobox', async () => {
+  let disabled = ref(false)
+  let value = ref('apple')
+
+  renderTemplate({
+    template: html`
+      <Combobox v-model="value" :disabled="disabled">
+        <ComboboxInput />
+        <ComboboxButton>Fruit</ComboboxButton>
+        <ComboboxOptions>
+          <ComboboxOption value="apple">Apple</ComboboxOption>
+          <ComboboxOption value="orange">Orange</ComboboxOption>
+        </ComboboxOptions>
+      </Combobox>
+    `,
+    setup: () => ({ disabled, value }),
+  })
+
+  await click(getComboboxButton())
+  assertComboboxList({ state: ComboboxState.Visible })
+
+  disabled.value = true
+  await nextTick()
+  expect(getComboboxInput()).toBeDisabled()
+  await click(getComboboxOptions()[1])
+
+  expect(value.value).toBe('apple')
+})
+
 describe('safeguards', () => {
   it.each([
     ['ComboboxButton', ComboboxButton],
