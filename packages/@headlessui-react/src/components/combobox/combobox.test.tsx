@@ -77,6 +77,33 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
+it('should not select an option after disabling an open Combobox', async () => {
+  let onChange = jest.fn()
+
+  function Example({ disabled }: { disabled: boolean }) {
+    return (
+      <Combobox value="apple" onChange={onChange} disabled={disabled}>
+        <ComboboxInput />
+        <ComboboxButton>Fruit</ComboboxButton>
+        <ComboboxOptions>
+          <ComboboxOption value="apple">Apple</ComboboxOption>
+          <ComboboxOption value="orange">Orange</ComboboxOption>
+        </ComboboxOptions>
+      </Combobox>
+    )
+  }
+
+  let { rerender } = render(<Example disabled={false} />)
+  await click(getComboboxButton())
+  assertComboboxList({ state: ComboboxState.Visible })
+
+  rerender(<Example disabled={true} />)
+  expect(getComboboxInput()).toBeDisabled()
+  await click(getComboboxOptions()[1])
+
+  expect(onChange).not.toHaveBeenCalled()
+})
+
 describe('safeguards', () => {
   it.each([
     ['Combobox.Button', Combobox.Button],

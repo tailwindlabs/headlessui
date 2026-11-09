@@ -1435,7 +1435,9 @@ export let ComboboxOption = defineComponent({
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
     let disabled = computed(() => {
-      return props.disabled || api.virtual.value?.disabled(props.value)
+      return (
+        api.disabled.value || props.disabled || (api.virtual.value?.disabled(props.value) ?? false)
+      )
     })
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
@@ -1452,7 +1454,7 @@ export let ComboboxOption = defineComponent({
 
     let virtualizer = inject(VirtualContext, null)
     let dataRef = computed<ComboboxOptionData>(() => ({
-      disabled: props.disabled,
+      disabled: disabled.value,
       value: props.value,
       domRef: internalOptionRef,
       order: computed(() => props.order),
@@ -1519,7 +1521,7 @@ export let ComboboxOption = defineComponent({
     }
 
     function handleFocus() {
-      if (props.disabled || api.virtual.value?.disabled(props.value)) {
+      if (disabled.value) {
         return api.goToOption(Focus.Nothing)
       }
       let idx = api.calculateIndex(props.value)
@@ -1534,7 +1536,7 @@ export let ComboboxOption = defineComponent({
 
     function handleMove(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled || api.virtual.value?.disabled(props.value)) return
+      if (disabled.value) return
       if (active.value) return
       let idx = api.calculateIndex(props.value)
       api.goToOption(Focus.Specific, idx, ActivationTrigger.Pointer)
@@ -1542,21 +1544,21 @@ export let ComboboxOption = defineComponent({
 
     function handleLeave(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled || api.virtual.value?.disabled(props.value)) return
+      if (disabled.value) return
       if (!active.value) return
       if (api.optionsPropsRef.value.hold) return
       api.goToOption(Focus.Nothing)
     }
 
     return () => {
-      let { disabled } = props
-      let slot = { active: active.value, selected: selected.value, disabled }
+      let isDisabled = disabled.value
+      let slot = { active: active.value, selected: selected.value, disabled: isDisabled }
       let ourProps = {
         id,
         ref: internalOptionRef,
         role: 'option',
-        tabIndex: disabled === true ? undefined : -1,
-        'aria-disabled': disabled === true ? true : undefined,
+        tabIndex: isDisabled === true ? undefined : -1,
+        'aria-disabled': isDisabled === true ? true : undefined,
         // According to the WAI-ARIA best practices, we should use aria-checked for
         // multi-select,but Voice-Over disagrees. So we use aria-selected instead for
         // both single and multi-select.
