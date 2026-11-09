@@ -390,28 +390,14 @@ let reducers: {
     }
   },
   [ActionTypes.UnregisterOptions]: (state, action) => {
-    let options = state.options
-
-    let idxs = []
     let ids = new Set(action.options)
-    for (let [idx, option] of options.entries()) {
-      if (ids.has(option.id)) {
-        idxs.push(idx)
-        ids.delete(option.id)
-        if (ids.size === 0) break
-      }
-    }
-
-    if (idxs.length > 0) {
-      options = options.slice()
-      for (let idx of idxs.reverse()) {
-        options.splice(idx, 1)
-      }
-    }
+    let adjustedState = adjustOrderedState(state, (options) =>
+      options.filter((option) => !ids.has(option.id))
+    )
 
     return {
       ...state,
-      options,
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
   },
