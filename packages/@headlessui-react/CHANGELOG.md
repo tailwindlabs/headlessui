@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix crash in `Menu` and `Listbox` when the active item is removed while open
+- Fix crash in `Menu` and `Listbox` when the active item is removed while open ([#3918](https://github.com/tailwindlabs/headlessui/pull/3918))
 
 ## [2.2.10] - 2026-04-07
 
