@@ -1245,7 +1245,15 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let inertOthersEnabled = data.__demoMode ? false : modal && comboboxState === ComboboxState.Open
   useInertOthers(inertOthersEnabled, {
     allowed: useCallback(
-      () => [inputElement, buttonElement, optionsElement],
+      () => [
+        inputElement,
+        buttonElement,
+        optionsElement,
+        // Keep the `<label>`s of the input (e.g. a `<Label>` inside a `<Field>`)
+        // accessible, otherwise the input loses its accessible name while the
+        // options are open.
+        ...Array.from(inputElement?.labels ?? []),
+      ],
       [inputElement, buttonElement, optionsElement]
     ),
   })

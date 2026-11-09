@@ -41,6 +41,8 @@ import {
   word,
 } from '../../test-utils/interactions'
 import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Field } from '../field/field'
+import { Label } from '../label/label'
 import { Transition } from '../transition/transition'
 import {
   Combobox,
@@ -5907,6 +5909,53 @@ describe('transitions', () => {
 
       // Ensure the input got the restored focus
       assertActiveElement(getComboboxInput())
+    })
+  )
+})
+
+// Regression test for https://github.com/tailwindlabs/headlessui/issues/3916
+describe('Inert others', () => {
+  it(
+    'should keep the label of the input accessible while the options are open',
+    suppressConsoleLogs(async () => {
+      render(
+        <div>
+          <Field>
+            <Label>Assignee</Label>
+            <Combobox value={null} onChange={NOOP}>
+              <ComboboxInput />
+              <ComboboxOptions>
+                <ComboboxOption value="alice">Alice</ComboboxOption>
+                <ComboboxOption value="bob">Bob</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+          </Field>
+          <p>Unrelated content</p>
+        </div>
+      )
+
+      let label = getByText('Assignee')
+      let unrelated = getByText('Unrelated content')
+
+      // Open the combobox
+      await focus(getComboboxInput())
+      await press(Keys.ArrowDown)
+      assertComboboxList({ state: ComboboxState.Visible })
+
+      // The label is not hidden, so the input keeps its accessible name
+      expect(label).not.toHaveAttribute('aria-hidden')
+      expect(label?.inert).toBeFalsy()
+
+      // Other content is still made inert
+      expect(unrelated).toHaveAttribute('aria-hidden', 'true')
+      expect(unrelated?.inert).toBe(true)
+
+      // Close the combobox
+      await press(Keys.Escape)
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      expect(unrelated).not.toHaveAttribute('aria-hidden')
+      expect(unrelated?.inert).toBeFalsy()
     })
   )
 })
