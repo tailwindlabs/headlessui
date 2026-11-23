@@ -166,7 +166,7 @@ export function useTransition(
       done() {
         if (cancelledRef.current) {
           if (hasPendingTransitions(element)) {
-            return
+            return false // Transitions are still running, wait for them.
           }
         }
 
@@ -179,6 +179,7 @@ export function useTransition(
         }
 
         events?.end?.(show)
+        return true
       },
     })
   }, [enabled, show, element, d])
@@ -216,7 +217,7 @@ function transition(
   }: {
     prepare: () => void
     run: () => void
-    done: () => void
+    done: () => boolean
     inFlight: MutableRefObject<boolean>
   }
 ) {
@@ -253,7 +254,7 @@ function transition(
   return d.dispose
 }
 
-function waitForTransition(node: HTMLElement | null, done: () => void) {
+function waitForTransition(node: HTMLElement | null, done: () => boolean) {
   let d = disposables()
   if (!node) return d.dispose
 
@@ -272,8 +273,13 @@ function waitForTransition(node: HTMLElement | null, done: () => void) {
 
   // Wait for all the transitions to complete.
   Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
-    if (!cancelled) {
-      done()
+    if (cancelled) {
+      return
+    }
+    // If done() bailed out because transitions are still pending, wait for
+    // those transitions as well instead of dropping the completion.
+    if (!done()) {
+      d.add(waitForTransition(node, done))
     }
   })
 
