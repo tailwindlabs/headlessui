@@ -714,6 +714,40 @@ describe('Composition', () => {
       assertDialog({ state: DialogState.InvisibleUnmounted })
     })
   )
+
+  // https://github.com/tailwindlabs/headlessui/issues/3920
+  it(
+    'should unmount the Dialog when it is closed during its enter transition',
+    suppressConsoleLogs(async () => {
+      function Example({ open }: { open: boolean }) {
+        return (
+          <>
+          <style>{'.panel { transition: opacity 50ms ease; }'}</style>
+            <Transition show={open}>
+              <Dialog autoFocus={false} onClose={() => {}}>
+                <Dialog.Panel transition className="panel">
+                <p>Contents</p>
+                </Dialog.Panel>
+              </Dialog>
+            </Transition>
+          </>
+        )
+            }
+      let { rerender } = render(<Example open={false} />)
+      // Open the dialog
+      rerender(<Example open={true} />)
+      // Wait 1 frame so the enter transition is in flight
+      await nextFrame()
+      // The dialog should be visible
+      assertDialog({ state: DialogState.Visible })
+      // Close the dialog while the enter transition is still running
+      rerender(<Example open={false} />)
+      // Wait for the transitions to finish
+      await frames(10)
+      // The dialog should be unmounted
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
