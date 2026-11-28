@@ -876,6 +876,99 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should not call setSelectionRange when syncing the value and the combobox input is not focused (#3923)',
+      suppressConsoleLogs(async () => {
+        let spy = jest.spyOn(HTMLInputElement.prototype, 'setSelectionRange')
+
+        function Example() {
+          let [value, setValue] = useState<string | null>('alice')
+
+          return (
+            <>
+              <Combobox value={value} onChange={setValue}>
+                <Combobox.Input />
+                <Combobox.Button />
+
+                <Combobox.Options>
+                  <Combobox.Option value="alice">alice</Combobox.Option>
+                  <Combobox.Option value="bob">bob</Combobox.Option>
+                  <Combobox.Option value="charlie">charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+              <button onClick={() => setValue('bob')}>Change value from outside</button>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        let input = getComboboxInput()!
+        Object.defineProperty(input, 'selectionStart', { configurable: true, get: () => 0 })
+        Object.defineProperty(input, 'selectionEnd', { configurable: true, get: () => 0 })
+
+        spy.mockClear()
+
+        // Input is not focused
+        expect(document.activeElement).not.toBe(input)
+
+        // Change value from outside
+        await click(getByText('Change value from outside'))
+
+        expect(input).toHaveValue('bob')
+        expect(document.activeElement).not.toBe(input)
+        expect(spy).not.toHaveBeenCalled()
+
+        spy.mockRestore()
+      })
+    )
+
+    it(
+      'should call setSelectionRange when syncing the value and the combobox input is focused',
+      suppressConsoleLogs(async () => {
+        let spy = jest.spyOn(HTMLInputElement.prototype, 'setSelectionRange')
+
+        function Example({ value }: { value: string }) {
+          return (
+            <Combobox value={value}>
+              <Combobox.Input />
+              <Combobox.Button />
+
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        let { rerender } = render(<Example value="alice" />)
+        let input = getComboboxInput()!
+
+        // Focus the combobox input
+        await focus(input)
+        expect(document.activeElement).toBe(input)
+
+        Object.defineProperty(input, 'selectionStart', { configurable: true, get: () => 0 })
+        Object.defineProperty(input, 'selectionEnd', { configurable: true, get: () => 0 })
+
+        spy.mockClear()
+
+        // Update value while input remains focused
+        rerender(<Example value="bob" />)
+
+        // Flush requestAnimationFrame
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+
+        expect(input).toHaveValue('bob')
+        expect(document.activeElement).toBe(input)
+        expect(spy).toHaveBeenCalledWith('bob'.length, 'bob'.length)
+
+        spy.mockRestore()
+      })
+    )
+
     // Skipped because JSDOM doesn't implement this properly: https://github.com/jsdom/jsdom/issues/3524
     xit(
       'should not move the caret to the end of the input when syncing the value if a custom selection is made',
