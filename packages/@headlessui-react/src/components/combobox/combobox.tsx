@@ -623,7 +623,7 @@ function InputFn<
         // Bail when the input is not the currently focused element. When it is not the focused
         // element, and we call the `setSelectionRange`, then it will become the focused
         // element which may be unwanted.
-        if (isActiveElement(input)) return
+        if (!isActiveElement(input)) return
 
         let { selectionStart, selectionEnd } = input
 
